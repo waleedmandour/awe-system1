@@ -1171,7 +1171,7 @@ function extractJsonObject(text: string): string | null {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { text, courseCode, topic, apiKey, examType, writingType, sourceTextId } = body;
+    const { text, courseCode, topic, examType, writingType, sourceTextId } = body;
 
     if (!text) {
       return NextResponse.json(
@@ -1180,10 +1180,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // API key is read from server-side environment variable only
+    const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       return NextResponse.json(
-        { error: 'Gemini API key is required' },
-        { status: 400 }
+        { error: 'Server configuration error: GEMINI_API_KEY environment variable is not set.' },
+        { status: 500 }
       );
     }
 

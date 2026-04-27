@@ -360,11 +360,7 @@ interface AppState {
   setStep: (step: AppStep) => void;
   
   // Settings
-  geminiApiKey: string;
-  assessmentApiKey: string;
   theme: 'light' | 'dark' | 'system';
-  setGeminiApiKey: (key: string) => void;
-  setAssessmentApiKey: (key: string) => void;
   setTheme: (theme: 'light' | 'dark' | 'system') => void;
 
   // OCR completion tracking (for cooldown timer)
@@ -468,12 +464,8 @@ export const useAppStore = create<AppState>()(
       currentStep: 'welcome',
       setStep: (step) => set({ currentStep: step }),
       
-      // Settings — API key is hardcoded for teacher deployment
-      geminiApiKey: 'AIzaSyAITB_fyTjgXbWfYjn1IVu8HK_RmAkIr4E',
-      assessmentApiKey: 'AIzaSyAITB_fyTjgXbWfYjn1IVu8HK_RmAkIr4E',
+      // Settings — API key is server-side only (env var GEMINI_API_KEY)
       theme: 'system',
-      setGeminiApiKey: (key) => set({ geminiApiKey: key }),
-      setAssessmentApiKey: (key) => set({ assessmentApiKey: key }),
       setTheme: (theme) => set({ theme }),
 
       // OCR completion tracking

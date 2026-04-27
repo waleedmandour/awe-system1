@@ -56,8 +56,6 @@ export default function AWEApp() {
 
   // Handle image upload and OCR processing — supports single or multi-page (up to 2)
   const handleImageUpload = async (images: string[]) => {
-    const { geminiApiKey } = useAppStore.getState();
-
     setStep('processing');
     const pageCount = images.length;
     setProcessing(true, `Extracting text from ${pageCount} page${pageCount > 1 ? 's' : ''}...`);
@@ -71,8 +69,6 @@ export default function AWEApp() {
         },
         body: JSON.stringify({
           images, // Array of base64/data-uri image strings, in page order
-          geminiApiKey: geminiApiKey || undefined,
-          useGemini: true,
         }),
       });
 

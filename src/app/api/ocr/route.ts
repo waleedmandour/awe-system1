@@ -22,7 +22,7 @@ const SUPPORTED_MIME_TYPES = [
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { image, images, apiKey, geminiApiKey, useGemini } = body;
+    const { image, images } = body;
 
     // Normalize to array: support both `image` (legacy) and `images` (new multi-page)
     const imageArray: string[] = [];
@@ -56,17 +56,16 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Check which OCR method to use
-    if (useGemini && geminiApiKey) {
-      return await performGeminiOCR(processedImages, geminiApiKey);
-    } else if (apiKey) {
-      return await performVisionOCR(processedImages, apiKey);
-    } else {
+    // API key is read from server-side environment variable only
+    const serverApiKey = process.env.GEMINI_API_KEY;
+    if (!serverApiKey) {
       return NextResponse.json(
-        { error: 'Either Vision API key or Gemini API key is required' },
-        { status: 400 }
+        { error: 'Server configuration error: GEMINI_API_KEY environment variable is not set.' },
+        { status: 500 }
       );
     }
+
+    return await performGeminiOCR(processedImages, serverApiKey);
   } catch (error) {
     console.error('OCR processing error:', error);
     return NextResponse.json(
