@@ -157,14 +157,14 @@ const RecordsScreen = ({ onBack, onNewAssessment }: { onBack: () => void; onNewA
       <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-16" preserveAspectRatio="none">
         <defs>
           <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#1a5f2a" stopOpacity="0.2" />
-            <stop offset="100%" stopColor="#1a5f2a" stopOpacity="0" />
+            <stop offset="0%" stopColor="#1e40af" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="#1e40af" stopOpacity="0" />
           </linearGradient>
         </defs>
         <path d={areaD} fill="url(#sparkGrad)" />
-        <path d={pathD} fill="none" stroke="#1a5f2a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d={pathD} fill="none" stroke="#1e40af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         {points.map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y} r="3" fill="#1a5f2a" stroke="white" strokeWidth="1.5" />
+          <circle key={i} cx={p.x} cy={p.y} r="3" fill="#1e40af" stroke="white" strokeWidth="1.5" />
         ))}
       </svg>
     );
@@ -190,7 +190,7 @@ const RecordsScreen = ({ onBack, onNewAssessment }: { onBack: () => void; onNewA
             <div className="p-4 space-y-4">
               <div className="text-center">
                 <p className="text-xs text-muted-foreground mb-1">{formatDate(record.createdAt)}</p>
-                <p className="text-3xl font-bold text-[#1a5f2a]">{record.assessment.percentage}%</p>
+                <p className="text-3xl font-bold text-[#1e40af]">{record.assessment.percentage}%</p>
                 <p className="text-sm text-muted-foreground">{record.assessment.totalScore}/{record.assessment.maxScore}</p>
                 <Badge className={`mt-2 border ${getPerformanceBadge(record.assessment.percentage).color}`} variant="outline">
                   {getPerformanceBadge(record.assessment.percentage).label}
@@ -215,7 +215,7 @@ const RecordsScreen = ({ onBack, onNewAssessment }: { onBack: () => void; onNewA
                             <div
                               className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold"
                               style={{
-                                background: `linear-gradient(135deg, ${pct >= 70 ? '#1a5f2a' : '#c9a227'}, ${pct >= 70 ? '#2a7f3a' : '#d9b237'})`,
+                                background: `linear-gradient(135deg, ${pct >= 70 ? '#1e40af' : '#3b82f6'}, ${pct >= 70 ? '#3b82f6' : '#60a5fa'})`,
                               }}
                             >
                               {score.score}
@@ -233,7 +233,7 @@ const RecordsScreen = ({ onBack, onNewAssessment }: { onBack: () => void; onNewA
                         <div className="mb-3">
                           <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                             <div
-                              className="h-full rounded-full bg-[#1a5f2a]"
+                              className="h-full rounded-full bg-[#1e40af]"
                               style={{ width: `${pct}%` }}
                             />
                           </div>
@@ -241,14 +241,14 @@ const RecordsScreen = ({ onBack, onNewAssessment }: { onBack: () => void; onNewA
 
                         {parsed.justification && (
                           <div className="mb-3 bg-muted/40 p-3 rounded-lg">
-                            <p className="text-xs font-medium text-[#1a5f2a] mb-1">Score Justification:</p>
+                            <p className="text-xs font-medium text-[#1e40af] mb-1">Score Justification:</p>
                             <p className="text-sm text-muted-foreground leading-relaxed">{parsed.justification}</p>
                           </div>
                         )}
 
                         {parsed.strengths && (
                           <div className="mb-3">
-                            <p className="text-xs font-medium text-[#1a5f2a] mb-1">Strengths:</p>
+                            <p className="text-xs font-medium text-[#1e40af] mb-1">Strengths:</p>
                             <p className="text-sm text-muted-foreground">{parsed.strengths}</p>
                           </div>
                         )}
@@ -269,7 +269,7 @@ const RecordsScreen = ({ onBack, onNewAssessment }: { onBack: () => void; onNewA
 
                         {parsed.suggestions && (
                           <div>
-                            <p className="text-xs font-medium text-[#c9a227] mb-1">Suggestions:</p>
+                            <p className="text-xs font-medium text-[#3b82f6] mb-1">Suggestions:</p>
                             <p className="text-sm text-muted-foreground">{parsed.suggestions}</p>
                           </div>
                         )}
@@ -285,10 +285,10 @@ const RecordsScreen = ({ onBack, onNewAssessment }: { onBack: () => void; onNewA
 
               {/* Overall Feedback */}
               {record.assessment.overallFeedback && (
-                <Card className="border-2 border-[#1a5f2a]/20">
+                <Card className="border-2 border-[#1e40af]/20">
                   <CardHeader className="pb-3">
                     <div className="flex items-center gap-2">
-                      <MessageSquare className="w-5 h-5 text-[#1a5f2a]" />
+                      <MessageSquare className="w-5 h-5 text-[#1e40af]" />
                       <CardTitle className="text-base">Overall Feedback</CardTitle>
                     </div>
                   </CardHeader>
@@ -348,19 +348,19 @@ const RecordsScreen = ({ onBack, onNewAssessment }: { onBack: () => void; onNewA
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-3 gap-3">
                   <Card className="border-0 shadow-sm">
                     <CardContent className="p-3 text-center">
-                      <p className="text-xl font-bold text-[#1a5f2a]">{totalAssessments}</p>
+                      <p className="text-xl font-bold text-[#1e40af]">{totalAssessments}</p>
                       <p className="text-xs text-muted-foreground">Total</p>
                     </CardContent>
                   </Card>
                   <Card className="border-0 shadow-sm">
                     <CardContent className="p-3 text-center">
-                      <p className="text-xl font-bold text-[#c9a227]">{avgScore}%</p>
+                      <p className="text-xl font-bold text-[#3b82f6]">{avgScore}%</p>
                       <p className="text-xs text-muted-foreground">Average</p>
                     </CardContent>
                   </Card>
                   <Card className="border-0 shadow-sm">
                     <CardContent className="p-3 text-center">
-                      <p className="text-xl font-bold text-[#1a5f2a]">{bestScore}%</p>
+                      <p className="text-xl font-bold text-[#1e40af]">{bestScore}%</p>
                       <p className="text-xs text-muted-foreground">Best</p>
                     </CardContent>
                   </Card>
@@ -385,7 +385,7 @@ const RecordsScreen = ({ onBack, onNewAssessment }: { onBack: () => void; onNewA
                   <div className="flex gap-2 flex-wrap">
                     <Badge
                       variant={filterCourse === 'all' ? 'default' : 'outline'}
-                      className={`cursor-pointer text-xs ${filterCourse === 'all' ? 'bg-[#1a5f2a] text-white border-[#1a5f2a]' : ''}`}
+                      className={`cursor-pointer text-xs ${filterCourse === 'all' ? 'bg-[#1e40af] text-white border-[#1e40af]' : ''}`}
                       onClick={() => setFilterCourse('all')}
                     >
                       All Courses
@@ -394,7 +394,7 @@ const RecordsScreen = ({ onBack, onNewAssessment }: { onBack: () => void; onNewA
                       <Badge
                         key={c.id}
                         variant={filterCourse === c.id ? 'default' : 'outline'}
-                        className={`cursor-pointer text-xs ${filterCourse === c.id ? 'bg-[#1a5f2a] text-white border-[#1a5f2a]' : ''}`}
+                        className={`cursor-pointer text-xs ${filterCourse === c.id ? 'bg-[#1e40af] text-white border-[#1e40af]' : ''}`}
                         onClick={() => setFilterCourse(c.id)}
                       >
                         {c.code}
@@ -417,7 +417,7 @@ const RecordsScreen = ({ onBack, onNewAssessment }: { onBack: () => void; onNewA
                         transition={{ delay: Math.min(index * 0.05, 0.3) }}
                       >
                         <Card
-                          className={`border-0 shadow-sm cursor-pointer transition-all duration-200 overflow-hidden ${isExpanded ? 'ring-2 ring-[#1a5f2a]/20' : ''}`}
+                          className={`border-0 shadow-sm cursor-pointer transition-all duration-200 overflow-hidden ${isExpanded ? 'ring-2 ring-[#1e40af]/20' : ''}`}
                           onClick={() => setExpandedId(isExpanded ? null : record.id)}
                         >
                           <CardContent className="p-4">
@@ -430,7 +430,7 @@ const RecordsScreen = ({ onBack, onNewAssessment }: { onBack: () => void; onNewA
                                   <span className="text-xs text-muted-foreground truncate">{formatDate(record.createdAt)}</span>
                                 </div>
                                 <div className="flex items-center gap-3 mt-2">
-                                  <span className="text-lg font-bold text-[#1a5f2a]">
+                                  <span className="text-lg font-bold text-[#1e40af]">
                                     {record.assessment.totalScore}/{record.assessment.maxScore}
                                   </span>
                                   <Badge className={`text-xs border shrink-0 ${badge.color}`} variant="outline">
@@ -445,7 +445,7 @@ const RecordsScreen = ({ onBack, onNewAssessment }: { onBack: () => void; onNewA
                                   <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                                     <motion.div
                                       className="h-full rounded-full"
-                                      style={{ backgroundColor: record.assessment.percentage >= 80 ? '#1a5f2a' : record.assessment.percentage >= 60 ? '#c9a227' : record.assessment.percentage >= 40 ? '#f97316' : '#ef4444' }}
+                                      style={{ backgroundColor: record.assessment.percentage >= 80 ? '#1e40af' : record.assessment.percentage >= 60 ? '#3b82f6' : record.assessment.percentage >= 40 ? '#f97316' : '#ef4444' }}
                                       initial={{ width: 0 }}
                                       animate={{ width: `${record.assessment.percentage}%` }}
                                       transition={{ duration: 0.8, delay: index * 0.05 }}
@@ -551,7 +551,7 @@ const RecordsScreen = ({ onBack, onNewAssessment }: { onBack: () => void; onNewA
                 <p className="text-sm text-muted-foreground text-center mb-6 max-w-xs">
                   Complete your first essay assessment to see your records here.
                 </p>
-                <Button onClick={onNewAssessment} className="bg-[#1a5f2a] hover:bg-[#1a5f2a]/90 rounded-xl ios-press">
+                <Button onClick={onNewAssessment} className="bg-[#1e40af] hover:bg-[#1e40af]/90 rounded-xl ios-press">
                   <Plus className="w-4 h-4 mr-2" />
                   Start Your First Assessment
                 </Button>

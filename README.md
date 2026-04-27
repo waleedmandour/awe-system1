@@ -309,7 +309,7 @@ API keys are entered by each user inside the app and stored locally in their bro
 
 - **Mobile-First:** Optimized for iOS and Android with touch-friendly UI, safe area support, and iOS press effects
 - **Smooth Animations:** Framer Motion page transitions and micro-interactions
-- **SQU Branding:** Official green (#1a5f2a) and gold (#c9a227) color scheme throughout, supporting 5 courses
+- **SQU Branding:** Official green (#1e40af) and gold (#3b82f6) color scheme throughout, supporting 5 courses
 - **Dark Mode:** Automatic theme detection (light/dark/system)
 - **PWA Features:** Offline support, install prompts, service worker caching
 - **Responsive:** Works seamlessly on phones, tablets, and desktop browsers

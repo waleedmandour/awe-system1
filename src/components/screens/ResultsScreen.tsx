@@ -79,7 +79,7 @@ const ResultsScreen = ({ assessment, onNewAssessment, onBack }: { assessment: As
             <p className="text-muted-foreground text-sm mb-6">Please submit an essay for assessment first.</p>
             <Button
               onClick={onNewAssessment}
-              className="bg-[#1a5f2a] hover:bg-[#1a5f2a]/90"
+              className="bg-[#1e40af] hover:bg-[#1e40af]/90"
             >
               Start New Assessment
             </Button>
@@ -192,7 +192,7 @@ const ResultsScreen = ({ assessment, onNewAssessment, onBack }: { assessment: As
         </div>
 
         {/* Score Hero */}
-        <div className="bg-gradient-to-br from-[#1a5f2a] to-[#2a7f3a] text-white p-6">
+        <div className="bg-gradient-to-br from-[#1e40af] to-[#3b82f6] text-white p-6">
           <div className="flex items-center justify-center gap-6">
             {/* Circular Score */}
             <motion.div
@@ -248,7 +248,7 @@ const ResultsScreen = ({ assessment, onNewAssessment, onBack }: { assessment: As
                 <span className="text-2xl font-bold">{safeAssessment.totalScore}/{safeAssessment.maxScore}</span>
               </div>
               <p className="text-sm opacity-80">Total Score</p>
-              <Badge className="mt-2 bg-[#c9a227] text-white border-0">
+              <Badge className="mt-2 bg-[#3b82f6] text-white border-0">
                 {safeAssessment.percentage! >= 80 ? 'Excellent' : safeAssessment.percentage! >= 60 ? 'Good' : 'Needs Work'}
               </Badge>
             </motion.div>
@@ -285,14 +285,14 @@ const ResultsScreen = ({ assessment, onNewAssessment, onBack }: { assessment: As
                 <div className="grid grid-cols-2 gap-3">
                   <Card>
                     <CardContent className="p-4 text-center">
-                      <Award className="w-8 h-8 mx-auto mb-2 text-[#c9a227]" />
+                      <Award className="w-8 h-8 mx-auto mb-2 text-[#3b82f6]" />
                       <p className="text-2xl font-bold">{safeAssessment.totalScore}/{safeAssessment.maxScore}</p>
                       <p className="text-xs text-muted-foreground">Total Points</p>
                     </CardContent>
                   </Card>
                   <Card>
                     <CardContent className="p-4 text-center">
-                      <TrendingUp className="w-8 h-8 mx-auto mb-2 text-[#1a5f2a]" />
+                      <TrendingUp className="w-8 h-8 mx-auto mb-2 text-[#1e40af]" />
                       <p className="text-2xl font-bold">{Math.round(safeAssessment.percentage)}%</p>
                       <p className="text-xs text-muted-foreground">Percentage</p>
                     </CardContent>
@@ -352,9 +352,9 @@ const ResultsScreen = ({ assessment, onNewAssessment, onBack }: { assessment: As
                                 className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold"
                                 style={{
                                   background: `linear-gradient(135deg, ${
-                                    (score.score / score.maxScore) * 100 >= 70 ? '#1a5f2a' : '#c9a227'
+                                    (score.score / score.maxScore) * 100 >= 70 ? '#1e40af' : '#3b82f6'
                                   }, ${
-                                    (score.score / score.maxScore) * 100 >= 70 ? '#2a7f3a' : '#d9b237'
+                                    (score.score / score.maxScore) * 100 >= 70 ? '#3b82f6' : '#60a5fa'
                                   })`,
                                 }}
                               >
@@ -373,14 +373,14 @@ const ResultsScreen = ({ assessment, onNewAssessment, onBack }: { assessment: As
                           {/* Structured Feedback */}
                           {parsedFeedback.justification && (
                             <div className="mb-3 bg-muted/40 p-3 rounded-lg">
-                              <p className="text-xs font-medium text-[#1a5f2a] mb-1">Score Justification:</p>
+                              <p className="text-xs font-medium text-[#1e40af] mb-1">Score Justification:</p>
                               <p className="text-sm text-muted-foreground leading-relaxed">{parsedFeedback.justification}</p>
                             </div>
                           )}
 
                           {parsedFeedback.strengths && (
                             <div className="mb-3">
-                              <p className="text-xs font-medium text-[#1a5f2a] mb-1">Strengths:</p>
+                              <p className="text-xs font-medium text-[#1e40af] mb-1">Strengths:</p>
                               <p className="text-sm text-muted-foreground">{parsedFeedback.strengths}</p>
                             </div>
                           )}
@@ -401,7 +401,7 @@ const ResultsScreen = ({ assessment, onNewAssessment, onBack }: { assessment: As
                           
                           {parsedFeedback.suggestions && (
                             <div>
-                              <p className="text-xs font-medium text-[#c9a227] mb-1">Suggestions:</p>
+                              <p className="text-xs font-medium text-[#3b82f6] mb-1">Suggestions:</p>
                               <p className="text-sm text-muted-foreground">{parsedFeedback.suggestions}</p>
                             </div>
                           )}
@@ -424,10 +424,10 @@ const ResultsScreen = ({ assessment, onNewAssessment, onBack }: { assessment: As
                 className="space-y-4"
               >
                 {/* Overall Feedback */}
-                <Card className="border-2 border-[#1a5f2a]/20">
+                <Card className="border-2 border-[#1e40af]/20">
                   <CardHeader className="pb-3">
                     <div className="flex items-center gap-2">
-                      <MessageSquare className="w-5 h-5 text-[#1a5f2a]" />
+                      <MessageSquare className="w-5 h-5 text-[#1e40af]" />
                       <CardTitle className="text-base">Overall Feedback</CardTitle>
                     </div>
                   </CardHeader>
@@ -441,7 +441,7 @@ const ResultsScreen = ({ assessment, onNewAssessment, onBack }: { assessment: As
                   <Card>
                     <CardHeader className="pb-3">
                       <div className="flex items-center gap-2">
-                        <FileText className="w-5 h-5 text-[#c9a227]" />
+                        <FileText className="w-5 h-5 text-[#3b82f6]" />
                         <CardTitle className="text-base">Word Count</CardTitle>
                       </div>
                     </CardHeader>
@@ -482,7 +482,7 @@ const ResultsScreen = ({ assessment, onNewAssessment, onBack }: { assessment: As
             </Button>
             <Button
               onClick={onNewAssessment}
-              className="flex-1 h-12 bg-[#1a5f2a] hover:bg-[#1a5f2a]/90 rounded-xl ios-press"
+              className="flex-1 h-12 bg-[#1e40af] hover:bg-[#1e40af]/90 rounded-xl ios-press"
             >
               <Plus className="w-4 h-4 mr-2" />
               New Essay

@@ -41,7 +41,7 @@ const InstallBanner = () => {
       exit={{ y: -100, opacity: 0 }}
       className="install-banner fixed top-0 left-0 right-0 z-50 safe-area-top"
     >
-      <div className="bg-gradient-to-r from-[#1a5f2a] to-[#2a7f3a] text-white px-4 py-3 flex items-center justify-between gap-3">
+      <div className="bg-gradient-to-r from-[#1e40af] to-[#3b82f6] text-white px-4 py-3 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
             <Download className="w-5 h-5" />
@@ -62,7 +62,7 @@ const InstallBanner = () => {
           </Button>
           <Button
             size="sm"
-            className="bg-white text-[#1a5f2a] hover:bg-white/90 h-9"
+            className="bg-white text-[#1e40af] hover:bg-white/90 h-9"
             onClick={handleInstall}
           >
             Install

@@ -99,15 +99,15 @@ const BottomNav = ({ currentStep, onNavigate }: { currentStep: string; onNavigat
               key={item.id}
               onClick={() => onNavigate(item.step)}
               className={`flex flex-col items-center justify-center py-2 px-4 min-w-[64px] ios-press ${
-                isActive ? 'text-[#1a5f2a]' : 'text-muted-foreground'
+                isActive ? 'text-[#1e40af]' : 'text-muted-foreground'
               }`}
             >
-              <item.icon className={`w-6 h-6 ${isActive ? 'text-[#1a5f2a]' : ''}`} />
+              <item.icon className={`w-6 h-6 ${isActive ? 'text-[#1e40af]' : ''}`} />
               <span className="text-xs mt-1 font-medium">{item.label}</span>
               {isActive && (
                 <motion.div
                   layoutId="nav-indicator"
-                  className="absolute -top-0.5 w-8 h-1 bg-[#1a5f2a] rounded-full"
+                  className="absolute -top-0.5 w-8 h-1 bg-[#1e40af] rounded-full"
                 />
               )}
             </button>

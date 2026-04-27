@@ -12,7 +12,6 @@ import BottomNav from '@/components/layout/BottomNav';
 
 // Screen components
 import WelcomeScreen from '@/components/screens/WelcomeScreen';
-import SetupScreen from '@/components/screens/SetupScreen';
 import CourseSelectionScreen from '@/components/screens/CourseSelectionScreen';
 import UploadScreen from '@/components/screens/UploadScreen';
 import ProcessingScreen from '@/components/screens/ProcessingScreen';
@@ -22,12 +21,12 @@ import ResultsScreen from '@/components/screens/ResultsScreen';
 import RecordsScreen from '@/components/screens/RecordsScreen';
 
 // ─── Main App Component (Orchestrator) ─────────────────────────────────────────
+// Teacher deployment: API key is hardcoded — no SetupScreen needed.
 
 export default function AWEApp() {
   const {
     currentStep,
     setStep,
-    geminiApiKey,
     selectedCourse,
     extractedText,
     setExtractedText,
@@ -41,13 +40,6 @@ export default function AWEApp() {
 
   const [direction, setDirection] = useState<'left' | 'right'>('right');
 
-  // Determine initial step based on state
-  useEffect(() => {
-    if (!geminiApiKey && currentStep === 'welcome') {
-      // Show setup after welcome if no API key — handled in navigateTo
-    }
-  }, [geminiApiKey, currentStep]);
-
   const navigateTo = (step: string) => {
     setDirection('right');
     setStep(step as any);
@@ -55,7 +47,7 @@ export default function AWEApp() {
 
   const goBack = () => {
     setDirection('left');
-    const stepOrder = ['welcome', 'setup', 'course', 'upload', 'processing', 'review', 'assessing', 'results', 'records'];
+    const stepOrder = ['welcome', 'course', 'upload', 'processing', 'review', 'assessing', 'results', 'records'];
     const currentIndex = stepOrder.indexOf(currentStep);
     if (currentIndex > 0) {
       setStep(stepOrder[currentIndex - 1] as any);
@@ -65,16 +57,6 @@ export default function AWEApp() {
   // Handle image upload and OCR processing — supports single or multi-page (up to 2)
   const handleImageUpload = async (images: string[]) => {
     const { geminiApiKey } = useAppStore.getState();
-
-    // Check if API key is available
-    if (!geminiApiKey) {
-      toast({
-        title: 'API Key Required',
-        description: 'Please configure your Gemini API key in settings.',
-        variant: 'destructive',
-      });
-      return;
-    }
 
     setStep('processing');
     const pageCount = images.length;
@@ -165,13 +147,7 @@ export default function AWEApp() {
       case 'welcome':
         return (
           <WelcomeScreen
-            onGetStarted={() => navigateTo(geminiApiKey ? 'course' : 'setup')}
-          />
-        );
-      case 'setup':
-        return (
-          <SetupScreen
-            onComplete={() => navigateTo('course')}
+            onGetStarted={() => navigateTo('course')}
           />
         );
       case 'course':
@@ -221,7 +197,7 @@ export default function AWEApp() {
           />
         );
       default:
-        return <WelcomeScreen onGetStarted={() => navigateTo('setup')} />;
+        return <WelcomeScreen onGetStarted={() => navigateTo('course')} />;
     }
   };
 
@@ -240,13 +216,13 @@ export default function AWEApp() {
         {renderScreen()}
       </AnimatePresence>
 
-      {shouldShowBottomNav && currentStep !== 'welcome' && currentStep !== 'setup' && (
+      {shouldShowBottomNav && currentStep !== 'welcome' && (
         <BottomNav currentStep={currentStep} onNavigate={navigateTo} />
       )}
 
       {/* Footer Credits */}
       <footer className="text-center py-3 text-xs text-muted-foreground border-t bg-white/80 backdrop-blur-sm">
-        <p>Developed by: <span className="font-medium text-[#1a5f2a]">Dr. Waleed Mandour</span></p>
+        <p>Developed by: <span className="font-medium text-[#1e40af]">Dr. Waleed Mandour</span></p>
         <p>AI Co-Marker Assistance Project, 2026</p>
       </footer>
     </div>

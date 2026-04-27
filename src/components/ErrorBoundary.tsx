@@ -23,7 +23,7 @@ interface ErrorBoundaryState {
  * displays a friendly fallback screen instead of a white crash page.
  *
  * Compatible with Next.js App Router ('use client').
- * Uses Tailwind CSS styled with the SQU green/gold theme.
+ * Uses Tailwind CSS styled with the SQU blue theme.
  */
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
@@ -64,10 +64,10 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
       return (
         <div className="flex min-h-[400px] items-center justify-center p-6">
-          <div className="w-full max-w-md rounded-2xl border border-green-200 bg-white p-8 text-center shadow-lg dark:border-green-900 dark:bg-gray-900">
+          <div className="w-full max-w-md rounded-2xl border border-blue-200 bg-white p-8 text-center shadow-lg dark:border-blue-900 dark:bg-gray-900">
             {/* Icon */}
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-50 dark:bg-green-950">
-              <AlertTriangle className="h-9 w-9 text-green-700 dark:text-green-400" />
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-950">
+              <AlertTriangle className="h-9 w-9 text-blue-700 dark:text-blue-400" />
             </div>
 
             {/* Title */}
@@ -83,7 +83,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
             {/* Try Again button */}
             <button
               onClick={this.handleReset}
-              className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-green-700 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-offset-gray-900"
+              className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-blue-700 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-offset-gray-900"
             >
               <RotateCcw className="h-4 w-4" />
               Try Again

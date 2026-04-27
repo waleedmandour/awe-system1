@@ -121,7 +121,7 @@ const UploadScreen = ({ onUpload, onBack }: { onUpload: (images: string[]) => vo
             {/* Page 1 (Required) */}
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <Badge className="bg-[#1a5f2a] text-white border-0 text-xs">Page 1</Badge>
+                <Badge className="bg-[#1e40af] text-white border-0 text-xs">Page 1</Badge>
                 <span className="text-xs text-muted-foreground">Required</span>
               </div>
               {page1Image ? (
@@ -156,7 +156,7 @@ const UploadScreen = ({ onUpload, onBack }: { onUpload: (images: string[]) => vo
                 >
                   <Card
                     className={`border-2 border-dashed transition-all duration-200 cursor-pointer ${
-                      isDragging ? 'border-[#1a5f2a] bg-[#1a5f2a]/5' : 'border-muted-foreground/30'
+                      isDragging ? 'border-[#1e40af] bg-[#1e40af]/5' : 'border-muted-foreground/30'
                     }`}
                     onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                     onDragLeave={() => setIsDragging(false)}
@@ -164,7 +164,7 @@ const UploadScreen = ({ onUpload, onBack }: { onUpload: (images: string[]) => vo
                     onClick={() => openFilePicker('page1')}
                   >
                     <CardContent className="flex flex-col items-center justify-center p-8">
-                      <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#1a5f2a] to-[#2a7f3a] flex items-center justify-center mb-3 shadow-md">
+                      <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#1e40af] to-[#3b82f6] flex items-center justify-center mb-3 shadow-md">
                         <Camera className="w-7 h-7 text-white" />
                       </div>
                       <h3 className="font-medium text-sm mb-1">Add Page 1</h3>
@@ -213,7 +213,7 @@ const UploadScreen = ({ onUpload, onBack }: { onUpload: (images: string[]) => vo
                   transition={{ delay: 0.1 }}
                 >
                   <Card
-                    className="border-2 border-dashed border-muted-foreground/30 hover:border-[#c9a227]/60 transition-colors cursor-pointer"
+                    className="border-2 border-dashed border-muted-foreground/30 hover:border-[#3b82f6]/60 transition-colors cursor-pointer"
                     onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                     onDragLeave={() => setIsDragging(false)}
                     onDrop={(e) => handleDrop(e, 'page2')}
@@ -233,15 +233,15 @@ const UploadScreen = ({ onUpload, onBack }: { onUpload: (images: string[]) => vo
 
             {/* Page count indicator */}
             <div className="flex items-center justify-center gap-3 py-1">
-              <div className={`w-2.5 h-2.5 rounded-full ${page1Image ? 'bg-[#1a5f2a]' : 'bg-muted-foreground/30'}`} />
-              <div className={`w-2.5 h-2.5 rounded-full ${page2Image ? 'bg-[#1a5f2a]' : 'bg-muted-foreground/30'}`} />
+              <div className={`w-2.5 h-2.5 rounded-full ${page1Image ? 'bg-[#1e40af]' : 'bg-muted-foreground/30'}`} />
+              <div className={`w-2.5 h-2.5 rounded-full ${page2Image ? 'bg-[#1e40af]' : 'bg-muted-foreground/30'}`} />
             </div>
 
             {/* Tips */}
               {/* Processing overlay */}
               {isProcessing && (
                 <div className="flex items-center justify-center gap-2 py-2">
-                  <Loader2 className="w-4 h-4 animate-spin text-[#1a5f2a]" />
+                  <Loader2 className="w-4 h-4 animate-spin text-[#1e40af]" />
                   <span className="text-sm text-muted-foreground">Processing image...</span>
                 </div>
               )}
@@ -288,7 +288,7 @@ const UploadScreen = ({ onUpload, onBack }: { onUpload: (images: string[]) => vo
           <Button
             onClick={handleConfirm}
             disabled={!page1Image}
-            className="w-full h-12 bg-[#1a5f2a] hover:bg-[#1a5f2a]/90 rounded-xl ios-press"
+            className="w-full h-12 bg-[#1e40af] hover:bg-[#1e40af]/90 rounded-xl ios-press"
           >
             <Zap className="w-4 h-4 mr-2" />
             {imageCount === 2 ? 'Process 2 Pages' : 'Process Essay'}

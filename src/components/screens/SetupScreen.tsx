@@ -76,8 +76,8 @@ const SetupScreen = ({ onComplete }: { onComplete: () => void }) => {
         {/* Header */}
         <div className="p-4 border-b bg-white/80 backdrop-blur-sm sticky top-0 z-10">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#1a5f2a]/10 flex items-center justify-center">
-              <Settings className="w-5 h-5 text-[#1a5f2a]" />
+            <div className="w-10 h-10 rounded-full bg-[#1e40af]/10 flex items-center justify-center">
+              <Settings className="w-5 h-5 text-[#1e40af]" />
             </div>
             <div>
               <h2 className="font-semibold text-lg">API Configuration</h2>
@@ -135,7 +135,7 @@ const SetupScreen = ({ onComplete }: { onComplete: () => void }) => {
                     href="https://aistudio.google.com/apikey"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[#1a5f2a] underline"
+                    className="text-[#1e40af] underline"
                   >
                     Google AI Studio
                   </a>
@@ -181,7 +181,7 @@ const SetupScreen = ({ onComplete }: { onComplete: () => void }) => {
                     href="https://aistudio.google.com/apikey"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[#1a5f2a] underline"
+                    className="text-[#1e40af] underline"
                   >
                     Google AI Studio
                   </a>
@@ -191,7 +191,7 @@ const SetupScreen = ({ onComplete }: { onComplete: () => void }) => {
 
             {/* Security Note */}
             <div className="flex items-start gap-3 p-4 bg-muted/50 rounded-xl">
-              <Shield className="w-5 h-5 text-[#1a5f2a] mt-0.5" />
+              <Shield className="w-5 h-5 text-[#1e40af] mt-0.5" />
               <div className="text-sm">
                 <p className="font-medium mb-1">Your data is secure</p>
                 <p className="text-muted-foreground text-xs">
@@ -207,7 +207,7 @@ const SetupScreen = ({ onComplete }: { onComplete: () => void }) => {
           <Button
             onClick={handleSave}
             disabled={isLoading || !localGeminiKey.trim()}
-            className="w-full h-12 bg-[#1a5f2a] hover:bg-[#1a5f2a]/90 rounded-xl ios-press"
+            className="w-full h-12 bg-[#1e40af] hover:bg-[#1e40af]/90 rounded-xl ios-press"
           >
             {isLoading ? (
               <>

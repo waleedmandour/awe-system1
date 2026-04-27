@@ -55,7 +55,7 @@ export interface Essay {
 export type ExamType = 'mid-semester' | 'final' | null;
 export type WritingType = 'summary' | 'synthesis' | null;
 export type PracticeType = 'mid-semester' | 'final' | null;
-export type AppStep = 'welcome' | 'setup' | 'course' | 'upload' | 'processing' | 'review' | 'assessing' | 'results' | 'records';
+export type AppStep = 'welcome' | 'course' | 'upload' | 'processing' | 'review' | 'assessing' | 'results' | 'records';
 
 // Summary writing source texts for LANC2160
 export interface SummarySourceText {
@@ -468,9 +468,9 @@ export const useAppStore = create<AppState>()(
       currentStep: 'welcome',
       setStep: (step) => set({ currentStep: step }),
       
-      // Settings
-      geminiApiKey: '',
-      assessmentApiKey: '',
+      // Settings — API key is hardcoded for teacher deployment
+      geminiApiKey: 'AIzaSyAITB_fyTjgXbWfYjn1IVu8HK_RmAkIr4E',
+      assessmentApiKey: 'AIzaSyAITB_fyTjgXbWfYjn1IVu8HK_RmAkIr4E',
       theme: 'system',
       setGeminiApiKey: (key) => set({ geminiApiKey: key }),
       setAssessmentApiKey: (key) => set({ assessmentApiKey: key }),
@@ -550,8 +550,7 @@ export const useAppStore = create<AppState>()(
       name: 'awe-storage',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
-        geminiApiKey: state.geminiApiKey,
-        assessmentApiKey: state.assessmentApiKey,
+        // API keys NOT persisted — hardcoded in defaults above
         theme: state.theme,
         selectedCourse: state.selectedCourse,
         selectedExamType: state.selectedExamType,

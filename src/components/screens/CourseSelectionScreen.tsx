@@ -63,7 +63,7 @@ const CourseSelectionScreen = ({ onSelect, onBack }: { onSelect: () => void; onB
     return course.program === activeTab;
   });
 
-  // Build the second line text for the green button
+  // Build the second line text for the blue button
   const getButtonSubtitle = () => {
     if (needsExamType && selectedExamType) {
       return selectedExamType === 'mid-semester' ? 'Mid-semester' : 'Final';
@@ -145,7 +145,7 @@ const CourseSelectionScreen = ({ onSelect, onBack }: { onSelect: () => void; onB
             {filteredCourses.map((course, index) => {
               const isSelected = selectedCourse?.id === course.id;
               const showChildren = isSelected;
-              const accentColor = activeTab === 'foundation' ? '#1a5f2a' : '#c9a227';
+              const accentColor = activeTab === 'foundation' ? '#1e40af' : '#3b82f6';
 
               // Check which children to show for this specific course
               const showExamType = showChildren && (course.code === '0230' || course.code === '0340');
@@ -173,7 +173,7 @@ const CourseSelectionScreen = ({ onSelect, onBack }: { onSelect: () => void; onB
                   <Card
                     className={`cursor-pointer transition-all duration-200 border-2 ${
                       isSelected
-                        ? 'border-[#1a5f2a] bg-[#1a5f2a]/5'
+                        ? 'border-[#1e40af] bg-[#1e40af]/5'
                         : 'border-transparent hover:border-muted-foreground/20'
                     }`}
                     onClick={() => setSelectedCourse(course)}
@@ -184,8 +184,8 @@ const CourseSelectionScreen = ({ onSelect, onBack }: { onSelect: () => void; onB
                           <div
                             className={`w-12 h-12 rounded-xl flex items-center justify-center ${
                               activeTab === 'foundation'
-                                ? 'bg-gradient-to-br from-[#1a5f2a] to-[#2a7f3a]'
-                                : 'bg-gradient-to-br from-[#c9a227] to-[#d9b237]'
+                                ? 'bg-gradient-to-br from-[#1e40af] to-[#3b82f6]'
+                                : 'bg-gradient-to-br from-[#3b82f6] to-[#60a5fa]'
                             }`}
                           >
                             {activeTab === 'foundation' ? (
@@ -207,7 +207,7 @@ const CourseSelectionScreen = ({ onSelect, onBack }: { onSelect: () => void; onB
                           </div>
                         </div>
                         {isSelected && (
-                          <CheckCircle className="w-6 h-6 text-[#1a5f2a]" />
+                          <CheckCircle className="w-6 h-6 text-[#1e40af]" />
                         )}
                       </div>
                     </CardContent>
@@ -238,7 +238,7 @@ const CourseSelectionScreen = ({ onSelect, onBack }: { onSelect: () => void; onB
                                   onClick={(e) => { e.stopPropagation(); setSelectedExamType('mid-semester'); }}
                                   className={`flex-1 flex items-center justify-center gap-2 rounded-xl border-2 px-4 py-3 text-sm font-medium transition-all duration-200 ios-press ${
                                     selectedExamType === 'mid-semester'
-                                      ? 'border-[#1a5f2a] bg-[#1a5f2a]/10 text-[#1a5f2a]'
+                                      ? 'border-[#1e40af] bg-[#1e40af]/10 text-[#1e40af]'
                                       : 'border-muted-foreground/20 bg-white hover:border-muted-foreground/40 text-muted-foreground'
                                   }`}
                                 >
@@ -249,7 +249,7 @@ const CourseSelectionScreen = ({ onSelect, onBack }: { onSelect: () => void; onB
                                   onClick={(e) => { e.stopPropagation(); setSelectedExamType('final'); }}
                                   className={`flex-1 flex items-center justify-center gap-2 rounded-xl border-2 px-4 py-3 text-sm font-medium transition-all duration-200 ios-press ${
                                     selectedExamType === 'final'
-                                      ? 'border-[#1a5f2a] bg-[#1a5f2a]/10 text-[#1a5f2a]'
+                                      ? 'border-[#1e40af] bg-[#1e40af]/10 text-[#1e40af]'
                                       : 'border-muted-foreground/20 bg-white hover:border-muted-foreground/40 text-muted-foreground'
                                   }`}
                                 >
@@ -271,7 +271,7 @@ const CourseSelectionScreen = ({ onSelect, onBack }: { onSelect: () => void; onB
                                 onChange={(e) => setWritingPrompt(e.target.value)}
                                 placeholder="Enter the essay topic or writing prompt, if provided by your instructor..."
                                 rows={3}
-                                className="w-full rounded-xl border-2 border-muted-foreground/20 bg-white px-4 py-3 text-sm resize-none focus:outline-none focus:border-[#1a5f2a]/50 focus:ring-1 focus:ring-[#1a5f2a]/20 placeholder:text-muted-foreground/60 transition-colors"
+                                className="w-full rounded-xl border-2 border-muted-foreground/20 bg-white px-4 py-3 text-sm resize-none focus:outline-none focus:border-[#1e40af]/50 focus:ring-1 focus:ring-[#1e40af]/20 placeholder:text-muted-foreground/60 transition-colors"
                               />
                             </div>
                           )}
@@ -287,7 +287,7 @@ const CourseSelectionScreen = ({ onSelect, onBack }: { onSelect: () => void; onB
                                   onClick={(e) => { e.stopPropagation(); setSelectedWritingType('summary'); }}
                                   className={`flex-1 flex flex-col items-center justify-center gap-1.5 rounded-xl border-2 px-4 py-4 text-sm font-medium transition-all duration-200 ios-press ${
                                     selectedWritingType === 'summary'
-                                      ? 'border-[#c9a227] bg-[#c9a227]/10 text-[#c9a227]'
+                                      ? 'border-[#3b82f6] bg-[#3b82f6]/10 text-[#3b82f6]'
                                       : 'border-muted-foreground/20 bg-white hover:border-muted-foreground/40 text-muted-foreground'
                                   }`}
                                 >
@@ -298,7 +298,7 @@ const CourseSelectionScreen = ({ onSelect, onBack }: { onSelect: () => void; onB
                                   onClick={(e) => { e.stopPropagation(); setSelectedWritingType('synthesis'); }}
                                   className={`flex-1 flex flex-col items-center justify-center gap-1.5 rounded-xl border-2 px-4 py-4 text-sm font-medium transition-all duration-200 ios-press ${
                                     selectedWritingType === 'synthesis'
-                                      ? 'border-[#c9a227] bg-[#c9a227]/10 text-[#c9a227]'
+                                      ? 'border-[#3b82f6] bg-[#3b82f6]/10 text-[#3b82f6]'
                                       : 'border-muted-foreground/20 bg-white hover:border-muted-foreground/40 text-muted-foreground'
                                   }`}
                                 >
@@ -320,7 +320,7 @@ const CourseSelectionScreen = ({ onSelect, onBack }: { onSelect: () => void; onB
                                   onClick={(e) => { e.stopPropagation(); setSelectedPracticeType('mid-semester'); }}
                                   className={`flex-1 flex flex-col items-center justify-center gap-1.5 rounded-xl border-2 px-4 py-4 text-sm font-medium transition-all duration-200 ios-press ${
                                     selectedPracticeType === 'mid-semester'
-                                      ? 'border-[#c9a227] bg-[#c9a227]/10 text-[#c9a227]'
+                                      ? 'border-[#3b82f6] bg-[#3b82f6]/10 text-[#3b82f6]'
                                       : 'border-muted-foreground/20 bg-white hover:border-muted-foreground/40 text-muted-foreground'
                                   }`}
                                 >
@@ -331,7 +331,7 @@ const CourseSelectionScreen = ({ onSelect, onBack }: { onSelect: () => void; onB
                                   onClick={(e) => { e.stopPropagation(); setSelectedPracticeType('final'); }}
                                   className={`flex-1 flex flex-col items-center justify-center gap-1.5 rounded-xl border-2 px-4 py-4 text-sm font-medium transition-all duration-200 ios-press ${
                                     selectedPracticeType === 'final'
-                                      ? 'border-[#c9a227] bg-[#c9a227]/10 text-[#c9a227]'
+                                      ? 'border-[#3b82f6] bg-[#3b82f6]/10 text-[#3b82f6]'
                                       : 'border-muted-foreground/20 bg-white hover:border-muted-foreground/40 text-muted-foreground'
                                   }`}
                                 >
@@ -357,21 +357,21 @@ const CourseSelectionScreen = ({ onSelect, onBack }: { onSelect: () => void; onB
                                         onClick={(e) => { e.stopPropagation(); setSelectedSourceTextId(source.id); }}
                                         className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-200 ${
                                           isSelected
-                                            ? 'border-[#c9a227] bg-[#c9a227]/5'
-                                            : 'border-muted-foreground/20 bg-white hover:border-[#c9a227]/30'
+                                            ? 'border-[#3b82f6] bg-[#3b82f6]/5'
+                                            : 'border-muted-foreground/20 bg-white hover:border-[#3b82f6]/30'
                                         }`}
                                       >
                                         <div className="flex items-start gap-3">
                                           <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
                                             isSelected
-                                              ? 'bg-[#c9a227] text-white'
+                                              ? 'bg-[#3b82f6] text-white'
                                               : 'bg-muted text-muted-foreground'
                                           }`}>
                                             <FileText className="w-5 h-5" />
                                           </div>
                                           <div className="flex-1 min-w-0">
                                             <p className={`text-sm font-semibold leading-tight ${
-                                              isSelected ? 'text-[#c9a227]' : 'text-foreground'
+                                              isSelected ? 'text-[#3b82f6]' : 'text-foreground'
                                             }`}>
                                               {source.title}
                                             </p>
@@ -403,21 +403,21 @@ const CourseSelectionScreen = ({ onSelect, onBack }: { onSelect: () => void; onB
                                         onClick={(e) => { e.stopPropagation(); setSelectedSourceTextId(assignment.id); }}
                                         className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-200 ${
                                           isSelected
-                                            ? 'border-[#c9a227] bg-[#c9a227]/5'
-                                            : 'border-muted-foreground/20 bg-white hover:border-[#c9a227]/30'
+                                            ? 'border-[#3b82f6] bg-[#3b82f6]/5'
+                                            : 'border-muted-foreground/20 bg-white hover:border-[#3b82f6]/30'
                                         }`}
                                       >
                                         <div className="flex items-start gap-3">
                                           <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
                                             isSelected
-                                              ? 'bg-[#c9a227] text-white'
+                                              ? 'bg-[#3b82f6] text-white'
                                               : 'bg-muted text-muted-foreground'
                                           }`}>
                                             <ClipboardList className="w-5 h-5" />
                                           </div>
                                           <div className="flex-1 min-w-0">
                                             <p className={`text-sm font-semibold leading-tight ${
-                                              isSelected ? 'text-[#c9a227]' : 'text-foreground'
+                                              isSelected ? 'text-[#3b82f6]' : 'text-foreground'
                                             }`}>
                                               {assignment.title}
                                             </p>
@@ -455,21 +455,21 @@ const CourseSelectionScreen = ({ onSelect, onBack }: { onSelect: () => void; onB
                                           onClick={(e) => { e.stopPropagation(); setSelectedSourceTextId(test.id); }}
                                           className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-200 ${
                                             isSelected
-                                              ? 'border-[#c9a227] bg-[#c9a227]/5'
-                                              : 'border-muted-foreground/20 bg-white hover:border-[#c9a227]/30'
+                                              ? 'border-[#3b82f6] bg-[#3b82f6]/5'
+                                              : 'border-muted-foreground/20 bg-white hover:border-[#3b82f6]/30'
                                           }`}
                                         >
                                           <div className="flex items-start gap-3">
                                             <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
                                               isSelected
-                                                ? 'bg-[#c9a227] text-white'
+                                                ? 'bg-[#3b82f6] text-white'
                                                 : 'bg-muted text-muted-foreground'
                                             }`}>
                                               <IconComponent className="w-5 h-5" />
                                             </div>
                                             <div className="flex-1 min-w-0">
                                               <p className={`text-sm font-semibold leading-tight ${
-                                                isSelected ? 'text-[#c9a227]' : 'text-foreground'
+                                                isSelected ? 'text-[#3b82f6]' : 'text-foreground'
                                               }`}>
                                                 {test.title}
                                               </p>
@@ -510,7 +510,7 @@ const CourseSelectionScreen = ({ onSelect, onBack }: { onSelect: () => void; onB
           <Button
             onClick={onSelect}
             disabled={!canContinue}
-            className="w-full h-12 bg-[#1a5f2a] hover:bg-[#1a5f2a]/90 rounded-xl ios-press"
+            className="w-full h-12 bg-[#1e40af] hover:bg-[#1e40af]/90 rounded-xl ios-press"
           >
             <span className="flex flex-col items-center justify-center flex-1 min-w-0 gap-0.5">
               <span>Continue with {selectedCourse?.code || 'Course'}</span>

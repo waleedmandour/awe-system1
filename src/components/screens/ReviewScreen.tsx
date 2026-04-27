@@ -124,7 +124,7 @@ const ReviewScreen = ({ onSubmit, onBack }: { onSubmit: (text: string) => void; 
               onClick={() => setIsEditing(!isEditing)}
               className="h-10 w-10 rounded-full"
             >
-              {isEditing ? <CheckCircle className="w-5 h-5 text-[#1a5f2a]" /> : <Edit3 className="w-5 h-5" />}
+              {isEditing ? <CheckCircle className="w-5 h-5 text-[#1e40af]" /> : <Edit3 className="w-5 h-5" />}
             </Button>
           </div>
         </div>
@@ -163,17 +163,17 @@ const ReviewScreen = ({ onSubmit, onBack }: { onSubmit: (text: string) => void; 
         {/* Stats Bar */}
         <div className="px-4 py-3 border-t bg-muted/50 flex items-center justify-around">
           <div className="text-center">
-            <p className="text-lg font-semibold text-[#1a5f2a]">{wordCount}</p>
+            <p className="text-lg font-semibold text-[#1e40af]">{wordCount}</p>
             <p className="text-xs text-muted-foreground">Words</p>
           </div>
           <div className="h-8 w-px bg-border" />
           <div className="text-center">
-            <p className="text-lg font-semibold text-[#1a5f2a]">{charCount}</p>
+            <p className="text-lg font-semibold text-[#1e40af]">{charCount}</p>
             <p className="text-xs text-muted-foreground">Characters</p>
           </div>
           <div className="h-8 w-px bg-border" />
           <div className="text-center">
-            <p className="text-lg font-semibold text-[#c9a227]">
+            <p className="text-lg font-semibold text-[#3b82f6]">
               {editedText.split(/[.!?]+/).filter(s => s.trim()).length}
             </p>
             <p className="text-xs text-muted-foreground">Sentences</p>
@@ -198,9 +198,9 @@ const ReviewScreen = ({ onSubmit, onBack }: { onSubmit: (text: string) => void; 
               </AlertDescription>
             </Alert>
           ) : (
-            <Alert className="bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800">
-              <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 shrink-0" />
-              <AlertDescription className="text-sm text-green-700 dark:text-green-300">
+            <Alert className="bg-blue-50 border-blue-200 dark:bg-blue-950 dark:border-blue-800">
+              <CheckCircle className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
+              <AlertDescription className="text-sm text-blue-700 dark:text-green-300">
                 Ready to submit for assessment.
               </AlertDescription>
             </Alert>
@@ -208,7 +208,7 @@ const ReviewScreen = ({ onSubmit, onBack }: { onSubmit: (text: string) => void; 
           <Button
             onClick={handleSubmit}
             disabled={editedText.trim().length < 50 || isCooldownActive}
-            className="w-full h-12 bg-[#1a5f2a] hover:bg-[#1a5f2a]/90 rounded-xl ios-press"
+            className="w-full h-12 bg-[#1e40af] hover:bg-[#1e40af]/90 rounded-xl ios-press"
           >
             {isCooldownActive ? (
               <>

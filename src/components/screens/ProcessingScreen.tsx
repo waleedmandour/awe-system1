@@ -90,13 +90,13 @@ const ProcessingScreen = () => {
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-              className="w-24 h-24 rounded-full border-4 border-muted border-t-[#1a5f2a] flex items-center justify-center"
+              className="w-24 h-24 rounded-full border-4 border-muted border-t-[#1e40af] flex items-center justify-center"
             >
               <motion.div
                 animate={{ scale: [1, 1.1, 1] }}
                 transition={{ duration: 1, repeat: Infinity }}
               >
-                <FileText className="w-10 h-10 text-[#1a5f2a]" />
+                <FileText className="w-10 h-10 text-[#1e40af]" />
               </motion.div>
             </motion.div>
           </div>
@@ -125,18 +125,18 @@ const ProcessingScreen = () => {
                 transition={{ delay: index * 0.1 }}
                 className={`flex items-center gap-3 p-3 rounded-xl transition-colors ${
                   index < currentStep
-                    ? 'bg-[#1a5f2a]/10'
+                    ? 'bg-[#1e40af]/10'
                     : index === currentStep
-                    ? 'bg-[#c9a227]/10'
+                    ? 'bg-[#3b82f6]/10'
                     : 'bg-muted/50'
                 }`}
               >
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center ${
                     index < currentStep
-                      ? 'bg-[#1a5f2a] text-white'
+                      ? 'bg-[#1e40af] text-white'
                       : index === currentStep
-                      ? 'bg-[#c9a227] text-white'
+                      ? 'bg-[#3b82f6] text-white'
                       : 'bg-muted'
                   }`}
                 >

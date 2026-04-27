@@ -48,12 +48,12 @@ const IconRevealAnimation = ({ onComplete }: { onComplete: () => void }) => {
   }, [onComplete]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-b from-[#0d3320] via-[#1a5f2a] to-[#0d3320] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-b from-[#0c1d3a] via-[#1e40af] to-[#0c1d3a] overflow-hidden">
       {/* Background radial glow */}
       <motion.div
         className="absolute w-[600px] h-[600px] rounded-full"
         style={{
-          background: 'radial-gradient(circle, rgba(201,162,39,0.10) 0%, transparent 60%)',
+          background: 'radial-gradient(circle, rgba(59,130,246,0.10) 0%, transparent 60%)',
         }}
         initial={{ scale: 0, opacity: 0 }}
         animate={{
@@ -77,7 +77,7 @@ const IconRevealAnimation = ({ onComplete }: { onComplete: () => void }) => {
             top: `${p.y}%`,
             left: `${p.x}%`,
             background: p.id % 2 === 0
-              ? 'radial-gradient(circle, rgba(201,162,39,0.5), transparent)'
+              ? 'radial-gradient(circle, rgba(59,130,246,0.5), transparent)'
               : 'radial-gradient(circle, rgba(255,255,255,0.2), transparent)',
           }}
           initial={{ opacity: 0, scale: 0 }}
@@ -101,8 +101,8 @@ const IconRevealAnimation = ({ onComplete }: { onComplete: () => void }) => {
       <motion.div
         className="absolute w-72 h-72 md:w-80 md:h-80 rounded-full"
         style={{
-          background: 'conic-gradient(from 90deg, rgba(201,162,39,0.10), rgba(255,255,255,0.08), rgba(201,162,39,0.10))',
-          border: '1.5px solid rgba(201,162,39,0.15)',
+          background: 'conic-gradient(from 90deg, rgba(59,130,246,0.10), rgba(255,255,255,0.08), rgba(59,130,246,0.10))',
+          border: '1.5px solid rgba(59,130,246,0.15)',
         }}
         initial={{ scale: 0, opacity: 0, rotate: -90 }}
         animate={{
@@ -141,7 +141,7 @@ const IconRevealAnimation = ({ onComplete }: { onComplete: () => void }) => {
           <motion.div
             className="absolute -inset-4 rounded-3xl -z-10"
             style={{
-              background: 'linear-gradient(135deg, rgba(201,162,39,0.20), rgba(26,95,42,0.15))',
+              background: 'linear-gradient(135deg, rgba(59,130,246,0.20), rgba(30,64,175,0.15))',
               filter: 'blur(12px)',
             }}
             animate={{
@@ -218,7 +218,7 @@ const WelcomeScreen = ({ onGetStarted }: { onGetStarted: () => void }) => {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.35, type: 'spring', stiffness: 400, damping: 15 }}
-              className="absolute -bottom-2 -right-2 w-12 h-12 bg-[#c9a227] rounded-full flex items-center justify-center shadow-lg"
+              className="absolute -bottom-2 -right-2 w-12 h-12 bg-[#3b82f6] rounded-full flex items-center justify-center shadow-lg"
             >
               <Sparkles className="w-6 h-6 text-white" />
             </motion.div>
@@ -226,7 +226,7 @@ const WelcomeScreen = ({ onGetStarted }: { onGetStarted: () => void }) => {
             <motion.div
               className="absolute -inset-3 rounded-[2rem] -z-10"
               style={{
-                background: 'conic-gradient(from 0deg, rgba(26,95,42,0.05), rgba(201,162,39,0.1), rgba(26,95,42,0.05))',
+                background: 'conic-gradient(from 0deg, rgba(30,64,175,0.05), rgba(59,130,246,0.1), rgba(30,64,175,0.05))',
               }}
               animate={{ rotate: 360 }}
               transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
@@ -240,10 +240,10 @@ const WelcomeScreen = ({ onGetStarted }: { onGetStarted: () => void }) => {
             transition={{ delay: 0.2, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             className="text-center mb-4"
           >
-            <h1 className="text-3xl md:text-4xl font-bold text-[#1a5f2a] mb-2">
+            <h1 className="text-3xl md:text-4xl font-bold text-[#1e40af] mb-2">
               iAWE System
             </h1>
-            <p className="text-lg text-[#c9a227] font-medium">
+            <p className="text-lg text-[#3b82f6] font-medium">
               Intelligent Automated Writing Evaluation
             </p>
           </motion.div>
@@ -280,8 +280,8 @@ const WelcomeScreen = ({ onGetStarted }: { onGetStarted: () => void }) => {
                   transition={{ delay: 0.35 + index * 0.07, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                   className="flex items-center gap-3 p-3 bg-muted/50 rounded-xl"
                 >
-                  <div className="w-10 h-10 rounded-full bg-[#1a5f2a]/10 flex items-center justify-center">
-                    <feature.icon className="w-5 h-5 text-[#1a5f2a]" />
+                  <div className="w-10 h-10 rounded-full bg-[#1e40af]/10 flex items-center justify-center">
+                    <feature.icon className="w-5 h-5 text-[#1e40af]" />
                   </div>
                   <span className="text-sm font-medium">{feature.text}</span>
                 </motion.div>
@@ -299,7 +299,7 @@ const WelcomeScreen = ({ onGetStarted }: { onGetStarted: () => void }) => {
         >
           <Button
             onClick={onGetStarted}
-            className="w-full h-14 text-lg font-semibold bg-[#1a5f2a] hover:bg-[#1a5f2a]/90 rounded-2xl shadow-lg shadow-[#1a5f2a]/25 ios-press"
+            className="w-full h-14 text-lg font-semibold bg-[#1e40af] hover:bg-[#1e40af]/90 rounded-2xl shadow-lg shadow-[#1e40af]/25 ios-press"
           >
             Get Started
             <ChevronRight className="w-5 h-5 ml-2" />

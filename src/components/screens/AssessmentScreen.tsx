@@ -156,7 +156,7 @@ const AssessmentScreen = ({ onComplete }: { onComplete: (assessment: Assessment)
             <p className="text-muted-foreground text-sm mb-6">{error}</p>
             <Button
               onClick={() => window.location.reload()}
-              className="bg-[#1a5f2a] hover:bg-[#1a5f2a]/90"
+              className="bg-[#1e40af] hover:bg-[#1e40af]/90"
             >
               Try Again
             </Button>
@@ -182,7 +182,7 @@ const AssessmentScreen = ({ onComplete }: { onComplete: (assessment: Assessment)
                 rotate: [0, 5, -5, 0],
               }}
               transition={{ duration: 2, repeat: Infinity }}
-              className="w-24 h-24 rounded-full bg-gradient-to-br from-[#1a5f2a] to-[#c9a227] flex items-center justify-center shadow-xl"
+              className="w-24 h-24 rounded-full bg-gradient-to-br from-[#1e40af] to-[#3b82f6] flex items-center justify-center shadow-xl"
             >
               <Cpu className="w-12 h-12 text-white" />
             </motion.div>
@@ -212,18 +212,18 @@ const AssessmentScreen = ({ onComplete }: { onComplete: (assessment: Assessment)
                 transition={{ delay: index * 0.1 }}
                 className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-300 ${
                   index < currentPhase
-                    ? 'bg-[#1a5f2a]/10 text-[#1a5f2a]'
+                    ? 'bg-[#1e40af]/10 text-[#1e40af]'
                     : index === currentPhase
-                    ? 'bg-[#c9a227]/10 text-[#c9a227]'
+                    ? 'bg-[#3b82f6]/10 text-[#3b82f6]'
                     : 'bg-muted/50 text-muted-foreground'
                 }`}
               >
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center ${
                     index < currentPhase
-                      ? 'bg-[#1a5f2a] text-white'
+                      ? 'bg-[#1e40af] text-white'
                       : index === currentPhase
-                      ? 'bg-[#c9a227] text-white animate-pulse'
+                      ? 'bg-[#3b82f6] text-white animate-pulse'
                       : 'bg-muted'
                   }`}
                 >

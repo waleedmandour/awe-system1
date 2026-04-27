@@ -5,9 +5,9 @@ import PDFDocument from 'pdfkit';
 export const maxDuration = 60;
 
 // Color constants
-const PRIMARY_GREEN = '#1a5f2a';
-const SECONDARY_GREEN = '#2a7f3a';
-const GOLD = '#c9a227';
+const PRIMARY_GREEN = '#1e40af';
+const SECONDARY_GREEN = '#3b82f6';
+const GOLD = '#3b82f6';
 const LIGHT_GRAY = '#f5f5f5';
 const DARK_GRAY = '#333333';
 
