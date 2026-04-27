@@ -6,11 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PageTransition } from '@/lib/animations';
 import {
-  Shield,
   Mail,
   Loader2,
   AlertCircle,
-  LogOut,
 } from 'lucide-react';
 
 interface AuthScreenProps {
@@ -86,17 +84,22 @@ const AuthScreen = ({ onAuthenticated, initialEmail }: AuthScreenProps) => {
           transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
           className="flex flex-col items-center w-full max-w-sm"
         >
-          {/* Shield Icon */}
+          {/* iAWE App Logo */}
           <motion.div
             initial={{ y: -12, scale: 0.95 }}
             animate={{ y: 0, scale: 1 }}
             transition={{ delay: 0.1, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             className="relative mb-8"
           >
-            <div className="w-24 h-24 rounded-3xl bg-[#1e40af]/10 flex items-center justify-center shadow-lg shadow-[#1e40af]/10">
-              <Shield className="w-12 h-12 text-[#1e40af]" />
+            <div className="w-28 h-28 md:w-32 md:h-32 rounded-3xl shadow-xl overflow-hidden bg-white p-2">
+              <img
+                src="/iawe-icon.png"
+                alt="iAWE System"
+                className="w-full h-full object-contain"
+                draggable={false}
+              />
             </div>
-            {/* Subtle glow ring */}
+            {/* Subtle rotating glow ring */}
             <motion.div
               className="absolute -inset-3 rounded-[2rem] -z-10"
               style={{

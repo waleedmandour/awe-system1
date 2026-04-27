@@ -178,9 +178,15 @@ export default function AWEApp() {
     return (
       <div className="min-h-screen min-h-[100dvh] flex items-center justify-center bg-gradient-to-b from-[#0c1d3a] via-[#1e40af] to-[#0c1d3a]">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center">
-            <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+          <div className="w-20 h-20 rounded-2xl bg-white/95 shadow-xl overflow-hidden p-1.5">
+            <img
+              src="/iawe-icon.png"
+              alt="iAWE System"
+              className="w-full h-full object-contain"
+              draggable={false}
+            />
           </div>
+          <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           <p className="text-white/60 text-sm">Loading iAWE System...</p>
         </div>
       </div>
