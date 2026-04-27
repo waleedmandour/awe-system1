@@ -200,7 +200,7 @@ const ReviewScreen = ({ onSubmit, onBack }: { onSubmit: (text: string) => void; 
           ) : (
             <Alert className="bg-blue-50 border-blue-200 dark:bg-blue-950 dark:border-blue-800">
               <CheckCircle className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
-              <AlertDescription className="text-sm text-blue-700 dark:text-green-300">
+              <AlertDescription className="text-sm text-blue-700 dark:text-blue-300">
                 Ready to submit for assessment.
               </AlertDescription>
             </Alert>

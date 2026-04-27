@@ -1,7 +1,7 @@
 {
   "name": "iAWE System - Sultan Qaboos University",
   "short_name": "iAWE",
-  "description": "Intelligent Automated Writing Evaluation System for Foundation and Post-Foundation Year Students at Sultan Qaboos University",
+  "description": "Intelligent Automated Writing Evaluation System for Teachers — AI-powered essay assessment at Sultan Qaboos University",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
