@@ -326,8 +326,12 @@ Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for gui
 
 ## Credits
 
-**Developed by:** Dr. Waleed Mandour
-**Year:** 2025-2026
+## Project Team
+
+- **Jokha Al Hosni** — Team Head
+- **Sanna Al Hudhifi** — Member
+- **Waleed Mandour** — Member
+
 **Institution:** Sultan Qaboos University — Center for Preparatory Studies
 
 ---
