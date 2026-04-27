@@ -11,6 +11,7 @@ import OfflineIndicator from '@/components/layout/OfflineIndicator';
 import BottomNav from '@/components/layout/BottomNav';
 
 // Screen components
+import AuthScreen from '@/components/screens/AuthScreen';
 import WelcomeScreen from '@/components/screens/WelcomeScreen';
 import CourseSelectionScreen from '@/components/screens/CourseSelectionScreen';
 import UploadScreen from '@/components/screens/UploadScreen';
@@ -21,7 +22,8 @@ import ResultsScreen from '@/components/screens/ResultsScreen';
 import RecordsScreen from '@/components/screens/RecordsScreen';
 
 // ─── Main App Component (Orchestrator) ─────────────────────────────────────────
-// Teacher deployment: API key is hardcoded — no SetupScreen needed.
+// Teacher deployment: API key is server-side (env var GEMINI_API_KEY)
+// Email whitelist authentication protects paid API access.
 
 export default function AWEApp() {
   const {
@@ -34,11 +36,40 @@ export default function AWEApp() {
     setCurrentAssessment,
     resetAssessment,
     setProcessing,
+    authenticatedEmail,
+    setAuthenticatedEmail,
+    isAuthChecked,
+    setAuthChecked,
   } = useAppStore();
 
   const { toast } = useToast();
 
   const [direction, setDirection] = useState<'left' | 'right'>('right');
+
+  // ─── Check authentication on app load ─────────────────────────────────────
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        const response = await fetch('/api/auth');
+        const data = await response.json();
+
+        if (data.authenticated && data.email) {
+          setAuthenticatedEmail(data.email);
+          setStep('welcome');
+        } else {
+          setAuthenticatedEmail(null);
+          setStep('auth');
+        }
+      } catch {
+        // Network error — default to auth screen
+        setStep('auth');
+      } finally {
+        setAuthChecked(true);
+      }
+    }
+
+    checkAuth();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const navigateTo = (step: string) => {
     setDirection('right');
@@ -47,11 +78,17 @@ export default function AWEApp() {
 
   const goBack = () => {
     setDirection('left');
-    const stepOrder = ['welcome', 'course', 'upload', 'processing', 'review', 'assessing', 'results', 'records'];
+    const stepOrder = ['auth', 'welcome', 'course', 'upload', 'processing', 'review', 'assessing', 'results', 'records'];
     const currentIndex = stepOrder.indexOf(currentStep);
     if (currentIndex > 0) {
       setStep(stepOrder[currentIndex - 1] as any);
     }
+  };
+
+  // Handle successful authentication
+  const handleAuthenticated = (email: string) => {
+    setAuthenticatedEmail(email);
+    setStep('welcome');
   };
 
   // Handle image upload and OCR processing — supports single or multi-page (up to 2)
@@ -136,10 +173,31 @@ export default function AWEApp() {
     setStep('welcome');
   };
 
+  // ─── Show loading state while checking auth ────────────────────────────────
+  if (!isAuthChecked) {
+    return (
+      <div className="min-h-screen min-h-[100dvh] flex items-center justify-center bg-gradient-to-b from-[#0c1d3a] via-[#1e40af] to-[#0c1d3a]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center">
+            <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+          </div>
+          <p className="text-white/60 text-sm">Loading iAWE System...</p>
+        </div>
+      </div>
+    );
+  }
+
   // ─── Step-based routing ────────────────────────────────────────────────────
 
   const renderScreen = () => {
     switch (currentStep) {
+      case 'auth':
+        return (
+          <AuthScreen
+            onAuthenticated={handleAuthenticated}
+            initialEmail={authenticatedEmail || undefined}
+          />
+        );
       case 'welcome':
         return (
           <WelcomeScreen
@@ -193,13 +251,13 @@ export default function AWEApp() {
           />
         );
       default:
-        return <WelcomeScreen onGetStarted={() => navigateTo('course')} />;
+        return <AuthScreen onAuthenticated={handleAuthenticated} />;
     }
   };
 
   // ─── BottomNav visibility ───────────────────────────────────────────────────
 
-  const shouldShowBottomNav = !['processing', 'assessing'].includes(currentStep);
+  const shouldShowBottomNav = !['auth', 'processing', 'assessing'].includes(currentStep);
 
   // ─── Render ────────────────────────────────────────────────────────────────
 

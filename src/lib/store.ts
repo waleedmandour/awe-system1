@@ -55,7 +55,7 @@ export interface Essay {
 export type ExamType = 'mid-semester' | 'final' | null;
 export type WritingType = 'summary' | 'synthesis' | null;
 export type PracticeType = 'mid-semester' | 'final' | null;
-export type AppStep = 'welcome' | 'course' | 'upload' | 'processing' | 'review' | 'assessing' | 'results' | 'records';
+export type AppStep = 'auth' | 'welcome' | 'course' | 'upload' | 'processing' | 'review' | 'assessing' | 'results' | 'records';
 
 // Summary writing source texts for LANC2160
 export interface SummarySourceText {
@@ -410,6 +410,12 @@ interface AppState {
   deleteRecord: (id: string) => void;
   clearAllRecords: () => void;
 
+  // Authentication state
+  authenticatedEmail: string | null;
+  setAuthenticatedEmail: (email: string | null) => void;
+  isAuthChecked: boolean;
+  setAuthChecked: (checked: boolean) => void;
+
   // UI state
   showInstallPrompt: boolean;
   setShowInstallPrompt: (show: boolean) => void;
@@ -460,8 +466,8 @@ const defaultCourses: Course[] = [
 export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
-      // Navigation
-      currentStep: 'welcome',
+      // Navigation — start at auth gate; will be overridden if already authenticated
+      currentStep: 'auth',
       setStep: (step) => set({ currentStep: step }),
       
       // Settings — API key is server-side only (env var GEMINI_API_KEY)
@@ -522,6 +528,12 @@ export const useAppStore = create<AppState>()(
         records: state.records.filter((r) => r.id !== id),
       })),
       clearAllRecords: () => set({ records: [] }),
+
+      // Authentication state
+      authenticatedEmail: null,
+      setAuthenticatedEmail: (email) => set({ authenticatedEmail: email }),
+      isAuthChecked: false,
+      setAuthChecked: (checked) => set({ isAuthChecked: checked }),
 
       // UI state
       showInstallPrompt: false,
