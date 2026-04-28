@@ -554,7 +554,7 @@ function buildCreditPrompt(text: string, topic: string | null, wordCount: number
 
   return `You are an expert writing assessor evaluating a Credit level student essay for Sultan Qaboos University's Center for Preparatory Studies.
 
-STUDENT LEVEL: CEFR A1-A2 (Basic User). Feedback must use simple, clear language that A1-A2 learners can understand. Be encouraging while maintaining appropriate standards. Avoid overly technical linguistic terminology.
+STUDENT LEVEL: CEFR A2-B1 (Elementary to Pre-Intermediate). Feedback must use simple, clear language that A2-B1 learners can understand. Be encouraging while maintaining appropriate academic standards. Avoid overly technical linguistic terminology.
 
 ${topic ? `Essay Topic: ${topic}` : 'No specific topic provided.'}
 
@@ -816,6 +816,60 @@ const SYNTHESIS_ASSIGNMENTS: SynthesisAssignmentData[] = [
       },
     ],
   },
+  {
+    id: 'xeros-washing-machine',
+    title: 'Two Advantages of the Xeros Waterless Washing Machine',
+    description: 'Write a synthesis essay (4 paragraphs) based on three source texts about the Xeros waterless washing machine. Synthesize information from all three sources to explain two advantages of the Xeros machine over conventional washing machines.',
+    cefrLevel: 'A2-B1',
+    expectedParagraphs: 4,
+    targetWordCount: {
+      min: 300,
+      max: 350,
+      ideal: 325,
+    },
+    sources: [
+      {
+        id: 'source-1-xeros-tech',
+        title: 'The Xeros Washing Machine: Cleaning with Nylon Beads Instead of Water',
+        content: `Laundry, washing clothes, consumes a large amount of water and energy. The process also produces large amounts of waste water. A UK company, Xeros Ltd., has developed a new kind of washing machine that uses 90% less water to clean clothes. Instead of water, the machine uses a large quantity of nylon beads. These beads are about 3mm long, and look something like grains of rice. The beads, which can be reused hundreds of times, absorb the dirt and stains in clothes.
+The idea for this technology came from Stephen Burkinshaw, a chemist at Leeds University who spent 30 years working out how to improve the dyeing of plastics used in fabrics. A few years ago he realized that the stains on clothes acted in a similar way to dyes, and he wondered if he could use plastics to attract away the stains.
+He experimented with many kinds of polymers before finding that nylon beads or chips work very well as stain collectors. A natural property of nylon makes it attract to its surface the particles that make up stains. In an environment of 100% humidity, the polymer chains in the nylon beads separate slightly. This makes them super absorbent. The stain particles are then sucked into the centers of the beads.
+Working with Xeros Ltd., Burkinshaw developed a washing machine based on his technology. The washing machine looks like a conventional washer. The clothes are placed in the washing compartment and the door is closed. The machine then adds a tiny amount of detergent to help separate dirt from the clothes and a small quantity of water, (360 ml for a commercial machine) to increase humidity. At the same time, several kilograms of nylon beads are released into the washing compartment. The drum rotates, and the beads flow over the laundry for some time. The beads absorb stains and dirt, along with the detergent, as they bounce and rub against the clothes. When the cycle has ended, the machine extracts the beads to be reused. Approximately 99.95% of the beads are removed. The clothes are then removed from the machine and the few remaining beads are shaken or vacuumed off. Clothes are almost completely dry when they come out of the machine. The nylon beads can be reused hundreds of times before they must be replaced. Used beads can then be recycled.
+The Xeros washing machine is not yet available to consumers. In the beginning, it will be used in commercial laundries rather than in the home. The first machines should be in use by the end of 2021. 50% of the running costs of commercial laundries comes from water and waste water, and energy costs make up another 30%. Since the Xeros machines use much less water and energy, they should be much cheaper to operate.
+People around the world have been washing their clothes in water for thousands of years. The Xeros waterless washing machine has the potential to change that, and thus save huge amounts of water and energy. It is truly a revolutionary product.`,
+      },
+      {
+        id: 'source-2-xeros-environment',
+        title: 'The Environmental Impact of Laundry',
+        content: `It takes a lot of water and energy to clean clothes, so the laundry process has a huge environmental impact. Many parts of the world have a shortage of water. This situation is getting worse as human populations increase. Laundry uses a significant part of the available water supply. Even the most efficient commercial washing machines use more than 18 liters of water per kilogram of clothes. In the U.S., more than 18 million cubic meters of water are used for laundry every day. This means more groundwater has to be pumped and more dams have to be constructed. Finally, almost all the water that is used for cleaning clothes is then released as waste water, which requires expensive processing.
+Laundry uses energy. First of all, energy is used to produce and purify the water. This is particularly true in places that desalinate ocean water. In addition, approximately 70% of the water used in a commercial laundry is heated, much of it to over 60 degrees C. That requires a lot of energy. A laundry that processes 2000 kg per day would use 36,000 liters. Heating 70% of that amount means heating over 25,000 liters of water. This requires a large amount of energy, and since most energy is produced from fossil fuels, washing clothes releases a large amount of CO2 into the atmosphere. Most laundries and many homes (over 80% in the U.S.) use clothes dryers in addition to washing machines. These use a very high amount of energy, which of course releases large quantities of CO2.
+A complex chemical engineering process is required to produce the detergents used in washing machines. These are made up in large part of hydrocarbons which come from oil, although many other chemicals are added to make them effective. A significant amount of energy is needed for these processes. Detergents must also be chemically broken down when, after use, they are released into waste water treatment facilities.
+Overall, cleaning clothes uses a large amount of resources and has a significant effect on the environment. A family which washes and dries a load of laundry every two days creates around 440kg of CO2 each year and uses thousands of liters of water. Significant reductions in this consumption could have a very positive effect on the planet.
+Since the Xeros does not require a rinse or spin cycle it uses just 2% of the water and energy of conventional washing machines, cutting CO2 emissions on top of the water savings. The energy savings are further increased by the fact that the clothes come out nearly dry, meaning no power-hungry clothes dryer is required. Xeros claims that, taking all these factors into account, its machine achieves a 40% reduction in carbon emissions over conventional washing and drying.`,
+      },
+      {
+        id: 'source-3-xeros-cost',
+        title: 'Cost Comparison for a New Commercial Laundry',
+        content: `The Xeros waterless technology will not be available for home use for some years. The machines will first be tested in commercial laundry businesses. Below is a general comparison of probable costs for a new laundry business (Table).
+
+Costs: Conventional Machines / Costs: Xeros
+
+First cost: washing machines lower than Xeros / higher than conventional
+dryers: high / none
+
+Operating costs:
+water (water to wash clothes): high / 90% lower than conventional
+waste water (water that has been used to clean clothes and must be removed): high / 90% lower than conventional
+electricity / gas: high: must heat washing water and must operate clothes dryers / much lower; no water heating, shorter washing cycles, no dryers
+detergents: high / low: much less detergent is used
+plastic beads: none / important cost; necessary for operation but beads can be reused many times
+
+machine maintenance: some cost / similar technology to conventional washers, so similar cost but no dryer maintenance
+
+Overall costs: higher / 30% lower than conventional`,
+      },
+    ],
+  },
 ];
 
 // Build prompt for Synthesis Essay (LANC2160)
@@ -823,6 +877,7 @@ function buildSynthesisPrompt(
   studentText: string,
   sources: { title: string; content: string }[],
   assignmentTitle: string,
+  assignmentDescription: string,
   wordCount: number,
   targetWordCount: { min: number; max: number; ideal: number }
 ): string {
@@ -862,9 +917,10 @@ ${s.content}
 
 STUDENT LEVEL: CEFR A2-B1 (Elementary to Pre-Intermediate). Feedback must use simple, clear language that A2-B1 learners can understand. Be encouraging while maintaining appropriate academic standards. Avoid overly technical linguistic terminology.
 
-TASK: The student was asked to read ALL THREE source texts below and write a 4-paragraph synthesis essay (200-300 words) that synthesizes information from all three sources to explain two common sources of nitrate poisoning.
+TASK: The student was asked to read ALL THREE source texts below and write a 4-paragraph synthesis essay (${targetWordCount.min}-${targetWordCount.max} words) based on the assignment below.
 
 ASSIGNMENT: ${assignmentTitle}
+INSTRUCTIONS: ${assignmentDescription}
 
 ${sourceTextsBlock}
 
@@ -882,11 +938,11 @@ ${criteriaDetails}
 
 SYNTHESIS-SPECIFIC ASSESSMENT RULES:
 1. A synthesis essay must combine information from ALL THREE source texts — not just one or two. The student should demonstrate the ability to integrate ideas from multiple sources into a coherent whole.
-2. The essay should explain TWO COMMON SOURCES OF NITRATE POISONING: (a) contaminated well water and (b) contaminated vegetables. Both sources must be addressed.
-3. The essay should be exactly 4 paragraphs in structure (typically: introduction, body paragraph 1 on well water, body paragraph 2 on vegetables, and conclusion). If the student has written significantly more or fewer paragraphs, note this in the Coherence and Cohesion assessment.
+2. The essay must address the specific assignment prompt: "${assignmentTitle}". The essay should cover the key points required by the prompt, drawing evidence from all three sources.
+3. The essay should be exactly 4 paragraphs in structure (typically: introduction, body paragraph 1, body paragraph 2, and conclusion). If the student has written significantly more or fewer paragraphs, note this in the Coherence and Cohesion assessment.
 4. The student MUST use their OWN WORDS (paraphrasing). Direct copying of phrases or sentences from the source texts without paraphrasing is NOT acceptable and must lower the Task Achievement and Lexical Resource scores. Estimate the percentage of directly copied text.
 5. A synthesis essay should NOT include the student's personal opinions, arguments, or new information not present in the source texts.
-6. If the essay is off-topic (not about nitrates/poisoning), give Task Achievement = 0.
+6. If the essay is off-topic (not addressing the assignment prompt), give Task Achievement = 0.
 7. If the student has simply copied large portions of any source text, this is NOT an acceptable synthesis — it should score low on Task Achievement and Lexical Resource regardless of how "accurate" the text is.
 8. Check word count: if the word count is 10% or more above or below the target range, this MUST lower the Task Achievement score according to the rubric bands.
 
@@ -1253,6 +1309,7 @@ export async function POST(request: NextRequest) {
         text,
         assignmentData.sources.map(s => ({ title: s.title, content: s.content })),
         assignmentData.title,
+        assignmentData.description,
         wordCount,
         activeTargetWordCount
       );
