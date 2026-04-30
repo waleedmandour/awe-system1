@@ -1002,7 +1002,7 @@ STEP 2 — For EACH criterion, write a "Justification" paragraph that:
   (b) Quotes at least ONE specific phrase or sentence from the student's essay as evidence
   (c) Explains why the essay fits that band descriptor — connect the evidence to the rubric
   (d) If you awarded a half-point, explain which aspects place it in the lower band and which aspects place it in the higher band
-  (e) For Task Achievement: specifically address whether the student synthesized ALL THREE sources, covered BOTH common sources of nitrate poisoning, stayed within word count, and used own words
+  (e) For Task Achievement: specifically address whether the student synthesized ALL THREE sources, addressed the assignment prompt requirements, stayed within word count, and used own words
   (f) If the score is below 3, clearly state what is missing compared to a higher score
   (g) If the score is 4 or 5, explain what the student did beyond basic expectations
 
@@ -1037,8 +1037,8 @@ JSON OUTPUT FORMAT:
       "criterionName": "Task Achievement",
       "score": 3.5,
       "maxScore": 5,
-      "justification": "Score 3.5 — between Satisfactory and Good. The essay synthesizes information from all three sources, covering both well water and vegetables. For example, the student writes: \\"[exact quote]\\" which shows [specific rubric alignment]. The student paraphrased in most places. Word count is within the acceptable range.",
-      "strengths": "The student successfully integrates information from all three source texts and addresses both common sources of nitrate poisoning.",
+      "justification": "Score 3.5 — between Satisfactory and Good. The essay synthesizes information from all three sources, addressing the assignment prompt. For example, the student writes: \\"[exact quote]\\" which shows [specific rubric alignment]. The student paraphrased in most places. Word count is within the acceptable range.",
+      "strengths": "The student successfully integrates information from all three source texts and addresses the assignment prompt requirements.",
       "mistakes": [
         "[exact quoted text]" — Highlight the mistake and explain why it is wrong, but do NOT provide the corrected version
       ],
@@ -1075,7 +1075,7 @@ JSON OUTPUT FORMAT:
   "totalScore": 13,
   "maxScore": ${totalMaxScore},
   "percentage": 65,
-  "overallFeedback": "Your synthesis essay draws on [X of 3] source texts to explain [which sources of nitrate poisoning]. Your strongest area is [criterion] where you [specific strength]. The area that needs the most improvement is [criterion] because [reason]. [Comment on paraphrasing/copied text percentage]. Focus on [one prioritized action] to improve your next essay."
+  "overallFeedback": "Your synthesis essay draws on [X of 3] source texts to address [key points from the assignment prompt]. Your strongest area is [criterion] where you [specific strength]. The area that needs the most improvement is [criterion] because [reason]. [Comment on paraphrasing/copied text percentage]. Focus on [one prioritized action] to improve your next essay."
 }`;
 }
 
@@ -1773,8 +1773,20 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Assessment error:', error);
+    const msg = error instanceof Error ? error.message : 'Unknown error';
+    // Provide more specific error messages for common Gemini API failures
+    let userError = 'Failed to assess essay';
+    if (msg.includes('API key not valid') || msg.includes('API_KEY_INVALID') || msg.includes('invalid API key')) {
+      userError = 'Gemini API key is invalid. Please check the GEMINI_API_KEY environment variable on the server.';
+    } else if (msg.includes('model not found') || msg.includes('does not exist') || msg.includes('MODEL_NOT_FOUND')) {
+      userError = 'The AI model is currently unavailable. Please try again later.';
+    } else if (msg.includes('quota') || msg.includes('RESOURCE_EXHAUSTED')) {
+      userError = 'Gemini API quota exceeded. Please wait a few minutes and try again.';
+    } else if (msg.includes('PERMISSION_DENIED') || msg.includes('forbidden')) {
+      userError = 'Gemini API access denied. The API key may not have permission to use this model.';
+    }
     return NextResponse.json(
-      { error: 'Failed to assess essay', details: error instanceof Error ? error.message : 'Unknown error' },
+      { error: userError, details: msg },
       { status: 500 }
     );
   }
