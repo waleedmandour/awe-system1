@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
 
-// IMPORTANT: Prevents Vercel from timing out the assessment process on the FREE tier
+// IMPORTANT: Vercel Hobby plan ($20/mo) allows maxDuration = 60.
+// On the FREE tier, Vercel caps serverless functions at 10 seconds regardless of this setting.
+// Prompts are optimised to complete within the 10-second free tier limit where possible.
 export const maxDuration = 60;
 
 // Word count targets by course and exam type for Foundation courses
@@ -120,20 +122,18 @@ const SUMMARY_CRITERIA = [
   },
 ];
 
-// Detailed rubric band descriptors for Summary Writing (A2-B1 level)
-// Condensed from per-0.5 bands to range bands to reduce token consumption
+// Condensed rubric band descriptors for Summary Writing (A2-B1 level)
+// Merged 7 bands → 5 bands to reduce token consumption while preserving accuracy.
 const SUMMARY_RUBRICS = {
   criteria: [
     {
       name: 'Task Achievement',
       maxScore: 5,
       rubric: {
-        '0-1': 'Poor: No summary written, completely irrelevant, or only isolated words/phrases. No main ideas captured. May be largely copied without comprehension.',
-        '1.5-2': 'Unsatisfactory: Captures at most one main idea; misses most key points. May include irrelevant details or personal opinions. Paraphrasing is minimal with heavy reliance on copying.',
-        '2.5': 'Below expectations: Captures most main ideas but misses one or two points. Some paraphrasing attempted but noticeable copying remains. Does not clearly distinguish main from minor ideas.',
-        '3': 'Satisfactory: Captures main ideas adequately with reasonable understanding. Some paraphrasing used though some phrases may be copied. Distinction between main and minor ideas is generally clear.',
-        '3.5': 'Good: Captures all or nearly all main ideas effectively. Solid understanding with consistent paraphrasing, only minor copied phrases. Supporting details appropriately selected.',
-        '4-4.5': 'Very good to Excellent: Captures all main ideas clearly and accurately. Strong/excellent comprehension. Effective paraphrasing throughout with focused, cohesive summary. Minor or no irrelevant details.',
+        '0-2': 'Poor to Unsatisfactory: Captures few or no main ideas. Paraphrasing minimal; heavy reliance on copying. May include irrelevant details or personal opinions.',
+        '2.5': 'Below expectations: Captures most main ideas but misses key points. Some paraphrasing attempted but noticeable copying remains. Does not clearly distinguish main from minor ideas.',
+        '3-3.5': 'Satisfactory to Good: Captures main ideas adequately. Paraphrasing generally effective though some phrases may be copied. Supporting details appropriately selected.',
+        '4-4.5': 'Very good to Excellent: Captures all main ideas clearly and accurately. Effective paraphrasing throughout. Focused, cohesive summary with minimal irrelevant details.',
         '5': 'Outstanding: Highly accurate, comprehensive reflection of source text. Sophisticated comprehension with consistently natural paraphrasing. Reads as a well-constructed independent text.',
       }
     },
@@ -141,12 +141,10 @@ const SUMMARY_RUBRICS = {
       name: 'Coherence & Cohesion',
       maxScore: 5,
       rubric: {
-        '0-1': 'Poor: No coherence. Random words/fragments with no logical connection or structure. No linking words used. Ideas cannot be followed.',
-        '1.5-2': 'Unsatisfactory: Minimal organization — ideas listed but not connected. Very few or no linking words. Disjointed presentation requiring reader effort to follow logic.',
-        '2.5': 'Below expectations: Basic organization present but inconsistent. Some simple linking words used but transitions are abrupt. Paragraph structure may be weak or absent. Generally understandable but not smooth.',
-        '3': 'Satisfactory: Logical structure generally easy to follow. Simple linking words and basic transitional devices used appropriately. Ideas connected so reader can follow without significant difficulty.',
-        '3.5': 'Good: Well-organized with clear logical progression. Range of linking words/transitional devices used correctly (e.g., "moreover", "as a result"). Smooth flow between ideas. Appropriate paragraph structure.',
-        '4-4.5': 'Very good to Excellent: Clearly and logically organized with strong progression. Good/wide range of cohesive devices used effectively and naturally. Highly readable with smooth flow.',
+        '0-2': 'Poor to Unsatisfactory: Minimal or no organization. Ideas listed but not connected. Very few linking words. Disjointed presentation requiring reader effort to follow.',
+        '2.5': 'Below expectations: Basic organization present but inconsistent. Some simple linking words used but transitions are abrupt. Paragraph structure may be weak. Understandable but not smooth.',
+        '3-3.5': 'Satisfactory to Good: Logical structure generally easy to follow. Linking words and transitional devices used correctly. Smooth flow between ideas. Appropriate paragraph structure.',
+        '4-4.5': 'Very good to Excellent: Clearly and logically organized with strong progression. Wide range of cohesive devices used effectively and naturally. Highly readable.',
         '5': 'Outstanding: Exceptionally well-organized with flawless logical flow. Cohesive devices used with mastery. Structure serves the content and enhances comprehension.',
       }
     },
@@ -154,25 +152,21 @@ const SUMMARY_RUBRICS = {
       name: 'Lexical Resource',
       maxScore: 5,
       rubric: {
-        '0-1': 'Poor: No meaningful or extremely limited vocabulary. Insufficient to convey meaning. Word choice frequently inaccurate. Spelling errors pervasive and impede understanding.',
-        '1.5-2': 'Unsatisfactory: Limited vocabulary with frequent repetition. Some paraphrasing attempted but word choice often awkward/inaccurate. Spelling errors frequent and sometimes affect communication.',
-        '2.5': 'Below expectations: Vocabulary limited but generally adequate. Paraphrasing attempted with some success though word choice may be awkward. Core vocabulary correct but little range. Some spelling errors.',
-        '3': 'Satisfactory: Adequate range of vocabulary for the task. Basic paraphrasing attempted and usually effective. Core vocabulary generally accurate. Spelling errors present but do not significantly affect communication.',
-        '3.5': 'Good: Good range of vocabulary. Paraphrasing generally effective, expressing source ideas in own words. Some less common vocabulary attempted. Spelling generally accurate.',
-        '4-4.5': 'Very good to Excellent: Varied and appropriate vocabulary. Effective, natural-sounding paraphrasing. Strong control of word choice and collocation. Spelling mostly to consistently accurate.',
-        '5': 'Outstanding: Sophisticated, precise vocabulary with excellent control. Consistently natural and effective paraphrasing. Word choice enhances clarity and quality. Spelling consistently accurate.',
+        '0-2': 'Poor to Unsatisfactory: Extremely limited vocabulary insufficient to convey meaning. Paraphrasing largely absent. Word choice frequently inaccurate. Spelling errors pervasive.',
+        '2.5': 'Below expectations: Vocabulary limited but generally adequate. Paraphrasing attempted with some success though word choice may be awkward. Core vocabulary correct but little range.',
+        '3-3.5': 'Satisfactory to Good: Adequate to good range of vocabulary. Paraphrasing generally effective. Some less common vocabulary attempted. Spelling generally accurate.',
+        '4-4.5': 'Very good to Excellent: Varied and appropriate vocabulary. Effective, natural-sounding paraphrasing. Strong control of word choice and collocation. Spelling consistently accurate.',
+        '5': 'Outstanding: Sophisticated, precise vocabulary with excellent control. Consistently natural and effective paraphrasing. Word choice enhances clarity.',
       }
     },
     {
       name: 'Grammar & Accuracy',
       maxScore: 5,
       rubric: {
-        '0-1': 'Poor: No grammatical control. Only random words/fragments. Errors in every sentence prevent meaningful communication. Punctuation largely absent or inaccurate.',
-        '1.5-2': 'Unsatisfactory: Simple sentence structures attempted but often contain errors. Limited variety in sentence structure. Common errors (articles, prepositions, tenses) occur frequently. Punctuation often incorrect.',
-        '2.5': 'Below expectations: Can form simple sentences with reasonable accuracy, but complex sentences contain errors. Some variety attempted. Common errors still occur but do not always impede understanding. Basic punctuation generally correct.',
-        '3': 'Satisfactory: Simple sentences accurate with some complex structures attempted. Reasonable range of grammatical structures. Errors in articles, prepositions, tenses occur but do not significantly affect meaning. Punctuation generally effective.',
-        '3.5': 'Good: Good range of simple and some complex structures with reasonable accuracy. Errors typically minor and do not impede communication. Sentence variety evident. Punctuation generally accurate.',
-        '4-4.5': 'Very good to Excellent: Good/strong control of grammatical structures including complex sentences. Errors infrequent/rare and minor. Sentence variety enhances quality. Punctuation accurate and effective.',
+        '0-2': 'Poor to Unsatisfactory: Little grammatical control. Simple structures attempted but often contain errors. Limited variety. Common errors (articles, tenses) frequent. Punctuation often incorrect.',
+        '2.5': 'Below expectations: Simple sentences reasonably accurate, complex sentences contain errors. Some variety attempted. Common errors still occur but do not always impede understanding.',
+        '3-3.5': 'Satisfactory to Good: Simple sentences accurate with some complex structures. Reasonable range of grammatical structures. Errors typically minor. Punctuation generally accurate.',
+        '4-4.5': 'Very good to Excellent: Good/strong control including complex sentences. Errors infrequent and minor. Sentence variety enhances quality. Punctuation accurate and effective.',
         '5': 'Outstanding: Near-native control. Wide variety of sentence structures used naturally and accurately. Errors virtually non-existent. Punctuation flawless.',
       }
     },
@@ -366,15 +360,13 @@ function buildLanc2146Prompt(
 
   const sectionsText = reportSections.map(s => `=== ${s.title} ===\n${s.content}`).join('\n\n');
 
-  return `You are an expert writing assessor evaluating a Credit level student's lab report Discussion and Conclusion for Sultan Qaboos University's Center for Preparatory Studies, course LANC2146 (Report Writing).
-
-STUDENT LEVEL: CEFR A2-B1 (Elementary to Pre-Intermediate). Feedback must use simple, clear language appropriate for A2-B1 learners. Be encouraging while maintaining appropriate academic standards. Avoid overly technical linguistic terminology.
+  return `You are an expert writing assessor for LANC2146 (Report Writing — Discussion & Conclusion) at Sultan Qaboos University. CEFR A2-B1 level. Use simple, clear language.
 
 ASSIGNMENT: ${assignmentTitle}
 
 WRITING TASK: Write an appropriate Discussion and Conclusion for the report based on the provided sections.
 
-TARGET WORD COUNT: ${targetWordCount.min}-${targetWordCount.max} words (ideal: ${targetWordCount.ideal}). A tolerance of +/-20 words is acceptable (effective range: ${toleranceBelow}-${toleranceAbove}).
+TARGET WORD COUNT: ${targetWordCount.min}-${targetWordCount.max} words (ideal: ${targetWordCount.ideal}). Tolerance: +/-20 words (${toleranceBelow}-${toleranceAbove}).
 
 ${wordCountStatus}
 
@@ -387,68 +379,40 @@ STUDENT'S DISCUSSION AND CONCLUSION:
 ${studentText}
 """
 
-ASSESSMENT RUBRICS (LANC2146 - Discussion and Conclusion of a Lab Report):
+ASSESSMENT RUBRICS (LANC2146 — Discussion and Conclusion):
 
 ${criteriaDetails}
 
-POINTS TO CONSIDER FOR EACH CRITERION:
-
-Task Response:
-- Discussion: analysis and interpretation with details/examples/statistics; reference to the hypothesis
-- Conclusion: most obvious result, reference to previous research; restatement of the aim; solutions/recommendations
-
-Coherence and Cohesion:
-- Logical organization of information and ideas
-- Cohesive devices (conjunctions and linkers)
-- Paragraphing
-
-Grammatical Range and Accuracy:
-- Functions: cause/effect, compare/contrast, prediction, recommendation/suggestion/solution
-- Grammar structures
-- Punctuation
-
-Lexical Resource:
-- Vocabulary range and genre-specific register
-- Spelling and/or word formation and capitalization
+POINTS TO CONSIDER:
+- TR: Discussion — analysis/interpretation with details/examples/statistics. Conclusion — obvious result, previous research reference, aim restatement, recommendations.
+- C&C: Logical organization, cohesive devices, paragraphing
+- GRA: Functions (cause/effect, compare/contrast, prediction, recommendation), grammar accuracy, punctuation
+- LR: Vocabulary range, genre-specific register, spelling/word formation/capitalization
 
 ============================================================
-SCORING AND FEEDBACK INSTRUCTIONS (CRITICAL — FOLLOW EXACTLY):
+SCORING INSTRUCTIONS:
 ============================================================
 
-STEP 1 — SCORE each criterion using WHOLE or HALF numbers (1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, or 5). If the text's quality falls between two adjacent score bands, award a half-point (e.g., 3.5). Use 0.5 increments only — never use 0.25 or 0.75.
+STEP 1 — Score each criterion (1-5, 0.5 increments). If quality falls between bands, award a half-point.
 
-STEP 2 — For EACH criterion, write a "Justification" paragraph that:
-  (a) Explicitly names the score band you chose (e.g. "Score 3.5 — Satisfactory")
-  (b) Quotes at least ONE specific phrase or sentence from the student's text as evidence
-  (c) Explains why the text fits that band descriptor — connect the evidence to the rubric
-  (d) If you awarded a half-point, explain which aspects place it in the lower band and which in the higher band
-  (e) If the score is below 4, clearly state what is missing compared to the next higher band
-  (f) If the score is 5, explain what the student did beyond expectations
+STEP 2 — For EACH criterion, write a Justification that:
+  (a) Names the score band chosen
+  (b) Quotes at least ONE phrase from the student's text as evidence
+  (c) Explains why the text fits that band — connect evidence to the rubric
 
-STEP 3 — For each criterion, list SPECIFIC errors found in the text. Format each as:
-  - "[exact quoted text]" — highlight the mistake and explain why it is wrong, but do NOT provide the corrected version
+STEP 3 — List up to 3 specific errors per criterion: "[exact quote]" — explain why wrong (no corrections).
 
-STEP 4 — For each criterion, provide 1-2 concrete, achievable suggestions for improvement appropriate for an A2-B1 level writer.
+STEP 4 — overallFeedback (3-4 sentences): strongest/weakest criterion, Discussion analysis quality, Conclusion adequacy, one prioritized action item.
 
-STEP 5 — overallFeedback must be a comprehensive summary (4-6 sentences) that:
-  - Highlights the student's strongest criterion and what they did well
-  - Identifies the weakest area needing the most attention
-  - Evaluates whether the Discussion section effectively analyzes and interprets the data
-  - Evaluates whether the Conclusion section adequately summarizes results and provides recommendations
-  - Gives one prioritized action item to focus on next
-
-STEP 6 — Calculate totalScore = sum of all criterion scores (max ${totalMaxScore}). Calculate percentage = round(totalScore / ${totalMaxScore} * 100).
+STEP 5 — totalScore = sum of scores (max ${totalMaxScore}). percentage = round(totalScore / ${totalMaxScore} * 100).
 
 ============================================================
 CRITICAL OUTPUT RULES:
-- Respond with ONLY the raw JSON object. No markdown, no code fences, no commentary.
-- Do NOT wrap the JSON in triple-backtick code blocks.
-- Use straight double quotes, not smart/curly quotes.
-- Do NOT add trailing commas after the last item in arrays or objects.
-- All string values must have properly escaped quotes inside them.
-- FORMAT: Write justification, strengths, suggestions, and overallFeedback using bullet points (•) or numbered lists (1. 2. 3.) wherever possible. Each bullet should be a separate, clear point. This makes the report easier to read for students.
+- Respond with ONLY raw JSON. No markdown, no code fences, no commentary.
+- Straight double quotes only. No trailing commas. No smart/curly quotes.
+- Use bullet points (•) in justification, strengths, suggestions, and overallFeedback.
 
-JSON OUTPUT FORMAT:
+JSON FORMAT:
 ============================================================
 {
   "scores": [
@@ -456,18 +420,19 @@ JSON OUTPUT FORMAT:
       "criterionName": "Task Response",
       "score": 4,
       "maxScore": 5,
-      "justification": "Score 4: Good. The discussion section analyses the main trend with adequate details and statistics. For example, the student writes: \\"[exact quote]\\" which shows [specific rubric alignment]. The conclusion restates the aim and provides general recommendations.",
-      "strengths": "The student demonstrates solid analysis of the main trend with supporting details.",
-      "mistakes": [
-        "[exact quoted text]" — Highlight the mistake and explain why it is wrong, but do NOT provide the corrected version
-      ],
-      "suggestions": "Include more specific statistics from the results to strengthen your analysis. Reference previous research more explicitly in the conclusion."
+      "justification": "Score 4: Good. Discussion analyses main trend with details. Quote: \\"[exact quote]\\" shows [rubric alignment]. Conclusion restates aim."
+    },
+    {
+      "criterionName": "Coherence and Cohesion",
+      "score": 3,
+      "maxScore": 5,
+      "justification": "Score 3 — Satisfactory. [explanation with quote]"
     }
   ],
   "totalScore": 16,
   "maxScore": ${totalMaxScore},
   "percentage": 80,
-  "overallFeedback": "Your strongest area is [criterion] where you [specific strength]. The area that needs the most improvement is [criterion] because [reason]. Your discussion effectively [evaluation]. Your conclusion could be improved by [suggestion]. Focus on [one prioritized action] to improve your next report."
+  "overallFeedback": "Strongest: [criterion]. Weakest: [criterion]. Discussion: [evaluation]. Conclusion: [evaluation]. Focus on: [action]."
 }`;
 }
 
@@ -499,9 +464,7 @@ function buildFoundationPrompt(text: string, topic: string | null, wordCount: nu
     return `${c.name} (0-${c.maxScore}):\n${rubricLevels}`;
   }).join('\n\n');
 
-  return `You are an expert writing assessor evaluating a Foundation level student essay for Sultan Qaboos University's Center for Preparatory Studies.
-
-STUDENT LEVEL: CEFR A1-A2 (Basic User). Feedback must use simple, clear language that A1-A2 learners can understand. Be encouraging while maintaining appropriate standards. Avoid overly technical linguistic terminology.
+  return `You are an expert writing assessor for Foundation level students at Sultan Qaboos University. CEFR A1-A2 level. Use simple, clear language.
 
 EXAM TYPE: ${examLabel}
 ${topic ? `Essay Topic: ${topic}` : 'No specific topic provided.'}
@@ -511,11 +474,11 @@ Student Essay:
 ${text}
 """
 
-TARGET WORD COUNT: ${targetWordCount.min}-${targetWordCount.max} words (ideal: ${targetWordCount.ideal}). A tolerance of +/-10 words is acceptable (effective range: ${toleranceBelow}-${toleranceAbove}).
+TARGET WORD COUNT: ${targetWordCount.min}-${targetWordCount.max} words (ideal: ${targetWordCount.ideal}). Tolerance: +/-10 words (${toleranceBelow}-${toleranceAbove}).
 
 ${wordCountStatus}
 
-ASSESSMENT RUBRICS (Foundation Courses - FP0230 and FP0340):
+ASSESSMENT RUBRICS (Foundation Courses — FP0230 and FP0340):
 
 ${criteriaDetails}
 
@@ -523,46 +486,31 @@ SPECIAL RULES:
 ${rubrics.specialRules.map((r, i) => `${i + 1}. ${r}`).join('\n')}
 
 ============================================================
-SCORING AND FEEDBACK INSTRUCTIONS (CRITICAL — FOLLOW EXACTLY):
+SCORING INSTRUCTIONS:
 ============================================================
 
-STEP 1 — SCORE each criterion using WHOLE or HALF numbers (0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, or 6). If the essay's quality falls between two adjacent score bands, award a half-point (e.g., 3.5). Use 0.5 increments only — never use 0.25 or 0.75.
+STEP 1 — Score each criterion (0-6, 0.5 increments). If quality falls between bands, award a half-point.
 
-STEP 2 — For EACH criterion, write a "Justification" paragraph that:
-  (a) Explicitly names the score band you chose (e.g. "Score 3.5" meaning between Satisfactory and Good)
-  (b) Quotes at least ONE specific phrase or sentence from the student's essay as evidence
-  (c) Explains why the essay fits that band descriptor — connect the evidence to the rubric
-  (d) If you awarded a half-point, explain which aspects place it in the lower band and which aspects place it in the higher band
-  (e) If the score is below 4, clearly state what is missing compared to the next higher band
-  (f) If the score is 5 or 6, explain what the student did beyond expectations
-  (g) For Task Response: specifically address whether the essay addresses the topic, stays within the word count, and follows the expected essay structure for a ${examLabel}
+STEP 2 — For EACH criterion, write a Justification that:
+  (a) Names the score band chosen
+  (b) Quotes at least ONE phrase from the student's essay as evidence
+  (c) Explains why the essay fits that band — connect evidence to the rubric
+  (d) For Task Response: address topic adherence, word count, essay structure
 
-This justification must make the score transparent and defensible. A reader should understand exactly why that score was given based on the evidence.
+STEP 3 — List up to 3 specific errors per criterion: "[exact quote]" — explain why wrong (no corrections).
 
-STEP 3 — For each criterion, list SPECIFIC errors found in the text. Format each as:
-  - "[exact quoted text]" — highlight the mistake and explain why it is wrong, but do NOT provide the corrected version
+STEP 4 — overallFeedback (3-4 sentences): strongest/weakest criterion, word count comment, one prioritized action item.
 
-STEP 4 — For each criterion, provide 1-2 concrete, achievable suggestions for improvement appropriate for an A1-A2 learner.
-
-STEP 5 — overallFeedback must be a comprehensive summary (3-5 sentences) that:
-  - Highlights the student's strongest criterion and what they did well
-  - Identifies the weakest area needing the most attention
-  - Comments on whether the word count meets the ${examLabel} requirements
-  - Gives one prioritized action item to focus on next
-
-STEP 6 — Calculate totalScore = sum of all criterion scores (max ${totalMaxScore}). Scores may include 0.5 increments (e.g., 3.5, 4.5). Calculate percentage = round(totalScore / ${totalMaxScore} * 100).
+STEP 5 — totalScore = sum of scores (max ${totalMaxScore}). percentage = round(totalScore / ${totalMaxScore} * 100).
 
 ============================================================
 CRITICAL OUTPUT RULES:
-- You MUST score ALL FOUR criteria: Task Response, Coherence and Cohesion, Lexical Resource, and Grammatical Range and Accuracy. Do NOT omit any criterion.
-- Respond with ONLY the raw JSON object. No markdown, no code fences, no commentary.
-- Do NOT wrap the JSON in triple-backtick code blocks.
-- Use straight double quotes, not smart/curly quotes.
-- Do NOT add trailing commas after the last item in arrays or objects.
-- All string values must have properly escaped quotes inside them.
-- FORMAT: Write justification, strengths, suggestions, and overallFeedback using bullet points (•) or numbered lists (1. 2. 3.) wherever possible. Each bullet should be a separate, clear point. This makes the report easier to read for students.
+- Score ALL FOUR criteria. Do NOT omit any.
+- Respond with ONLY raw JSON. No markdown, no code fences, no commentary.
+- Straight double quotes only. No trailing commas. No smart/curly quotes.
+- Use bullet points (•) in justification, strengths, suggestions, and overallFeedback.
 
-JSON OUTPUT FORMAT (you MUST include exactly 4 score entries — one for EACH criterion):
+JSON FORMAT (exactly 4 score entries):
 ============================================================
 {
   "scores": [
@@ -570,45 +518,19 @@ JSON OUTPUT FORMAT (you MUST include exactly 4 score entries — one for EACH cr
       "criterionName": "Task Response",
       "score": 4,
       "maxScore": 6,
-      "justification": "Score 4: Good. The essay addresses the task by [explanation]. For example, the student writes: \\"[exact quote]\\" which shows [specific rubric alignment].",
-      "strengths": "The student clearly addresses the topic and provides relevant examples.",
-      "mistakes": [
-        "[exact quoted text]: Highlight the mistake and explain why it is wrong, but do NOT provide the corrected version"
-      ],
-      "suggestions": "Try to add a clear concluding sentence that summarizes your main point. Use transition words like 'In conclusion' or 'To sum up'."
+      "justification": "Score 4: Good. Addresses the task. Quote: \\"[exact quote]\\" shows [rubric alignment]."
     },
     {
       "criterionName": "Coherence and Cohesion",
       "score": 3.5,
       "maxScore": 6,
-      "justification": "Score 3.5: [justification with quoted evidence]",
-      "strengths": "[specific strengths]",
-      "mistakes": ["[exact quoted text]: explanation"],
-      "suggestions": "[1-2 improvement suggestions]"
-    },
-    {
-      "criterionName": "Lexical Resource",
-      "score": 3,
-      "maxScore": 6,
-      "justification": "Score 3: [justification with quoted evidence]",
-      "strengths": "[specific strengths]",
-      "mistakes": ["[exact quoted text]: explanation"],
-      "suggestions": "[1-2 improvement suggestions]"
-    },
-    {
-      "criterionName": "Grammatical Range and Accuracy",
-      "score": 3.5,
-      "maxScore": 6,
-      "justification": "Score 3.5: [justification with quoted evidence]",
-      "strengths": "[specific strengths]",
-      "mistakes": ["[exact quoted text]: explanation"],
-      "suggestions": "[1-2 improvement suggestions]"
+      "justification": "Score 3.5: [justification with quote]"
     }
   ],
   "totalScore": 14,
   "maxScore": ${totalMaxScore},
   "percentage": 58,
-  "overallFeedback": "Your strongest area is [criterion] where you [specific strength]. The area that needs the most improvement is [criterion] because [reason]. [Comment on word count if relevant]. Focus on [one prioritized action] to improve your next essay."
+  "overallFeedback": "Strongest: [criterion]. Weakest: [criterion]. [Word count comment]. Focus on: [action]."
 }`;
 }
 
@@ -617,9 +539,7 @@ function buildCreditPrompt(text: string, topic: string | null, wordCount: number
   const criteria = CREDIT_CRITERIA;
   const totalMaxScore = criteria.reduce((sum, c) => sum + c.maxScore, 0);
 
-  return `You are an expert writing assessor evaluating a Credit level student essay for Sultan Qaboos University's Center for Preparatory Studies.
-
-STUDENT LEVEL: CEFR A2-B1 (Elementary to Pre-Intermediate). Feedback must use simple, clear language that A2-B1 learners can understand. Be encouraging while maintaining appropriate academic standards. Avoid overly technical linguistic terminology.
+  return `You are an expert writing assessor for Credit level students at Sultan Qaboos University. CEFR A2-B1 level. Use simple, clear language.
 
 ${topic ? `Essay Topic: ${topic}` : 'No specific topic provided.'}
 
@@ -634,38 +554,29 @@ ASSESSMENT CRITERIA (Credit Course - LANC2160):
 ${criteria.map(c => `- ${c.name} (0-${c.maxScore}): ${c.description}`).join('\n')}
 
 ============================================================
-SCORING AND FEEDBACK INSTRUCTIONS (CRITICAL — FOLLOW EXACTLY):
+SCORING INSTRUCTIONS:
 ============================================================
 
-STEP 1 — SCORE each criterion using WHOLE or HALF numbers (0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, or 5). If the essay's quality falls between two adjacent score bands, award a half-point (e.g., 2.5). Use 0.5 increments only — never use 0.25 or 0.75.
+STEP 1 — Score each criterion (0-5, 0.5 increments). If quality falls between bands, award a half-point.
 
-STEP 2 — For EACH criterion, write a "Justification" paragraph that:
-  (a) Explicitly names the score band you chose (e.g. "Score 2.5" meaning between Unsatisfactory and Satisfactory)
-  (b) Quotes at least ONE specific phrase or sentence from the student's essay as evidence
-  (c) Explains why the essay earned that score based on the criterion description
-  (d) If you awarded a half-point, explain which aspects place it in the lower band and which aspects place it in the higher band
-  (e) If the score is below 3, clearly state what is missing compared to a higher score
-  (f) If the score is 4 or 5, explain what the student did beyond basic expectations
+STEP 2 — For EACH criterion, write a Justification that:
+  (a) Names the score band chosen
+  (b) Quotes at least ONE phrase from the student's essay as evidence
+  (c) Explains why the essay fits that band — connect evidence to the rubric
 
-STEP 3 — For each criterion, list SPECIFIC errors found in the text. Format each as:
-  - "[exact quoted text]" — highlight the mistake and explain why it is wrong, but do NOT provide the corrected version
+STEP 3 — List up to 3 specific errors per criterion: "[exact quote]" — explain why wrong (no corrections).
 
-STEP 4 — For each criterion, provide 1-2 concrete, achievable suggestions for improvement appropriate for an A2-B1 learner.
+STEP 4 — overallFeedback (3-4 sentences): strongest/weakest criterion, one prioritized action item.
 
-STEP 5 — overallFeedback must be a comprehensive summary (3-5 sentences) that highlights the student's strongest criterion, identifies the weakest area, and gives one prioritized action item.
-
-STEP 6 — Calculate totalScore = sum of all criterion scores (max ${totalMaxScore}). Calculate percentage = round(totalScore / ${totalMaxScore} * 100).
+STEP 5 — totalScore = sum of scores (max ${totalMaxScore}). percentage = round(totalScore / ${totalMaxScore} * 100).
 
 ============================================================
 CRITICAL OUTPUT RULES:
-- Respond with ONLY the raw JSON object. No markdown, no code fences, no commentary.
-- Do NOT wrap the JSON in triple-backtick code blocks.
-- Use straight double quotes, not smart/curly quotes.
-- Do NOT add trailing commas after the last item in arrays or objects.
-- All string values must have properly escaped quotes inside them.
-- FORMAT: Write justification, strengths, suggestions, and overallFeedback using bullet points (•) or numbered lists (1. 2. 3.) wherever possible. Each bullet should be a separate, clear point. This makes the report easier to read for students.
+- Respond with ONLY raw JSON. No markdown, no code fences, no commentary.
+- Straight double quotes only. No trailing commas. No smart/curly quotes.
+- Use bullet points (•) in justification, strengths, suggestions, and overallFeedback.
 
-JSON OUTPUT FORMAT:
+JSON FORMAT:
 ============================================================
 {
   "scores": [
@@ -673,18 +584,19 @@ JSON OUTPUT FORMAT:
       "criterionName": "Task Achievement",
       "score": 4,
       "maxScore": 5,
-      "justification": "The essay achieves the task well by [explanation]. For example, \\"[exact quote]\\" shows [specific alignment with criterion].",
-      "strengths": "The student captures the main points effectively and demonstrates good comprehension of the source material.",
-      "mistakes": [
-        "[exact quoted text]" — Highlight the mistake and explain why it is wrong, but do NOT provide the corrected version
-      ],
-      "suggestions": "Make sure every main point from the original text is represented in your summary. Use your own words rather than copying phrases."
+      "justification": "Score 4: Good. Achieves the task. Quote: \\"[exact quote]\\" shows [criterion alignment]."
+    },
+    {
+      "criterionName": "Coherence & Cohesion",
+      "score": 3,
+      "maxScore": 5,
+      "justification": "Score 3 — Satisfactory. [explanation with quote]"
     }
   ],
   "totalScore": 16,
   "maxScore": ${totalMaxScore},
   "percentage": 80,
-  "overallFeedback": "Your strongest area is [criterion] where you [specific strength]. The area that needs the most improvement is [criterion] because [reason]. Focus on [one prioritized action] to improve your next essay."
+  "overallFeedback": "Strongest: [criterion]. Weakest: [criterion]. Focus on: [action]."
 }`;
 }
 
@@ -714,11 +626,9 @@ function buildSummaryPrompt(
     return `${c.name} (0-${c.maxScore}):\n${rubricLevels}`;
   }).join('\n\n');
 
-  return `You are an expert writing assessor evaluating a Credit level student's summary for Sultan Qaboos University's Center for Preparatory Studies, course LANC2160 (Academic English: Summary Writing & Synthesis Essay).
+  return `You are an expert writing assessor for LANC2160 (Summary Writing) at Sultan Qaboos University. CEFR A2-B1 level. Use simple, clear language.
 
-STUDENT LEVEL: CEFR A2-B1 (Elementary to Pre-Intermediate). Feedback must use simple, clear language that A2-B1 learners can understand. Be encouraging while maintaining appropriate academic standards. Avoid overly technical linguistic terminology.
-
-TASK: The student was asked to read the source text below and write a summary of approximately one-third of the original text length.
+TASK: The student read the source text and wrote a summary of approximately one-third of the original text length.
 
 SOURCE TEXT:
 Title: "${sourceTitle}"
@@ -738,53 +648,37 @@ SUMMARY WRITING ASSESSMENT RUBRICS (LANC2160 — Summary Writing):
 
 ${criteriaDetails}
 
-SUMMARY-SPECIFIC ASSESSMENT RULES:
-1. A summary must capture the MAIN IDEAS of the source text — focus on key points, not minor details.
-2. The student must use their OWN WORDS (paraphrasing). Direct copying of phrases or sentences from the source text without paraphrasing indicates poor summarizing skills and should lower the Task Achievement and Lexical Resource scores.
-3. A summary should NOT include the student's personal opinions, arguments, or new information not present in the source text.
-4. The summary should be approximately one-third of the original text length. Significantly shorter summaries likely miss key points; significantly longer ones likely include unnecessary details.
-5. If the summary is off-topic (not about the source text at all), give Task Achievement = 0.
-6. If the student has simply copied large portions of the source text, this is NOT an acceptable summary — it should score low on Task Achievement and Lexical Resource regardless of how "accurate" the text is.
+SUMMARY RULES:
+1. Capture MAIN IDEAS only — focus on key points, not minor details.
+2. Student must use OWN WORDS (paraphrasing). Copied phrases/sentences lower Task Achievement and Lexical Resource scores.
+3. No personal opinions, arguments, or new information not in the source text.
+4. Off-topic summary = Task Achievement 0. Large-scale copying = low TA and LR regardless of accuracy.
 
 ============================================================
-SCORING AND FEEDBACK INSTRUCTIONS (CRITICAL — FOLLOW EXACTLY):
+SCORING INSTRUCTIONS:
 ============================================================
 
-STEP 1 — SCORE each criterion using WHOLE or HALF numbers (0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, or 5). Use 0.5 increments only — never use 0.25 or 0.75. If the summary's quality falls between two adjacent score bands, award a half-point (e.g., 3.5).
+STEP 1 — Score each criterion (0-5, 0.5 increments). If quality falls between bands, award a half-point.
 
-STEP 2 — For EACH criterion, write a "Justification" paragraph that:
-  (a) Explicitly names the score band you chose (e.g. "Score 3.5 — Good achievement")
-  (b) Quotes at least ONE specific phrase or sentence from the student's summary as evidence
-  (c) Explains why the summary fits that band descriptor — connect the evidence to the rubric
-  (d) If you awarded a half-point, explain which aspects place it in the lower band and which aspects place it in the higher band
-  (e) For Task Achievement: specifically address how many main ideas from the source text were captured, whether paraphrasing was used, and whether irrelevant details were excluded
-  (f) If the score is below 3, clearly state what is missing compared to a higher score
-  (g) If the score is 4 or 5, explain what the student did beyond basic expectations
+STEP 2 — For EACH criterion, write a Justification that:
+  (a) Names the score band chosen
+  (b) Quotes at least ONE phrase from the student's summary as evidence
+  (c) Explains why the text fits that band — connect evidence to the rubric
+  (d) For Task Achievement: address which main ideas were captured, paraphrasing quality, and whether irrelevant details were included
 
-STEP 3 — For each criterion, list SPECIFIC errors found in the text. Format each as:
-  - "[exact quoted text]" — highlight the mistake and explain why it is wrong, but do NOT provide the corrected version
+STEP 3 — List up to 3 specific errors per criterion: "[exact quote]" — explain why wrong (no corrections).
 
-STEP 4 — For each criterion, provide 1-2 concrete, achievable suggestions for improvement appropriate for an A2-B1 learner. For example: "Try using linking words like 'Furthermore' or 'In addition' to connect your ideas."
+STEP 4 — overallFeedback (3-4 sentences): which main ideas were captured/missed, strongest/weakest criterion, paraphrasing quality, one prioritized action item.
 
-STEP 5 — overallFeedback must be a comprehensive summary (4-6 sentences) that:
-  - Identifies which main ideas from the source text the student captured and which ones were missing
-  - Highlights the student's strongest criterion and what they did well
-  - Identifies the weakest area needing the most attention
-  - Comments on the paraphrasing quality (own words vs. copied text)
-  - Gives one prioritized action item to focus on next
-
-STEP 6 — Calculate totalScore = sum of all criterion scores (max ${totalMaxScore}). Scores may include 0.5 increments (e.g., 3.5, 4.5). Calculate percentage = round(totalScore / ${totalMaxScore} * 100).
+STEP 5 — totalScore = sum of scores (max ${totalMaxScore}). percentage = round(totalScore / ${totalMaxScore} * 100).
 
 ============================================================
 CRITICAL OUTPUT RULES:
-- Respond with ONLY the raw JSON object. No markdown, no code fences, no commentary.
-- Do NOT wrap the JSON in triple-backtick code blocks.
-- Use straight double quotes, not smart/curly quotes.
-- Do NOT add trailing commas after the last item in arrays or objects.
-- All string values must have properly escaped quotes inside them.
-- FORMAT: Write justification, strengths, suggestions, and overallFeedback using bullet points (•) or numbered lists (1. 2. 3.) wherever possible. Each bullet should be a separate, clear point. This makes the report easier to read for students.
+- Respond with ONLY raw JSON. No markdown, no code fences, no commentary.
+- Straight double quotes only. No trailing commas. No smart/curly quotes.
+- Use bullet points (•) in justification, strengths, suggestions, and overallFeedback.
 
-JSON OUTPUT FORMAT:
+JSON FORMAT:
 ============================================================
 {
   "scores": [
@@ -792,45 +686,19 @@ JSON OUTPUT FORMAT:
       "criterionName": "Task Achievement",
       "score": 3.5,
       "maxScore": 5,
-      "justification": "Score 3.5 — Good achievement. The summary captures most main ideas effectively. For example, the student writes: \\"[exact quote]\\" which shows [specific rubric alignment]. The student paraphrased well in most places, though some phrases were copied directly from the source text.",
-      "strengths": "The student captures the main points about [X] and [Y] effectively. The paraphrasing shows reasonable comprehension of the source text.",
-      "mistakes": [
-        "[exact quoted text]" — Highlight the mistake and explain why it is wrong, but do NOT provide the corrected version
-      ],
-      "suggestions": "Try to capture ALL main ideas from the source text. Remember to use your own words rather than copying phrases directly."
+      "justification": "Score 3.5 — Good achievement. Captures most main ideas. Quote: \\"[exact quote]\\" shows [rubric alignment]. Paraphrased well in most places."
     },
     {
       "criterionName": "Coherence & Cohesion",
       "score": 3,
       "maxScore": 5,
-      "justification": "Score 3 — Satisfactory coherence. [explanation with quoted evidence]",
-      "strengths": "[specific strengths]",
-      "mistakes": ["[exact quoted text]" — highlight the mistake and explain why it is wrong, but do NOT correct it],
-      "suggestions": "[1-2 improvement suggestions]"
-    },
-    {
-      "criterionName": "Lexical Resource",
-      "score": 3,
-      "maxScore": 5,
-      "justification": "Score 3 — Satisfactory vocabulary. [explanation with quoted evidence]",
-      "strengths": "[specific strengths]",
-      "mistakes": ["[exact quoted text]" — highlight the mistake and explain why it is wrong, but do NOT correct it],
-      "suggestions": "[1-2 improvement suggestions]"
-    },
-    {
-      "criterionName": "Grammar & Accuracy",
-      "score": 3.5,
-      "maxScore": 5,
-      "justification": "Score 3.5 — Good grammar. [explanation with quoted evidence]",
-      "strengths": "[specific strengths]",
-      "mistakes": ["[exact quoted text]" — highlight the mistake and explain why it is wrong, but do NOT correct it],
-      "suggestions": "[1-2 improvement suggestions]"
+      "justification": "Score 3 — Satisfactory. [explanation with quote]"
     }
   ],
   "totalScore": 13,
   "maxScore": ${totalMaxScore},
   "percentage": 65,
-  "overallFeedback": "Your summary captures the main ideas about [X, Y, Z] from the source text, but misses [key point]. Your strongest area is [criterion] where you [specific strength]. The area that needs the most improvement is [criterion] because [reason]. [Comment on paraphrasing]. Focus on [one prioritized action] to improve your next summary."
+  "overallFeedback": "Captures main ideas about [X, Y] but misses [Z]. Strongest: [criterion]. Weakest: [criterion]. Paraphrasing is [quality]. Focus on: [action]."
 }`;
 }
 
@@ -871,15 +739,13 @@ function buildLanc1070Prompt(
     return `${c.name} (0-${c.maxScore}):\n${rubricLevels}`;
   }).join('\n\n');
 
-  return `You are an expert writing assessor evaluating a Credit level student's synthesis essay for Sultan Qaboos University's Center for Preparatory Studies, course LANC1070 (Academic English).
-
-STUDENT LEVEL: CEFR A2-B1 (Elementary to Pre-Intermediate). Feedback must use simple, clear language appropriate for A2-B1 learners. Be encouraging while maintaining appropriate academic standards. Avoid overly technical linguistic terminology.
+  return `You are an expert writing assessor for LANC1070 (Synthesis Essay) at Sultan Qaboos University. CEFR A2-B1 level. Use simple, clear language.
 
 ASSIGNMENT: ${assignmentTitle}
 
 WRITING TASK: ${assignmentDescription}
 
-TARGET WORD COUNT: ${targetWordCount.min}-${targetWordCount.max} words (ideal: ${targetWordCount.ideal}). A tolerance of +/-10% is acceptable (effective range: ${tenPercentBelow}-${tenPercentAbove}).
+TARGET WORD COUNT: ${targetWordCount.min}-${targetWordCount.max} words (ideal: ${targetWordCount.ideal}). Tolerance: +/-10% (${tenPercentBelow}-${tenPercentAbove}).
 
 ${wordCountStatus}
 
@@ -894,70 +760,40 @@ STUDENT'S ESSAY:
 ${studentText}
 """
 
-ASSESSMENT RUBRICS (LANC1070 - Synthesis Essay based on a single source text):
+ASSESSMENT RUBRICS (LANC1070 — Synthesis Essay, single source):
 
 ${criteriaDetails}
 
-POINTS TO CONSIDER FOR EACH CRITERION:
-
-Task Achievement:
-- Does the essay address the required discussion points from the assignment?
-- Is information from the source text synthesized effectively?
-- Does the essay stay within the target word count?
-
-Coherence and Cohesion:
-- Logical organization of information and ideas
-- Use of cohesive devices (conjunctions and linkers)
-- Paragraphing and essay structure
-
-Lexical Resource:
-- Vocabulary range and accuracy
-- Paraphrasing quality (student uses own words rather than copying)
-- Spelling and word formation
-
-Grammatical Range and Accuracy:
-- Range and accuracy of grammatical structures
-- Sentence variety
-- Punctuation
+POINTS TO CONSIDER:
+- TA: Does the essay address the required discussion points? Is source text synthesized? Word count within target?
+- C&C: Logical organization, cohesive devices, paragraphing
+- LR: Vocabulary range/accuracy, paraphrasing quality, spelling
+- GRA: Grammatical range/accuracy, sentence variety, punctuation
 
 ============================================================
-SCORING AND FEEDBACK INSTRUCTIONS (CRITICAL — FOLLOW EXACTLY):
+SCORING INSTRUCTIONS:
 ============================================================
 
-STEP 1 — SCORE each criterion using WHOLE or HALF numbers (0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, or 5). If the essay's quality falls between two adjacent score bands, award a half-point (e.g., 3.5). Use 0.5 increments only — never use 0.25 or 0.75.
+STEP 1 — Score each criterion (0-5, 0.5 increments). If quality falls between bands, award a half-point.
 
-STEP 2 — For EACH criterion, write a "Justification" paragraph that:
-  (a) Explicitly names the score band you chose (e.g. "Score 3.5 — Satisfactory")
-  (b) Quotes at least ONE specific phrase or sentence from the student's essay as evidence
-  (c) Explains why the essay fits that band descriptor — connect the evidence to the rubric
-  (d) If you awarded a half-point, explain which aspects place it in the lower band and which in the higher band
-  (e) If the score is below 4, clearly state what is missing compared to the next higher band
-  (f) If the score is 5, explain what the student did beyond expectations
+STEP 2 — For EACH criterion, write a Justification that:
+  (a) Names the score band chosen
+  (b) Quotes at least ONE phrase from the student's essay as evidence
+  (c) Explains why the essay fits that band — connect evidence to the rubric
 
-STEP 3 — For each criterion, list SPECIFIC errors found in the text. Format each as:
-  - "[exact quoted text]" — highlight the mistake and explain why it is wrong, but do NOT provide the corrected version
+STEP 3 — List up to 3 specific errors per criterion: "[exact quote]" — explain why wrong (no corrections).
 
-STEP 4 — For each criterion, provide 1-2 concrete, achievable suggestions for improvement appropriate for an A2-B1 level writer.
+STEP 4 — overallFeedback (3-4 sentences): strongest/weakest criterion, how well discussion points were addressed, paraphrasing quality, one prioritized action item.
 
-STEP 5 — overallFeedback must be a comprehensive summary (4-6 sentences) that:
-  - Highlights the student's strongest criterion and what they did well
-  - Identifies the weakest area needing the most attention
-  - Evaluates how well the essay addresses the assigned discussion points
-  - Evaluates how effectively the student used the source text (paraphrasing vs copying)
-  - Gives one prioritized action item to focus on next
-
-STEP 6 — Calculate totalScore = sum of all criterion scores (max ${totalMaxScore}). Calculate percentage = round(totalScore / ${totalMaxScore} * 100).
+STEP 5 — totalScore = sum of scores (max ${totalMaxScore}). percentage = round(totalScore / ${totalMaxScore} * 100).
 
 ============================================================
 CRITICAL OUTPUT RULES:
-- Respond with ONLY the raw JSON object. No markdown, no code fences, no commentary.
-- Do NOT wrap the JSON in triple-backtick code blocks.
-- Use straight double quotes, not smart/curly quotes.
-- Do NOT add trailing commas after the last item in arrays or objects.
-- All string values must have properly escaped quotes inside them.
-- FORMAT: Write justification, strengths, suggestions, and overallFeedback using bullet points (•) or numbered lists (1. 2. 3.) wherever possible. Each bullet should be a separate, clear point. This makes the report easier to read for students.
+- Respond with ONLY raw JSON. No markdown, no code fences, no commentary.
+- Straight double quotes only. No trailing commas. No smart/curly quotes.
+- Use bullet points (•) in justification, strengths, suggestions, and overallFeedback.
 
-JSON OUTPUT FORMAT:
+JSON FORMAT:
 ============================================================
 {
   "scores": [
@@ -965,18 +801,19 @@ JSON OUTPUT FORMAT:
       "criterionName": "Task Achievement",
       "score": 4,
       "maxScore": 5,
-      "justification": "Score 4: Good. The essay addresses the task by [explanation]. For example, the student writes: \\"[exact quote]\\" which shows [specific rubric alignment].",
-      "strengths": "The student demonstrates solid understanding of the source material and addresses the main discussion points.",
-      "mistakes": [
-        "[exact quoted text]" — Highlight the mistake and explain why it is wrong, but do NOT provide the corrected version
-      ],
-      "suggestions": "Include more specific examples from the source text to support your discussion points. Use your own words more consistently when paraphrasing."
+      "justification": "Score 4: Good. Addresses the task. Quote: \\"[exact quote]\\" shows [rubric alignment]."
+    },
+    {
+      "criterionName": "Coherence and Cohesion",
+      "score": 3,
+      "maxScore": 5,
+      "justification": "Score 3 — Satisfactory. [explanation with quote]"
     }
   ],
   "totalScore": 16,
   "maxScore": ${totalMaxScore},
   "percentage": 80,
-  "overallFeedback": "Your strongest area is [criterion] where you [specific strength]. The area that needs the most improvement is [criterion] because [reason]. Focus on [one prioritized action] to improve your next essay."
+  "overallFeedback": "Strongest: [criterion] where [strength]. Weakest: [criterion] because [reason]. Focus on: [action]."
 }`;
 }
 
@@ -1021,11 +858,9 @@ ${s.content}
 """`;
   }).join('\n\n');
 
-  return `You are an expert writing assessor evaluating a Credit level student's synthesis essay for Sultan Qaboos University's Center for Preparatory Studies, course LANC2160 (Academic English: Summary Writing & Synthesis Essay).
+  return `You are an expert writing assessor for LANC2160 (Synthesis Essay) at Sultan Qaboos University. CEFR A2-B1 level. Use simple, clear language.
 
-STUDENT LEVEL: CEFR A2-B1 (Elementary to Pre-Intermediate). Feedback must use simple, clear language that A2-B1 learners can understand. Be encouraging while maintaining appropriate academic standards. Avoid overly technical linguistic terminology.
-
-TASK: The student was asked to read ALL THREE source texts below and write a 4-paragraph synthesis essay (${targetWordCount.min}-${targetWordCount.max} words) based on the assignment below.
+TASK: The student read ALL THREE source texts and wrote a 4-paragraph synthesis essay (${targetWordCount.min}-${targetWordCount.max} words).
 
 ASSIGNMENT: ${assignmentTitle}
 INSTRUCTIONS: ${assignmentDescription}
@@ -1044,55 +879,38 @@ SYNTHESIS ESSAY ASSESSMENT RUBRICS (LANC2160 — Two-Point Essay Writing Marking
 
 ${criteriaDetails}
 
-SYNTHESIS-SPECIFIC ASSESSMENT RULES:
-1. A synthesis essay must combine information from ALL THREE source texts — not just one or two. The student should demonstrate the ability to integrate ideas from multiple sources into a coherent whole.
-2. The essay must address the specific assignment prompt: "${assignmentTitle}". The essay should cover the key points required by the prompt, drawing evidence from all three sources.
-3. The essay should be exactly 4 paragraphs in structure (typically: introduction, body paragraph 1, body paragraph 2, and conclusion). If the student has written significantly more or fewer paragraphs, note this in the Coherence and Cohesion assessment.
-4. The student MUST use their OWN WORDS (paraphrasing). Direct copying of phrases or sentences from the source texts without paraphrasing is NOT acceptable and must lower the Task Achievement and Lexical Resource scores. Estimate the percentage of directly copied text.
-5. A synthesis essay should NOT include the student's personal opinions, arguments, or new information not present in the source texts.
-6. If the essay is off-topic (not addressing the assignment prompt), give Task Achievement = 0.
-7. If the student has simply copied large portions of any source text, this is NOT an acceptable synthesis — it should score low on Task Achievement and Lexical Resource regardless of how "accurate" the text is.
-8. Check word count: if the word count is 10% or more above or below the target range, this MUST lower the Task Achievement score according to the rubric bands.
+SYNTHESIS RULES:
+1. Synthesize ALL THREE source texts — combine information from multiple sources into a coherent whole. Address the assignment prompt "${assignmentTitle}".
+2. Student MUST use OWN WORDS (paraphrasing). Copied phrases/sentences lower TA and LR scores. Estimate copying percentage.
+3. Structure: exactly 4 paragraphs (intro, body 1, body 2, conclusion). Note deviations in C&C assessment.
+4. No personal opinions, arguments, or new information. Off-topic = TA 0. Large-scale copying = low TA and LR regardless of accuracy.
+5. Word count: 10%+ deviation from target range MUST lower TA per rubric bands.
 
 ============================================================
-SCORING AND FEEDBACK INSTRUCTIONS (CRITICAL — FOLLOW EXACTLY):
+SCORING INSTRUCTIONS:
 ============================================================
 
-STEP 1 — SCORE each criterion using WHOLE or HALF numbers (0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, or 5). Use 0.5 increments only — never use 0.25 or 0.75. If the essay's quality falls between two adjacent score bands, award a half-point (e.g., 3.5).
+STEP 1 — Score each criterion (0-5, 0.5 increments). If quality falls between bands, award a half-point.
 
-STEP 2 — For EACH criterion, write a "Justification" paragraph that:
-  (a) Explicitly names the score band you chose (e.g. "Score 3.5 — between Satisfactory and Good")
-  (b) Quotes at least ONE specific phrase or sentence from the student's essay as evidence
-  (c) Explains why the essay fits that band descriptor — connect the evidence to the rubric
-  (d) If you awarded a half-point, explain which aspects place it in the lower band and which aspects place it in the higher band
-  (e) For Task Achievement: specifically address whether the student synthesized ALL THREE sources, addressed the assignment prompt requirements, stayed within word count, and used own words
-  (f) If the score is below 3, clearly state what is missing compared to a higher score
-  (g) If the score is 4 or 5, explain what the student did beyond basic expectations
+STEP 2 — For EACH criterion, write a Justification that:
+  (a) Names the score band chosen
+  (b) Quotes at least ONE phrase from the student's essay as evidence
+  (c) Explains why the essay fits that band — connect evidence to the rubric
+  (d) For Task Achievement: address whether ALL THREE sources were synthesized, assignment prompt addressed, word count respected, and own words used
 
-STEP 3 — For each criterion, list SPECIFIC errors found in the text. Format each as:
-  - "[exact quoted text]" — highlight the mistake and explain why it is wrong, but do NOT provide the corrected version
+STEP 3 — List up to 3 specific errors per criterion: "[exact quote]" — explain why wrong (no corrections).
 
-STEP 4 — For each criterion, provide 1-2 concrete, achievable suggestions for improvement appropriate for an A2-B1 learner. For example: "Try using linking words like 'Furthermore' or 'In addition' to connect your ideas."
+STEP 4 — overallFeedback (3-4 sentences): which sources were used (all 3?), strongest/weakest criterion, paraphrasing/copied text percentage, one prioritized action item.
 
-STEP 5 — overallFeedback must be a comprehensive summary (4-6 sentences) that:
-  - Identifies which sources the student used and whether all three were synthesized
-  - Highlights the student's strongest criterion and what they did well
-  - Identifies the weakest area needing the most attention
-  - Comments on the paraphrasing quality (own words vs. copied text) and estimated copying percentage
-  - Gives one prioritized action item to focus on next
-
-STEP 6 — Calculate totalScore = sum of all criterion scores (max ${totalMaxScore}). Scores may include 0.5 increments (e.g., 3.5, 4.5). Calculate percentage = round(totalScore / ${totalMaxScore} * 100).
+STEP 5 — totalScore = sum of scores (max ${totalMaxScore}). percentage = round(totalScore / ${totalMaxScore} * 100).
 
 ============================================================
 CRITICAL OUTPUT RULES:
-- Respond with ONLY the raw JSON object. No markdown, no code fences, no commentary.
-- Do NOT wrap the JSON in triple-backtick code blocks.
-- Use straight double quotes, not smart/curly quotes.
-- Do NOT add trailing commas after the last item in arrays or objects.
-- All string values must have properly escaped quotes inside them.
-- FORMAT: Write justification, strengths, suggestions, and overallFeedback using bullet points (•) or numbered lists (1. 2. 3.) wherever possible. Each bullet should be a separate, clear point. This makes the report easier to read for students.
+- Respond with ONLY raw JSON. No markdown, no code fences, no commentary.
+- Straight double quotes only. No trailing commas. No smart/curly quotes.
+- Use bullet points (•) in justification, strengths, suggestions, and overallFeedback.
 
-JSON OUTPUT FORMAT:
+JSON FORMAT:
 ============================================================
 {
   "scores": [
@@ -1100,45 +918,19 @@ JSON OUTPUT FORMAT:
       "criterionName": "Task Achievement",
       "score": 3.5,
       "maxScore": 5,
-      "justification": "Score 3.5 — between Satisfactory and Good. The essay synthesizes information from all three sources, addressing the assignment prompt. For example, the student writes: \\"[exact quote]\\" which shows [specific rubric alignment]. The student paraphrased in most places. Word count is within the acceptable range.",
-      "strengths": "The student successfully integrates information from all three source texts and addresses the assignment prompt requirements.",
-      "mistakes": [
-        "[exact quoted text]" — Highlight the mistake and explain why it is wrong, but do NOT provide the corrected version
-      ],
-      "suggestions": "Try to ensure ALL main ideas from each source are represented. Remember to use your own words throughout."
+      "justification": "Score 3.5 — Synthesizes all three sources. Quote: \\"[exact quote]\\" shows [rubric alignment]. Paraphrased in most places. Word count acceptable."
     },
     {
       "criterionName": "Coherence and Cohesion",
       "score": 3,
       "maxScore": 5,
-      "justification": "Score 3 — Satisfactory. [explanation with quoted evidence]",
-      "strengths": "[specific strengths]",
-      "mistakes": ["[exact quoted text]" — highlight the mistake and explain why it is wrong, but do NOT correct it],
-      "suggestions": "[1-2 improvement suggestions]"
-    },
-    {
-      "criterionName": "Lexical Resource",
-      "score": 3,
-      "maxScore": 5,
-      "justification": "Score 3 — Satisfactory. [explanation with quoted evidence]",
-      "strengths": "[specific strengths]",
-      "mistakes": ["[exact quoted text]" — highlight the mistake and explain why it is wrong, but do NOT correct it],
-      "suggestions": "[1-2 improvement suggestions]"
-    },
-    {
-      "criterionName": "Grammatical Range and Accuracy",
-      "score": 3.5,
-      "maxScore": 5,
-      "justification": "Score 3.5 — between Satisfactory and Good. [explanation with quoted evidence]",
-      "strengths": "[specific strengths]",
-      "mistakes": ["[exact quoted text]" — highlight the mistake and explain why it is wrong, but do NOT correct it],
-      "suggestions": "[1-2 improvement suggestions]"
+      "justification": "Score 3 — Satisfactory. [explanation with quote]"
     }
   ],
   "totalScore": 13,
   "maxScore": ${totalMaxScore},
   "percentage": 65,
-  "overallFeedback": "Your synthesis essay draws on [X of 3] source texts to address [key points from the assignment prompt]. Your strongest area is [criterion] where you [specific strength]. The area that needs the most improvement is [criterion] because [reason]. [Comment on paraphrasing/copied text percentage]. Focus on [one prioritized action] to improve your next essay."
+  "overallFeedback": "Draws on [X of 3] source texts. Strongest: [criterion]. Weakest: [criterion]. Copied text ~[X]%. Focus on: [action]."
 }`;
 }
 
@@ -1550,7 +1342,10 @@ export async function POST(request: NextRequest) {
     // Try generation with model fallback and increasing token limits on truncation
     let responseText = '';
     let parsedOk = false;
-    const tokenLimits = [16384, 32768];
+    // NOTE: Gemini free tier caps maxOutputTokens at 8192. Start there to avoid
+    // API errors on free-tier keys. If response is truncated, retry at 16384
+    // (which works on paid tiers and will be silently capped on free tier).
+    const tokenLimits = [8192, 16384];
 
     // Outer loop: try Pro first, fall back to Flash if unavailable
     modelTierLoop: for (let modelTierIndex = 0; modelTierIndex < MODEL_TIERS.length; modelTierIndex++) {
@@ -1899,6 +1694,8 @@ export async function POST(request: NextRequest) {
       userError = 'Gemini API quota exceeded. Please wait a few minutes and try again.';
     } else if (msg.includes('PERMISSION_DENIED') || msg.includes('forbidden')) {
       userError = 'Gemini API access denied. The API key may not have permission to use this model.';
+    } else if (msg.includes('timeout') || msg.includes('TIMEOUT') || msg.includes('Function exceeded time limits') || msg.includes('504') || msg.includes('ECONNRESET') || msg.includes('socket hang up')) {
+      userError = 'Assessment timed out. The AI took too long to respond. This can happen on the free plan for complex assignments. Please try again.';
     }
     return NextResponse.json(
       { error: userError, details: msg },
