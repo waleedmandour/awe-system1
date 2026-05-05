@@ -1522,20 +1522,16 @@ export async function POST(request: NextRequest) {
       ? 'You are an expert writing assessment AI for the Credit level course LANC2146 (Report Writing) at Sultan Qaboos University. For lab report Discussion and Conclusion tasks, students are at CEFR A2-B1 level. Your feedback must use simple, clear language appropriate for this proficiency level. CRITICAL: You MUST (1) evaluate the Discussion section for analysis and interpretation of data with details/examples/statistics, (2) evaluate the Conclusion for summary of results, reference to previous research, restatement of aim, and recommendations, (3) quote exact words from the student text as evidence, (4) explicitly justify why the score matches the rubric band, (5) list specific errors with quoted text, (6) check word count against the target range specified in the prompt, and (7) give actionable suggestions. You respond only with valid JSON. No markdown formatting or code blocks.'
       : 'You are an expert writing assessment AI for university courses at Sultan Qaboos University. Students are at CEFR A2-B1 level (Elementary to Pre-Intermediate). Your feedback must use simple, clear language appropriate for this proficiency level. Focus on fundamental skills and provide encouraging, constructive guidance. CRITICAL: For each criterion you MUST (1) quote exact words from the student essay as evidence, (2) explicitly justify why the score matches the rubric band, (3) list specific errors with quoted text, and (4) give actionable suggestions. You respond only with valid JSON. No markdown formatting or code blocks.';
 
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-2.5-flash',
-      systemInstruction,
-      generationConfig: {
-        responseMimeType: 'application/json',
-      },
-    });
+    // Model tiers: gemini-2.5-pro for best accuracy, gemini-2.5-flash as fallback
+    const MODEL_TIERS = ['gemini-2.5-pro', 'gemini-2.5-flash'];
 
-    // 3. Generate Content — gemini-2.5-flash is a "thinking" model by default.
+    // 3. Generate Content — gemini-2.5-pro is a "thinking" model by default.
     //    We MUST disable thinking because:
     //    (a) thinking tokens waste the maxOutputTokens budget, causing truncated JSON
     //    (b) thinking text can bleed into the response, breaking JSON parsing
     //    (c) we only need structured JSON output, not reasoning
     //    We also use responseMimeType: 'application/json' to force valid JSON.
+    //    If the primary model (Pro) is unavailable or rate-limited, we fall back to Flash.
     //
     //    SAFETY: Lower safety thresholds to prevent student essay content
     //    (e.g., essays about smoking, pollution, social issues) from being
@@ -1551,19 +1547,29 @@ export async function POST(request: NextRequest) {
     const RATE_LIMIT_RETRIES = 3;
     const RATE_LIMIT_DELAYS = [5000, 15000, 30000]; // 5s, 15s, 30s
 
-    // Try generation with increasing token limits on truncation
+    // Try generation with model fallback and increasing token limits on truncation
     let responseText = '';
     let parsedOk = false;
     const tokenLimits = [16384, 32768];
 
-    for (const maxTokens of tokenLimits) {
-      // Inner retry loop for rate-limit (429) errors
-      for (let rateLimitAttempt = 0; rateLimitAttempt < RATE_LIMIT_RETRIES; rateLimitAttempt++) {
-        try {
+    // Outer loop: try Pro first, fall back to Flash if unavailable
+    modelTierLoop: for (let modelTierIndex = 0; modelTierIndex < MODEL_TIERS.length; modelTierIndex++) {
+      const model = genAI.getGenerativeModel({
+        model: MODEL_TIERS[modelTierIndex],
+        systemInstruction,
+        generationConfig: {
+          responseMimeType: 'application/json',
+        },
+      });
+
+      for (const maxTokens of tokenLimits) {
+        // Inner retry loop for rate-limit (429) errors
+        for (let rateLimitAttempt = 0; rateLimitAttempt < RATE_LIMIT_RETRIES; rateLimitAttempt++) {
+          try {
           const result = await model.generateContent({
             contents: [{ role: 'user', parts: [{ text: prompt }] }],
             generationConfig: {
-              temperature: 0.2,
+              temperature: 0.1,
               maxOutputTokens: maxTokens,
               thinkingConfig: {
                 thinkingBudget: 0,  // Disable thinking — prevents thought tokens from consuming output budget or polluting JSON
@@ -1597,7 +1603,7 @@ export async function POST(request: NextRequest) {
           }
 
           // Extract text — manually filter out "thought" parts from thinking models
-          // gemini-2.5-flash may include thought parts in the response even with thinkingBudget: 0
+          // Gemini 2.5 models may include thought parts in the response even with thinkingBudget: 0
           // We only want the actual text (non-thought) parts for JSON parsing
           let rawText = '';
           if (candidate?.content?.parts) {
@@ -1679,24 +1685,35 @@ export async function POST(request: NextRequest) {
             continue; // retry inner loop
           }
 
-          // If rate-limited and out of retries, return a helpful error
+          // If rate-limited and out of retries
           if (isRateLimit) {
-            console.error('Rate limit exhausted after all retries.');
+            console.error(`Rate limit exhausted for ${MODEL_TIERS[modelTierIndex]} after all retries.`);
+            if (modelTierIndex < MODEL_TIERS.length - 1) {
+              console.warn(`Falling back to ${MODEL_TIERS[modelTierIndex + 1]}...`);
+              break modelTierLoop; // Skip to next model tier immediately
+            }
+            // All model tiers exhausted
             return NextResponse.json(
               { error: 'Gemini API rate limit reached. Your free tier has a limited number of requests per minute. Please wait 1-2 minutes and try again. Tip: Add a second Gemini API key in Settings (one for OCR, one for assessment) to double your quota.', details: errMsg },
               { status: 429 }
             );
           }
 
-          // Non-rate-limit error: if this is the last token limit attempt, throw
+          // Non-rate-limit error: if this is the last token limit attempt
           if (maxTokens === tokenLimits[tokenLimits.length - 1]) {
-            throw genError;
+            if (modelTierIndex < MODEL_TIERS.length - 1) {
+              console.warn(`Model ${MODEL_TIERS[modelTierIndex]} error, falling back to ${MODEL_TIERS[modelTierIndex + 1]}...`);
+              break modelTierLoop; // Skip to next model tier immediately
+            }
+            throw genError; // All model tiers exhausted
           }
           console.warn(`Generation error with ${maxTokens} tokens:`, errMsg);
           break; // break inner loop, try next token limit
         }
       }
 
+        if (parsedOk) break;
+      }
       if (parsedOk) break;
     }
 
