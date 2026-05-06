@@ -1550,9 +1550,22 @@ export async function POST(request: NextRequest) {
       s.score = Math.round(rawScore * 2) / 2;
       s.maxScore = Math.round(Number(s.maxScore) || 0);
 
-      // Strip markdown from Gemini-returned fields before building feedback
-      const clean = (str: string) => {
-        if (!str) return '';
+      // Strip markdown from Gemini-returned fields before building feedback.
+      // Coerces non-string values (arrays, objects) to strings first to prevent
+      // "e.replace is not a function" runtime errors when the model returns
+      // unexpected types for these fields.
+      const clean = (val: any): string => {
+        if (val == null) return '';
+        let str: string;
+        if (typeof val === 'string') {
+          str = val;
+        } else if (Array.isArray(val)) {
+          // Model returned an array of strings — join with bullet points
+          str = val.map((item: any) => (typeof item === 'string' ? item : JSON.stringify(item))).join(' • ');
+        } else {
+          // Object or other — stringify
+          str = JSON.stringify(val);
+        }
         return str
           .replace(/\*\*/g, '')           // Remove bold markers
           .replace(/\*(?!\*)/g, '')        // Remove italic markers
@@ -1645,13 +1658,24 @@ export async function POST(request: NextRequest) {
     assessment.percentage = assessment.maxScore > 0 ? Math.round((assessment.totalScore / assessment.maxScore) * 100) : 0;
 
     // Clean overallFeedback from any markdown residue
-    if (typeof assessment.overallFeedback === 'string') {
-      assessment.overallFeedback = assessment.overallFeedback
-        .replace(/\*\*/g, '')
-        .replace(/\*(?!\*)/g, '')
-        .replace(/^#+\s+/gm, '')
-        .replace(/^---+$/gm, '')
-        .trim();
+    if (assessment.overallFeedback != null) {
+      if (typeof assessment.overallFeedback === 'string') {
+        assessment.overallFeedback = assessment.overallFeedback
+          .replace(/\*\*/g, '')
+          .replace(/\*(?!\*)/g, '')
+          .replace(/^#+\s+/gm, '')
+          .replace(/^---+$/gm, '')
+          .trim();
+      } else if (Array.isArray(assessment.overallFeedback)) {
+        assessment.overallFeedback = assessment.overallFeedback
+          .map((item: any) => (typeof item === 'string' ? item : JSON.stringify(item)))
+          .join(' ');
+      } else {
+        assessment.overallFeedback = String(assessment.overallFeedback);
+      }
+      if (!assessment.overallFeedback) {
+        assessment.overallFeedback = 'No overall feedback provided.';
+      }
     }
 
     // Add word count info
