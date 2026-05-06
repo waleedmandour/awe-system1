@@ -24,7 +24,8 @@ const DEFAULT_FOUNDATION_WORD_COUNTS: Record<string, { min: number; max: number;
   '0340': { min: 110, max: 150, ideal: 120, label: 'FP0340 Foundation Exam' },
 };
 
-// Detailed assessment rubrics for Foundation courses (0230, 0340)
+// Condensed assessment rubrics for Foundation courses (0230, 0340)
+// Merged 7 bands -> 5 bands to reduce token consumption while preserving accuracy.
 const FOUNDATION_RUBRICS = {
   criteria:[
     {
@@ -32,13 +33,10 @@ const FOUNDATION_RUBRICS = {
       maxScore: 6,
       description: 'How well the essay addresses the task requirements, audience, purpose, and genre.',
       rubric: {
-        '0-1.5': 'Very Poor: Text fails to fulfill any task requirements and shows no understanding of audience, purpose or genre. Length of text may be inappropriate.',
-        '2-2.5': 'Weak: Response shows minimal awareness of the task, audience, purpose or genre. Very limited topic development. Length of text is likely inappropriate.',
-        '3': 'Unsatisfactory: Response does not adequately fulfill task requirements and shows little awareness of audience, purpose and genre. Little or no attempt at topic development. Length of text may be inappropriate.',
-        '3.5': 'Satisfactory: Response fulfills most task requirements and shows adequate awareness of audience, purpose and genre. Topic development is attempted but may be limited, predictable, and/or irrelevant in places. Length of text may be inappropriate.',
-        '4': 'Good: Response fulfills specific task requirements. Little more could reasonably be expected for the level. Response shows a good level of awareness of audience, purpose and genre. Topic is developed and explored well.',
-        '4.5': 'Very Good: Response fulfills all specific task requirements. Response shows a very good level of awareness of audience, purpose and genre. Topic is well developed and explored with some depth.',
-        '5-6': 'Excellent: Response fulfills all specific task requirements and exceeds expectations for this level. Response shows a high level of awareness of audience, purpose and genre. Topic is fully developed and explored.'
+        '0-2.5': 'Poor to Weak: Fails to fulfill task requirements. Minimal awareness of audience/purpose/genre. Very limited or no topic development. Length likely inappropriate.',
+        '3-3.5': 'Unsatisfactory to Satisfactory: Partially fulfills task requirements. Some awareness of audience/purpose/genre. Topic development attempted but limited, predictable, or irrelevant in places. Length may be inappropriate.',
+        '4-4.5': 'Good to Very Good: Fulfills all specific task requirements. Good to very good awareness of audience/purpose/genre. Topic is well developed with some depth. Little more could be expected.',
+        '5-6': 'Excellent: Fulfills all task requirements and exceeds expectations. High awareness of audience/purpose/genre. Topic is fully developed and thoroughly explored.'
       }
     },
     {
@@ -46,13 +44,10 @@ const FOUNDATION_RUBRICS = {
       maxScore: 6,
       description: 'Logical organization, paragraphing, and use of cohesive devices.',
       rubric: {
-        '0-1.5': 'Very Poor: Very little control of organizational features. The text is largely confused and incoherent, making it challenging for the reader to process.',
-        '2-2.5': 'Weak: Minimal organization. Ideas are disconnected and difficult to follow. No paragraphs or very poor paragraphing. Cohesive devices are absent or misused.',
-        '3': 'Unsatisfactory: Organization is limited, compromising coherence. Some re-reading may be necessary. Ideas lack progression and may be repeated. There may be no paragraphs. Some simple cohesive devices are used but usually inaccurately and repetitively.',
-        '3.5': 'Satisfactory: Organization provides an underlying coherence although progression may be inconsistent. Text may be stilted in places. Paragraphing is generally appropriate although ideas may not always be supported. Cohesive devices may be over or under used, or used mechanically in places. Text may be repetitive due to lack of referencing.',
-        '4': 'Good: Organization of information and ideas makes text clear and easy to understand. Each paragraph has a main topic supported by some relevant details. Cohesive devices are frequently used accurately both within and/or between sentences.',
-        '4.5': 'Very Good: Information and ideas are clearly and logically organized. Each paragraph has a clear main topic supported by relevant details. Cohesive devices are consistently used accurately within and between sentences.',
-        '5-6': 'Excellent: Information and ideas are organized so effectively that text has a fluent progression throughout. Opening and closing sections are appropriate and fully developed. Each paragraph has a clear main topic supported by well-organised, relevant details. Cohesive devices are consistently used accurately both within and/or between sentences.'
+        '0-2.5': 'Poor to Weak: Very little control of organization. Text is largely confused/incoherent. Ideas disconnected. No paragraphs or very poor paragraphing. Cohesive devices absent or misused.',
+        '3-3.5': 'Unsatisfactory to Satisfactory: Limited organization, coherence may be inconsistent. Ideas may lack progression or repeat. Paragraphing generally appropriate. Cohesive devices may be over/under used or mechanical.',
+        '4-4.5': 'Good to Very Good: Information and ideas clearly organized. Each paragraph has a main topic with relevant details. Cohesive devices used accurately within and between sentences.',
+        '5-6': 'Excellent: Information organized so effectively that text has fluent progression throughout. Opening/closing sections appropriate and fully developed. Cohesive devices used consistently and accurately.'
       }
     },
     {
@@ -60,13 +55,10 @@ const FOUNDATION_RUBRICS = {
       maxScore: 6,
       description: 'Range and accuracy of vocabulary, word choice, and spelling.',
       rubric: {
-        '0-1.5': 'Very Poor: Vocabulary is very limited and may be unrelated to the task or consists largely of inappropriate memorized chunks. Poor word choice and spelling prevent the communication of ideas.',
-        '2-2.5': 'Weak: Vocabulary is extremely limited and frequently inappropriate. Word choice and spelling errors are pervasive and severely impede communication. Only isolated words or phrases are comprehensible.',
-        '3': 'Unsatisfactory: Vocabulary is inadequate or inappropriate for the level and task and may be used repetitively. Errors in word choice and spelling frequently affect communication.',
-        '3.5': 'Satisfactory: Text has a limited but adequate range of vocabulary for the level and task. Core vocabulary is usually used accurately and appropriately. If there are attempts to extend beyond this range, there may be some inaccuracy or inappropriacy which affects communication in places.',
-        '4': 'Good: Text has a good range of vocabulary for the level and task. Core vocabulary is frequently used accurately and appropriately. If there are attempts to extend beyond this range, there may be some inaccuracy or inappropriacy, although communication is not affected.',
-        '4.5': 'Very Good: Text has a very good range of vocabulary for the level and task. Vocabulary is used accurately and appropriately with only rare minor errors. Communication is clear and effective.',
-        '5-6': 'Excellent: Text has a significantly wider range of vocabulary than is expected for the level and task. Core vocabulary is consistently used accurately and appropriately. There may be occasional errors in word choice and spelling where more complex/creative lexis is attempted but communication is not affected.'
+        '0-2.5': 'Poor to Weak: Vocabulary very limited and frequently inappropriate. Word choice and spelling errors pervasive, severely impede communication.',
+        '3-3.5': 'Unsatisfactory to Satisfactory: Limited but adequate vocabulary for the level. Core vocabulary usually accurate. Attempts to extend range may show some inaccuracy affecting communication in places.',
+        '4-4.5': 'Good to Very Good: Good to very good vocabulary range for the level. Core vocabulary frequently used accurately. Occasional inaccuracy does not affect communication.',
+        '5-6': 'Excellent: Significantly wider vocabulary range than expected. Core vocabulary consistently used accurately. Occasional errors only where more complex/creative lexis is attempted.'
       }
     },
     {
@@ -74,13 +66,10 @@ const FOUNDATION_RUBRICS = {
       maxScore: 6,
       description: 'Range and accuracy of grammatical structures and punctuation.',
       rubric: {
-        '0-1.5': 'Very Poor: Structures are inaccurate and errors predominate, preventing meaningful communication. Punctuation may be inadequate and/or inaccurate.',
-        '2-2.5': 'Weak: Very limited grammatical structures with frequent serious errors. Most sentences contain errors that impede understanding. Punctuation is largely absent or inaccurate.',
-        '3': 'Unsatisfactory: Structures are very limited and inadequate for the level and task. Errors are noticeable and may often affect communication. Punctuation may be inadequate and/or inaccurate.',
-        '3.5': 'Satisfactory: Text has a limited but adequate range of structures for the level and task. Core structures for the level are usually used accurately and appropriately although they may sometimes be used mechanically. Grammatical errors may affect communication in places. Punctuation is generally effective.',
-        '4': 'Good: Text has a good range of structures for the level and task. Core structures for the level are frequently used accurately and appropriately. If there are attempts to extend beyond this range, there may be some inaccuracy or inappropriacy, without affecting communication. Punctuation is well managed and effective.',
-        '4.5': 'Very Good: Text has a very good range of structures for the level. Most structures are used accurately and appropriately. Minor errors do not impede communication. Punctuation is well managed and effective.',
-        '5-6': 'Excellent: Text has a significantly wider range of structures than is expected for the level and task. Core structures are consistently used accurately and appropriately. There may be occasional errors where more complex structures are attempted but communication is not affected. Punctuation is well managed and effective.'
+        '0-2.5': 'Poor to Weak: Inaccurate structures, errors predominate, preventing meaningful communication. Punctuation inadequate/absent.',
+        '3-3.5': 'Unsatisfactory to Satisfactory: Limited but adequate range of structures for the level. Core structures usually accurate but may be mechanical. Grammatical errors may affect communication in places.',
+        '4-4.5': 'Good to Very Good: Good range of structures. Core structures frequently used accurately. Some inaccuracy without affecting communication. Punctuation well managed.',
+        '5-6': 'Excellent: Significantly wider range of structures than expected. Core structures consistently used accurately. Occasional errors only with complex structures. Punctuation well managed.'
       }
     }
   ],
@@ -274,51 +263,48 @@ const LANC2146_CRITERIA = [
   },
 ];
 
-// Detailed rubric band descriptors for LANC2146 Discussion & Conclusion (A2-B1 level)
+// Condensed rubric band descriptors for LANC2146 Discussion & Conclusion (A2-B1 level)
+// Merged 7 bands -> 5 bands to reduce token consumption while preserving accuracy.
 const LANC2146_RUBRICS = {
   criteria: [
     {
       name: 'Task Response',
       maxScore: 5,
       rubric: {
-        '1': 'Poor (1-1.5): The analysis and interpretation of the main trend lacks specific details, examples, and statistics. The conclusion is missing or irrelevant.',
-        '2': 'Unsatisfactory (2-2.5): The analysis and interpretation of the main trend is supported by few details, examples, and statistics. The conclusion is insufficient, may not refer to previous research, may not restate the aim, and provides irrelevant recommendations.',
-        '3': 'Satisfactory (3-3.5): The analysis and interpretation of one clear main trend is supported by relevant details and examples, including some statistics. The conclusion adequately summarizes the most obvious result, refers to previous research, restates the aim, and provides solutions/general recommendations, but there may be gaps in coverage.',
-        '4': 'Good (4-4.5): The analysis and interpretation of one clear main trend is supported by adequate details, examples, and relevant statistics. The conclusion adequately summarizes the most obvious result, refers to previous research, restates the aim, and provides solutions/general recommendations.',
-        '5': 'Excellent (5): The analysis and interpretation of one clear main trend is supported by carefully chosen details and examples, including comprehensive statistics. The conclusion provides an insightful and effective summary of the most obvious result, refers to previous research, restates the aim, and provides solutions/specific recommendations.',
+        '1-2': 'Poor to Unsatisfactory: Analysis/interpretation of main trend lacks specific details, examples, or statistics. Conclusion is missing, irrelevant, or insufficient. May not refer to previous research or restate aim.',
+        '3': 'Satisfactory: Analysis/interpretation of one main trend supported by relevant details and some statistics. Conclusion adequately summarizes obvious result, refers to previous research, restates aim, provides general recommendations, but may have gaps.',
+        '4': 'Good: Analysis/interpretation of main trend supported by adequate details, examples, and relevant statistics. Conclusion adequately summarizes result, refers to research, restates aim, provides general recommendations.',
+        '5': 'Excellent: Analysis/interpretation supported by carefully chosen details and comprehensive statistics. Conclusion provides insightful summary, refers to research, restates aim, provides specific recommendations.',
       }
     },
     {
       name: 'Coherence and Cohesion',
       maxScore: 5,
       rubric: {
-        '1': 'Poor (1-1.5): Lacks coherent development of ideas, with disjointed or illogical writing which is largely confused and incoherent. Cohesive devices are missing or used inaccurately. Paragraphs lack clear organization and unity, with ideas scattered or unrelated.',
-        '2': 'Unsatisfactory (2-2.5): Only basic understanding of information in the text through illogical and/or incoherent writing with limited development of ideas, and connections between concepts are unclear or inconsistent. Cohesive devices are used inaccurately and inappropriately. Paragraphs demonstrate some attempt at organization.',
-        '3': 'Satisfactory (3-3.5): Generally logical and coherent writing, but may not be completely successful, possibly due to some misunderstanding of the data. Cohesive devices used may be accurate but not appropriate or too simple, over or under used, creating many abrupt or weak transitions. Paragraphs demonstrate development of ideas, but the organization is not sustained.',
-        '4': 'Good (4-4.5): Sufficient depth of analysis and interpretation, but with some abrupt or weak transitions. Cohesive devices are usually used accurately and appropriately. Paragraphs exhibit clear organization and unity.',
-        '5': 'Excellent (5): Seamless flow of ideas with effective transitions that guide the reader through the in-depth analysis and interpretation. An extensive range of cohesive devices is used accurately and appropriately. Paragraphs are exceptionally well-organized and unified.',
+        '1-2': 'Poor to Unsatisfactory: Lacks coherent development. Ideas disjointed/illogical. Cohesive devices missing or inaccurate. Paragraphs lack clear organization.',
+        '3': 'Satisfactory: Generally logical but may not be fully coherent. Cohesive devices may be too simple, over/under used, creating weak transitions. Paragraph organization not sustained.',
+        '4': 'Good: Sufficient depth with some weak transitions. Cohesive devices usually used accurately. Paragraphs exhibit clear organization and unity.',
+        '5': 'Excellent: Seamless flow with effective transitions. Extensive range of cohesive devices used accurately. Paragraphs exceptionally well-organized.',
       }
     },
     {
       name: 'Grammatical Range and Accuracy',
       maxScore: 5,
       rubric: {
-        '1': 'Poor (1-1.5): Little control of grammar, with basic faulty sentence structures. Severe grammar errors that significantly impede understanding. Numerous instances of incorrect or missing punctuation throughout the text, hindering readability and comprehension.',
-        '2': 'Unsatisfactory (2-2.5): Limited control of grammar, with repetitive sentence structures. Noticeable grammar errors throughout the text, making comprehension difficult. Noticeable errors in punctuation, hindering readability and comprehension.',
-        '3': 'Satisfactory (3-3.5): Adequate control of grammar, with repetitive sentence structures. Occasional errors which impede understanding. Occasional instances of incorrect or missing punctuation, but overall punctuation usage is adequate for understanding.',
-        '4': 'Good (4-4.5): Proficient use of grammar, with a wide range of sentence structures with a few errors that do not impede understanding. The majority of sentences are error-free. Generally correct and appropriately-used punctuation, with only minor errors that do not significantly affect readability and comprehension.',
-        '5': 'Excellent (5): Exemplary command of grammar, with a variety of sentence structures with no errors, allowing for clear and precise communication of ideas. All sentences are error-free. Punctuation is error-free and effectively used to enhance readability and comprehension.',
+        '1-2': 'Poor to Unsatisfactory: Little to limited control of grammar. Repetitive sentence structures. Severe errors impede understanding. Punctuation errors prevalent.',
+        '3': 'Satisfactory: Adequate grammar control but repetitive structures. Occasional errors which may impede understanding. Punctuation generally adequate.',
+        '4': 'Good: Proficient grammar with a range of structures. Few errors that do not impede understanding. Most sentences error-free. Punctuation generally correct.',
+        '5': 'Excellent: Exemplary grammar with varied sentence structures. No errors. Punctuation error-free and enhances readability.',
       }
     },
     {
       name: 'Lexical Resource',
       maxScore: 5,
       rubric: {
-        '1': 'Poor (1-1.5): Basic vocabulary which may be repetitive or inappropriate for the task, hindering understanding. Limited control of word formation and/or spelling; numerous severe spelling and capitalization errors.',
-        '2': 'Unsatisfactory (2-2.5): Uses a limited range of vocabulary (vocabulary choices are often inappropriate or ineffective, detracting from the overall quality of the description), but this is minimally adequate for the task. May make frequent and noticeable errors in spelling and/or word formation throughout the text, making it difficult to understand.',
-        '3': 'Satisfactory (3-3.5): Uses an adequate range of vocabulary for the task (vocabulary choices are generally appropriate with some awareness of style and collocation, but there is some repetition or lack of variety). Makes some errors in spelling and/or word formation that may cause some difficulty for the reader.',
-        '4': 'Good (4-4.5): Uses a wide range of vocabulary with uncommon lexical items to allow some flexibility and precision, but there may be occasional inaccuracies in word choice and collocation. Produces rare errors in spelling and/or word formation and capitalization but they do not impede communication.',
-        '5': 'Excellent (5): Uses a wide range of vocabulary (rich, varied, and perfectly suited to the context) with very natural and sophisticated control of lexical features; rare minor errors occur only as slips. Produces no errors in spelling and/or word formation and capitalization.',
+        '1-2': 'Poor to Unsatisfactory: Basic, repetitive, or inappropriate vocabulary. Limited word formation control. Frequent spelling/capitalization errors.',
+        '3': 'Satisfactory: Adequate vocabulary range. Generally appropriate word choice with some repetition. Some spelling/word formation errors may cause difficulty.',
+        '4': 'Good: Wide vocabulary with uncommon items allowing flexibility and precision. Occasional inaccuracies in word choice/collocation. Rare spelling errors.',
+        '5': 'Excellent: Rich, varied vocabulary perfectly suited to context. Sophisticated lexical control. No spelling/word formation errors.',
       }
     },
   ],
@@ -1314,16 +1300,15 @@ export async function POST(request: NextRequest) {
       ? 'You are an expert writing assessment AI for the Credit level course LANC2146 (Report Writing) at Sultan Qaboos University. For lab report Discussion and Conclusion tasks, students are at CEFR A2-B1 level. Your feedback must use simple, clear language appropriate for this proficiency level. CRITICAL: You MUST (1) evaluate the Discussion section for analysis and interpretation of data with details/examples/statistics, (2) evaluate the Conclusion for summary of results, reference to previous research, restatement of aim, and recommendations, (3) quote exact words from the student text as evidence, (4) explicitly justify why the score matches the rubric band, (5) list specific errors with quoted text, (6) check word count against the target range specified in the prompt, and (7) give actionable suggestions. You respond only with valid JSON. No markdown formatting or code blocks.'
       : 'You are an expert writing assessment AI for university courses at Sultan Qaboos University. Students are at CEFR A2-B1 level (Elementary to Pre-Intermediate). Your feedback must use simple, clear language appropriate for this proficiency level. Focus on fundamental skills and provide encouraging, constructive guidance. CRITICAL: For each criterion you MUST (1) quote exact words from the student essay as evidence, (2) explicitly justify why the score matches the rubric band, (3) list specific errors with quoted text, and (4) give actionable suggestions. You respond only with valid JSON. No markdown formatting or code blocks.';
 
-    // Model tiers: gemini-2.0-flash is a non-thinking model — critical for Vercel free tier
-    // because the @google/generative-ai SDK (even v0.24+) does NOT support thinkingConfig,
-    // so thinking models (gemini-2.5-pro/flash) always use default thinking, adding 3-8s
-    // of invisible reasoning overhead that exceeds the 10-second free tier timeout.
-    const MODEL_TIERS = ['gemini-2.0-flash'];
+    // Model tiers: try gemini-2.0-flash first (fast, non-thinking), fall back to
+    // gemini-2.5-flash if unavailable. Both configured with responseMimeType for
+    // reliable JSON output and temperature 0.1 for consistent scoring.
+    const MODEL_TIERS = ['gemini-2.0-flash', 'gemini-2.5-flash'];
 
     // 3. Generate Content
-    //    Using gemini-2.0-flash (non-thinking) for speed and reliability.
+    //    Using gemini-2.0-flash (primary) with gemini-2.5-flash fallback.
     //    responseMimeType: 'application/json' forces valid JSON output.
-    //    No thinkingConfig needed — this is a non-thinking model.
+    //    temperature: 0.1 for consistent, deterministic scoring.
     //
     //    SAFETY: Lower safety thresholds to prevent student essay content
     //    (e.g., essays about smoking, pollution, social issues) from being
@@ -1347,13 +1332,16 @@ export async function POST(request: NextRequest) {
     // (which works on paid tiers and will be silently capped on free tier).
     const tokenLimits = [8192, 16384];
 
-    // Outer loop: try Pro first, fall back to Flash if unavailable
+    // Outer loop: try primary model first, fall back to next tier
     modelTierLoop: for (let modelTierIndex = 0; modelTierIndex < MODEL_TIERS.length; modelTierIndex++) {
       const model = genAI.getGenerativeModel({
         model: MODEL_TIERS[modelTierIndex],
         systemInstruction,
         generationConfig: {
           responseMimeType: 'application/json',
+          // For gemini-2.5-flash: disable thinking to avoid 3-8s reasoning overhead
+          // on Vercel free tier. gemini-2.0-flash ignores this (non-thinking model).
+          ...(MODEL_TIERS[modelTierIndex].startsWith('gemini-2.5') ? { thinkingConfig: { thinkingBudget: 0 } } : {}),
         },
       });
 

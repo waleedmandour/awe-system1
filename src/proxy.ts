@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
- * Edge Middleware for AWE System1
+ * Proxy for AWE System1
  *
  * Protects API routes (/api/ocr, /api/assess) by verifying the
  * authentication token cookie. Unauthenticated requests receive 401.
@@ -14,7 +14,7 @@ export const config = {
   matcher: ['/api/ocr/:path*', '/api/assess/:path*'],
 };
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const token = request.cookies.get('awe-auth-token')?.value;
   const email = request.cookies.get('awe-auth-email')?.value;
 
@@ -53,7 +53,7 @@ export async function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-// ─── Token Verification (Edge-compatible) ─────────────────────────────────────
+// ─── Token Verification ──────────────────────────────────────────────────
 
 async function verifyToken(token: string, expectedEmail: string, secret: string): Promise<boolean> {
   try {
@@ -68,7 +68,7 @@ async function verifyToken(token: string, expectedEmail: string, secret: string)
     // Ensure the email matches
     if (tokenEmail !== expectedEmail) return false;
 
-    // Verify the HMAC signature using Web Crypto API (Edge-compatible)
+    // Verify the HMAC signature using Web Crypto API
     const encoder = new TextEncoder();
     const keyData = encoder.encode(secret);
     const messageData = encoder.encode(tokenEmail);
