@@ -379,7 +379,7 @@ POINTS TO CONSIDER:
 SCORING INSTRUCTIONS:
 ============================================================
 
-STEP 1 — Score each criterion (1-5, 0.5 increments). If quality falls between bands, award a half-point.
+STEP 1 — Score each criterion INDEPENDENTLY using the FULL range (1-5, 0.5 increments). Do NOT default to middle scores (3-3.5). Award HIGH scores (4-5) for strong work matching the upper rubric bands, and LOW scores (1-2) for weak work matching the lower bands. Score based ONLY on how the text aligns with the rubric descriptors. If quality falls between bands, award a half-point.
 
 STEP 2 — For EACH criterion, write a Justification that:
   (a) Names the score band chosen
@@ -397,6 +397,7 @@ CRITICAL OUTPUT RULES:
 - Respond with ONLY raw JSON. No markdown, no code fences, no commentary.
 - Straight double quotes only. No trailing commas. No smart/curly quotes.
 - Use bullet points (•) in justification, strengths, suggestions, and overallFeedback.
+- SCORE INDEPENDENTLY: The example JSON below shows FORMAT ONLY — do NOT copy its example scores. Score each criterion based on the actual student text quality against the rubric bands.
 
 JSON FORMAT:
 ============================================================
@@ -475,7 +476,7 @@ ${rubrics.specialRules.map((r, i) => `${i + 1}. ${r}`).join('\n')}
 SCORING INSTRUCTIONS:
 ============================================================
 
-STEP 1 — Score each criterion (0-6, 0.5 increments). If quality falls between bands, award a half-point.
+STEP 1 — Score each criterion INDEPENDENTLY using the FULL range (0-6, 0.5 increments). Do NOT default to middle scores (3-3.5). Award HIGH scores (5-6) for strong work matching the upper rubric bands, and LOW scores (1-2) for weak work matching the lower bands. Score based ONLY on how the essay aligns with the rubric descriptors. If quality falls between bands, award a half-point.
 
 STEP 2 — For EACH criterion, write a Justification that:
   (a) Names the score band chosen
@@ -495,6 +496,7 @@ CRITICAL OUTPUT RULES:
 - Respond with ONLY raw JSON. No markdown, no code fences, no commentary.
 - Straight double quotes only. No trailing commas. No smart/curly quotes.
 - Use bullet points (•) in justification, strengths, suggestions, and overallFeedback.
+- SCORE INDEPENDENTLY: The example JSON below shows FORMAT ONLY — do NOT copy its example scores. Score each criterion based on the actual student text quality against the rubric bands.
 
 JSON FORMAT (exactly 4 score entries):
 ============================================================
@@ -543,7 +545,7 @@ ${criteria.map(c => `- ${c.name} (0-${c.maxScore}): ${c.description}`).join('\n'
 SCORING INSTRUCTIONS:
 ============================================================
 
-STEP 1 — Score each criterion (0-5, 0.5 increments). If quality falls between bands, award a half-point.
+STEP 1 — Score each criterion INDEPENDENTLY using the FULL range (0-5, 0.5 increments). Do NOT default to middle scores (3-3.5). Award HIGH scores (4-5) for strong work matching the upper rubric bands, and LOW scores (1-2) for weak work matching the lower bands. Score based ONLY on how the text aligns with the rubric descriptors. If quality falls between bands, award a half-point.
 
 STEP 2 — For EACH criterion, write a Justification that:
   (a) Names the score band chosen
@@ -561,6 +563,7 @@ CRITICAL OUTPUT RULES:
 - Respond with ONLY raw JSON. No markdown, no code fences, no commentary.
 - Straight double quotes only. No trailing commas. No smart/curly quotes.
 - Use bullet points (•) in justification, strengths, suggestions, and overallFeedback.
+- SCORE INDEPENDENTLY: The example JSON below shows FORMAT ONLY — do NOT copy its example scores. Score each criterion based on the actual student text quality against the rubric bands.
 
 JSON FORMAT:
 ============================================================
@@ -644,7 +647,7 @@ SUMMARY RULES:
 SCORING INSTRUCTIONS:
 ============================================================
 
-STEP 1 — Score each criterion (0-5, 0.5 increments). If quality falls between bands, award a half-point.
+STEP 1 — Score each criterion INDEPENDENTLY using the FULL range (0-5, 0.5 increments). Do NOT default to middle scores (3-3.5). Award HIGH scores (4-5) for strong work matching the upper rubric bands, and LOW scores (1-2) for weak work matching the lower bands. Score based ONLY on how the text aligns with the rubric descriptors. If quality falls between bands, award a half-point.
 
 STEP 2 — For EACH criterion, write a Justification that:
   (a) Names the score band chosen
@@ -663,6 +666,7 @@ CRITICAL OUTPUT RULES:
 - Respond with ONLY raw JSON. No markdown, no code fences, no commentary.
 - Straight double quotes only. No trailing commas. No smart/curly quotes.
 - Use bullet points (•) in justification, strengths, suggestions, and overallFeedback.
+- SCORE INDEPENDENTLY: The example JSON below shows FORMAT ONLY — do NOT copy its example scores. Score each criterion based on the actual student text quality against the rubric bands.
 
 JSON FORMAT:
 ============================================================
@@ -681,9 +685,9 @@ JSON FORMAT:
       "justification": "Score 3 — Satisfactory. [explanation with quote]"
     }
   ],
-  "totalScore": 13,
+  "totalScore": 17,
   "maxScore": ${totalMaxScore},
-  "percentage": 65,
+  "percentage": 85,
   "overallFeedback": "Captures main ideas about [X, Y] but misses [Z]. Strongest: [criterion]. Weakest: [criterion]. Paraphrasing is [quality]. Focus on: [action]."
 }`;
 }
@@ -760,7 +764,7 @@ POINTS TO CONSIDER:
 SCORING INSTRUCTIONS:
 ============================================================
 
-STEP 1 — Score each criterion (0-5, 0.5 increments). If quality falls between bands, award a half-point.
+STEP 1 — Score each criterion INDEPENDENTLY using the FULL range (0-5, 0.5 increments). Do NOT default to middle scores (3-3.5). Award HIGH scores (4-5) for strong work matching the upper rubric bands, and LOW scores (1-2) for weak work matching the lower bands. Score based ONLY on how the text aligns with the rubric descriptors. If quality falls between bands, award a half-point.
 
 STEP 2 — For EACH criterion, write a Justification that:
   (a) Names the score band chosen
@@ -778,6 +782,7 @@ CRITICAL OUTPUT RULES:
 - Respond with ONLY raw JSON. No markdown, no code fences, no commentary.
 - Straight double quotes only. No trailing commas. No smart/curly quotes.
 - Use bullet points (•) in justification, strengths, suggestions, and overallFeedback.
+- SCORE INDEPENDENTLY: The example JSON below shows FORMAT ONLY — do NOT copy its example scores. Score each criterion based on the actual student text quality against the rubric bands.
 
 JSON FORMAT:
 ============================================================
@@ -876,7 +881,7 @@ SYNTHESIS RULES:
 SCORING INSTRUCTIONS:
 ============================================================
 
-STEP 1 — Score each criterion (0-5, 0.5 increments). If quality falls between bands, award a half-point.
+STEP 1 — Score each criterion INDEPENDENTLY using the FULL range (0-5, 0.5 increments). Do NOT default to middle scores (3-3.5). Award HIGH scores (4-5) for strong work matching the upper rubric bands, and LOW scores (1-2) for weak work matching the lower bands. Score based ONLY on how the text aligns with the rubric descriptors. If quality falls between bands, award a half-point.
 
 STEP 2 — For EACH criterion, write a Justification that:
   (a) Names the score band chosen
@@ -895,6 +900,7 @@ CRITICAL OUTPUT RULES:
 - Respond with ONLY raw JSON. No markdown, no code fences, no commentary.
 - Straight double quotes only. No trailing commas. No smart/curly quotes.
 - Use bullet points (•) in justification, strengths, suggestions, and overallFeedback.
+- SCORE INDEPENDENTLY: The example JSON below shows FORMAT ONLY — do NOT copy its example scores. Score each criterion based on the actual student text quality against the rubric bands.
 
 JSON FORMAT:
 ============================================================
@@ -913,9 +919,9 @@ JSON FORMAT:
       "justification": "Score 3 — Satisfactory. [explanation with quote]"
     }
   ],
-  "totalScore": 13,
+  "totalScore": 10,
   "maxScore": ${totalMaxScore},
-  "percentage": 65,
+  "percentage": 50,
   "overallFeedback": "Draws on [X of 3] source texts. Strongest: [criterion]. Weakest: [criterion]. Copied text ~[X]%. Focus on: [action]."
 }`;
 }
