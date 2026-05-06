@@ -1314,16 +1314,16 @@ export async function POST(request: NextRequest) {
       ? 'You are an expert writing assessment AI for the Credit level course LANC2146 (Report Writing) at Sultan Qaboos University. For lab report Discussion and Conclusion tasks, students are at CEFR A2-B1 level. Your feedback must use simple, clear language appropriate for this proficiency level. CRITICAL: You MUST (1) evaluate the Discussion section for analysis and interpretation of data with details/examples/statistics, (2) evaluate the Conclusion for summary of results, reference to previous research, restatement of aim, and recommendations, (3) quote exact words from the student text as evidence, (4) explicitly justify why the score matches the rubric band, (5) list specific errors with quoted text, (6) check word count against the target range specified in the prompt, and (7) give actionable suggestions. You respond only with valid JSON. No markdown formatting or code blocks.'
       : 'You are an expert writing assessment AI for university courses at Sultan Qaboos University. Students are at CEFR A2-B1 level (Elementary to Pre-Intermediate). Your feedback must use simple, clear language appropriate for this proficiency level. Focus on fundamental skills and provide encouraging, constructive guidance. CRITICAL: For each criterion you MUST (1) quote exact words from the student essay as evidence, (2) explicitly justify why the score matches the rubric band, (3) list specific errors with quoted text, and (4) give actionable suggestions. You respond only with valid JSON. No markdown formatting or code blocks.';
 
-    // Model tiers: gemini-2.5-pro for best accuracy, gemini-2.5-flash as fallback
-    const MODEL_TIERS = ['gemini-2.5-pro', 'gemini-2.5-flash'];
+    // Model tiers: gemini-2.0-flash is a non-thinking model — critical for Vercel free tier
+    // because the @google/generative-ai SDK (even v0.24+) does NOT support thinkingConfig,
+    // so thinking models (gemini-2.5-pro/flash) always use default thinking, adding 3-8s
+    // of invisible reasoning overhead that exceeds the 10-second free tier timeout.
+    const MODEL_TIERS = ['gemini-2.0-flash'];
 
-    // 3. Generate Content — gemini-2.5-pro is a "thinking" model by default.
-    //    We MUST disable thinking because:
-    //    (a) thinking tokens waste the maxOutputTokens budget, causing truncated JSON
-    //    (b) thinking text can bleed into the response, breaking JSON parsing
-    //    (c) we only need structured JSON output, not reasoning
-    //    We also use responseMimeType: 'application/json' to force valid JSON.
-    //    If the primary model (Pro) is unavailable or rate-limited, we fall back to Flash.
+    // 3. Generate Content
+    //    Using gemini-2.0-flash (non-thinking) for speed and reliability.
+    //    responseMimeType: 'application/json' forces valid JSON output.
+    //    No thinkingConfig needed — this is a non-thinking model.
     //
     //    SAFETY: Lower safety thresholds to prevent student essay content
     //    (e.g., essays about smoking, pollution, social issues) from being
@@ -1366,10 +1366,8 @@ export async function POST(request: NextRequest) {
             generationConfig: {
               temperature: 0.1,
               maxOutputTokens: maxTokens,
-              thinkingConfig: {
-                thinkingBudget: 0,  // Disable thinking — prevents thought tokens from consuming output budget or polluting JSON
-              },
-            } as any,
+              responseMimeType: 'application/json',
+            },
             safetySettings,
           });
 
@@ -1397,9 +1395,7 @@ export async function POST(request: NextRequest) {
             );
           }
 
-          // Extract text — manually filter out "thought" parts from thinking models
-          // Gemini 2.5 models may include thought parts in the response even with thinkingBudget: 0
-          // We only want the actual text (non-thought) parts for JSON parsing
+          // Extract text — filter out any thought parts (safety for future model upgrades)
           let rawText = '';
           if (candidate?.content?.parts) {
             // Filter out thought parts and concatenate only text parts
