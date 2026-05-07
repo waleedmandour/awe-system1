@@ -379,18 +379,27 @@ POINTS TO CONSIDER:
 SCORING INSTRUCTIONS:
 ============================================================
 
-STEP 1 — Score each criterion INDEPENDENTLY using the FULL range (0-5, 0.5 increments). Do NOT default to middle scores (3-3.5). Award HIGH scores (4-5) for strong work matching the upper rubric bands, and LOW scores (0-1) for weak work matching the lower bands. Score based ONLY on how the text aligns with the rubric descriptors. If quality falls between bands, award a half-point.
+BEFORE SCORING — DIAGNOSE FIRST: For EACH criterion, actively scan the student's text for SPECIFIC errors, weaknesses, and strengths. Do NOT give a score until you have identified at least one concrete piece of evidence (a quoted phrase). This prevents generic scoring.
+
+STEP 1 — Score each criterion INDEPENDENTLY using the FULL range (0-5, 0.5 increments). Do NOT default to middle scores (3-3.5). Award HIGH scores (4-5) ONLY if the text genuinely matches the upper rubric bands. Award LOW scores (0-1) if the text clearly matches the lower rubric bands. Score based ONLY on how the text aligns with the rubric descriptors. If quality falls between bands, award a half-point.
 
 STEP 2 — For EACH criterion, write a Justification that:
   (a) Names the score band chosen
-  (b) Quotes at least ONE phrase from the student's text as evidence
+  (b) Quotes at least ONE exact phrase from the student's text as evidence
   (c) Explains why the text fits that band — connect evidence to the rubric
 
-STEP 3 — List up to 3 specific errors per criterion: "[exact quote]" — explain why wrong (no corrections).
+STEP 3 — List up to 3 specific errors per criterion in the "mistakes" array. Each mistake MUST have:
+  - "quote": the EXACT words from the student's text that contain the error
+  - "explanation": WHY it is wrong (grammar rule broken, wrong word choice, etc.) — do NOT provide corrections
+  If you genuinely cannot find any error for a criterion, you may set mistakes to [] — but this should be rare.
 
-STEP 4 — overallFeedback (3-4 sentences): strongest/weakest criterion, Discussion analysis quality, Conclusion adequacy, one prioritized action item.
+STEP 4 — For EACH criterion, write:
+  - "strengths": 1-2 specific things the student did well in this criterion (quote evidence)
+  - "suggestions": 1-2 specific, actionable improvements for this criterion
 
-STEP 5 — totalScore = sum of scores (max ${totalMaxScore}). percentage = round(totalScore / ${totalMaxScore} * 100).
+STEP 5 — overallFeedback (3-4 sentences): strongest/weakest criterion, Discussion analysis quality, Conclusion adequacy, one prioritized action item.
+
+STEP 6 — totalScore = sum of scores (max ${totalMaxScore}). percentage = round(totalScore / ${totalMaxScore} * 100).
 
 ============================================================
 CRITICAL OUTPUT RULES:
@@ -398,6 +407,7 @@ CRITICAL OUTPUT RULES:
 - Straight double quotes only. No trailing commas. No smart/curly quotes.
 - Use bullet points (•) in justification, strengths, suggestions, and overallFeedback.
 - SCORE INDEPENDENTLY: The example JSON below shows FORMAT ONLY — do NOT copy its example scores. Score each criterion based on the actual student text quality against the rubric bands.
+- MANDATORY: Every score entry MUST include justification, strengths, mistakes, and suggestions fields.
 
 JSON FORMAT:
 ============================================================
@@ -407,19 +417,30 @@ JSON FORMAT:
       "criterionName": "Task Response",
       "score": 4,
       "maxScore": 5,
-      "justification": "Score 4: Good. Discussion analyses main trend with details. Quote: \\"[exact quote]\\" shows [rubric alignment]. Conclusion restates aim."
+      "justification": "Score 4: Good. Discussion analyses main trend with details. Quote: \\"[exact phrase]\\" shows [rubric alignment]. Conclusion restates aim.",
+      "strengths": "[specific strengths with evidence]",
+      "mistakes": [
+        { "quote": "[exact error from text]", "explanation": "[why wrong, no correction]" },
+        { "quote": "[exact error from text]", "explanation": "[why wrong]" }
+      ],
+      "suggestions": "[specific actionable improvement]"
     },
     {
       "criterionName": "Coherence and Cohesion",
       "score": 3,
       "maxScore": 5,
-      "justification": "Score 3 — Satisfactory. [explanation with quote]"
+      "justification": "Score 3 — Satisfactory. [explanation with quote]",
+      "strengths": "[specific strengths]",
+      "mistakes": [
+        { "quote": "[exact error]", "explanation": "[why wrong]" }
+      ],
+      "suggestions": "[specific improvement]"
     }
   ],
   "totalScore": 16,
   "maxScore": ${totalMaxScore},
   "percentage": 80,
-  "overallFeedback": "Strongest: [criterion]. Weakest: [criterion]. Discussion: [evaluation]. Conclusion: [evaluation]. Focus on: [action]."
+  "overallFeedback": "Strongest: [criterion] because [reason]. Weakest: [criterion] because [reason]. Discussion: [evaluation]. Conclusion: [evaluation]. Focus on: [action]."
 }`;
 }
 
@@ -476,19 +497,28 @@ ${rubrics.specialRules.map((r, i) => `${i + 1}. ${r}`).join('\n')}
 SCORING INSTRUCTIONS:
 ============================================================
 
-STEP 1 — Score each criterion INDEPENDENTLY using the FULL range (0-6, 0.5 increments). Do NOT default to middle scores (3-3.5). Award HIGH scores (5-6) for strong work matching the upper rubric bands, and LOW scores (1-2) for weak work matching the lower bands. Score based ONLY on how the essay aligns with the rubric descriptors. If quality falls between bands, award a half-point.
+BEFORE SCORING — DIAGNOSE FIRST: For EACH criterion, actively scan the essay for SPECIFIC errors, weaknesses, and strengths. Do NOT give a score until you have identified at least one concrete piece of evidence (a quoted phrase). This prevents generic scoring.
+
+STEP 1 — Score each criterion INDEPENDENTLY using the FULL range (0-6, 0.5 increments). Do NOT default to middle scores (3-3.5). Award HIGH scores (5-6) ONLY if the essay genuinely matches the upper rubric bands. Award LOW scores (1-2) if the essay clearly matches the lower rubric bands. If quality falls between bands, award a half-point.
 
 STEP 2 — For EACH criterion, write a Justification that:
   (a) Names the score band chosen
-  (b) Quotes at least ONE phrase from the student's essay as evidence
+  (b) Quotes at least ONE exact phrase from the student's essay as evidence
   (c) Explains why the essay fits that band — connect evidence to the rubric
   (d) For Task Response: address topic adherence and essay structure. If the word count exceeds the target, mention it in the feedback but do NOT deduct marks.
 
-STEP 3 — List up to 3 specific errors per criterion: "[exact quote]" — explain why wrong (no corrections).
+STEP 3 — List up to 3 specific errors per criterion in the "mistakes" array. Each mistake MUST have:
+  - "quote": the EXACT words from the student's essay that contain the error
+  - "explanation": WHY it is wrong (grammar rule broken, wrong word choice, etc.) — do NOT provide corrections
+  If you genuinely cannot find any error for a criterion, you may set mistakes to [] — but this should be rare.
 
-STEP 4 — overallFeedback (3-4 sentences): strongest/weakest criterion, word count comment, one prioritized action item.
+STEP 4 — For EACH criterion, write:
+  - "strengths": 1-2 specific things the student did well in this criterion (quote evidence)
+  - "suggestions": 1-2 specific, actionable improvements for this criterion
 
-STEP 5 — totalScore = sum of scores (max ${totalMaxScore}). percentage = round(totalScore / ${totalMaxScore} * 100).
+STEP 5 — overallFeedback (3-4 sentences): strongest/weakest criterion, word count comment, one prioritized action item.
+
+STEP 6 — totalScore = sum of scores (max ${totalMaxScore}). percentage = round(totalScore / ${totalMaxScore} * 100).
 
 ============================================================
 CRITICAL OUTPUT RULES:
@@ -497,6 +527,7 @@ CRITICAL OUTPUT RULES:
 - Straight double quotes only. No trailing commas. No smart/curly quotes.
 - Use bullet points (•) in justification, strengths, suggestions, and overallFeedback.
 - SCORE INDEPENDENTLY: The example JSON below shows FORMAT ONLY — do NOT copy its example scores. Score each criterion based on the actual student text quality against the rubric bands.
+- MANDATORY: Every score entry MUST include justification, strengths, mistakes, and suggestions fields.
 
 JSON FORMAT (exactly 4 score entries):
 ============================================================
@@ -506,19 +537,30 @@ JSON FORMAT (exactly 4 score entries):
       "criterionName": "Task Response",
       "score": 4,
       "maxScore": 6,
-      "justification": "Score 4: Good. Addresses the task. Quote: \\"[exact quote]\\" shows [rubric alignment]."
+      "justification": "Score 4: Good. Addresses the task well. Quote: \\"[exact phrase from essay]\\" shows [rubric alignment].",
+      "strengths": "Clearly addresses the topic. Quote: \\"[exact phrase]\\" demonstrates [specific strength].",
+      "mistakes": [
+        { "quote": "[exact error from essay]", "explanation": "[why wrong, no correction]" },
+        { "quote": "[exact error from essay]", "explanation": "[why wrong]" }
+      ],
+      "suggestions": "Try to [specific actionable improvement] for a higher score."
     },
     {
       "criterionName": "Coherence and Cohesion",
       "score": 3.5,
       "maxScore": 6,
-      "justification": "Score 3.5: [justification with quote]"
+      "justification": "Score 3.5 — Satisfactory to Good. [explanation with quote]",
+      "strengths": "[specific strengths with evidence]",
+      "mistakes": [
+        { "quote": "[exact error]", "explanation": "[why wrong]" }
+      ],
+      "suggestions": "[specific improvement]"
     }
   ],
   "totalScore": 14,
   "maxScore": ${totalMaxScore},
   "percentage": 58,
-  "overallFeedback": "Strongest: [criterion]. Weakest: [criterion]. [Word count comment]. Focus on: [action]."
+  "overallFeedback": "Strongest: [criterion] because [reason]. Weakest: [criterion] because [reason]. [Word count comment]. Focus on: [action]."
 }`;
 }
 
@@ -545,18 +587,27 @@ ${criteria.map(c => `- ${c.name} (0-${c.maxScore}): ${c.description}`).join('\n'
 SCORING INSTRUCTIONS:
 ============================================================
 
-STEP 1 — Score each criterion INDEPENDENTLY using the FULL range (0-5, 0.5 increments). Do NOT default to middle scores (3-3.5). Award HIGH scores (4-5) for strong work matching the upper rubric bands, and LOW scores (1-2) for weak work matching the lower bands. Score based ONLY on how the text aligns with the rubric descriptors. If quality falls between bands, award a half-point.
+BEFORE SCORING — DIAGNOSE FIRST: For EACH criterion, actively scan the essay for SPECIFIC errors, weaknesses, and strengths. Do NOT give a score until you have identified at least one concrete piece of evidence (a quoted phrase). This prevents generic scoring.
+
+STEP 1 — Score each criterion INDEPENDENTLY using the FULL range (0-5, 0.5 increments). Do NOT default to middle scores (3-3.5). Award HIGH scores (4-5) ONLY if the essay genuinely matches the upper rubric bands. Award LOW scores (1-2) if the essay clearly matches the lower rubric bands. Score based ONLY on how the text aligns with the rubric descriptors. If quality falls between bands, award a half-point.
 
 STEP 2 — For EACH criterion, write a Justification that:
   (a) Names the score band chosen
-  (b) Quotes at least ONE phrase from the student's essay as evidence
+  (b) Quotes at least ONE exact phrase from the student's essay as evidence
   (c) Explains why the essay fits that band — connect evidence to the rubric
 
-STEP 3 — List up to 3 specific errors per criterion: "[exact quote]" — explain why wrong (no corrections).
+STEP 3 — List up to 3 specific errors per criterion in the "mistakes" array. Each mistake MUST have:
+  - "quote": the EXACT words from the student's essay that contain the error
+  - "explanation": WHY it is wrong (grammar rule broken, wrong word choice, etc.) — do NOT provide corrections
+  If you genuinely cannot find any error for a criterion, you may set mistakes to [] — but this should be rare.
 
-STEP 4 — overallFeedback (3-4 sentences): strongest/weakest criterion, one prioritized action item.
+STEP 4 — For EACH criterion, write:
+  - "strengths": 1-2 specific things the student did well in this criterion (quote evidence)
+  - "suggestions": 1-2 specific, actionable improvements for this criterion
 
-STEP 5 — totalScore = sum of scores (max ${totalMaxScore}). percentage = round(totalScore / ${totalMaxScore} * 100).
+STEP 5 — overallFeedback (3-4 sentences): strongest/weakest criterion, one prioritized action item.
+
+STEP 6 — totalScore = sum of scores (max ${totalMaxScore}). percentage = round(totalScore / ${totalMaxScore} * 100).
 
 ============================================================
 CRITICAL OUTPUT RULES:
@@ -564,6 +615,7 @@ CRITICAL OUTPUT RULES:
 - Straight double quotes only. No trailing commas. No smart/curly quotes.
 - Use bullet points (•) in justification, strengths, suggestions, and overallFeedback.
 - SCORE INDEPENDENTLY: The example JSON below shows FORMAT ONLY — do NOT copy its example scores. Score each criterion based on the actual student text quality against the rubric bands.
+- MANDATORY: Every score entry MUST include justification, strengths, mistakes, and suggestions fields.
 
 JSON FORMAT:
 ============================================================
@@ -573,20 +625,31 @@ JSON FORMAT:
       "criterionName": "Task Achievement",
       "score": 4,
       "maxScore": 5,
-      "justification": "Score 4: Good. Achieves the task. Quote: \\"[exact quote]\\" shows [criterion alignment]."
+      "justification": "Score 4: Good. Achieves the task well. Quote: \\"[exact phrase from essay]\\" shows [criterion alignment].",
+      "strengths": "[specific strengths with evidence]",
+      "mistakes": [
+        { "quote": "[exact error from essay]", "explanation": "[why wrong, no correction]" }
+      ],
+      "suggestions": "[specific actionable improvement]"
     },
     {
       "criterionName": "Coherence & Cohesion",
       "score": 3,
       "maxScore": 5,
-      "justification": "Score 3 — Satisfactory. [explanation with quote]"
+      "justification": "Score 3 — Satisfactory. [explanation with quote]",
+      "strengths": "[specific strengths]",
+      "mistakes": [
+        { "quote": "[exact error]", "explanation": "[why wrong]" }
+      ],
+      "suggestions": "[specific improvement]"
     }
   ],
   "totalScore": 16,
   "maxScore": ${totalMaxScore},
   "percentage": 80,
-  "overallFeedback": "Strongest: [criterion]. Weakest: [criterion]. Focus on: [action]."
-}`;
+  "overallFeedback": "Strongest: [criterion] because [reason]. Weakest: [criterion] because [reason]. Focus on: [action]."
+}
+`;
 }
 
 // Build prompt for Summary Writing (LANC2160)
@@ -647,19 +710,28 @@ SUMMARY RULES:
 SCORING INSTRUCTIONS:
 ============================================================
 
-STEP 1 — Score each criterion INDEPENDENTLY using the FULL range (0-5, 0.5 increments). Do NOT default to middle scores (3-3.5). Award HIGH scores (4-5) for strong work matching the upper rubric bands, and LOW scores (1-2) for weak work matching the lower bands. Score based ONLY on how the text aligns with the rubric descriptors. If quality falls between bands, award a half-point.
+BEFORE SCORING — DIAGNOSE FIRST: For EACH criterion, actively scan the summary for SPECIFIC errors, weaknesses, and strengths. Do NOT give a score until you have identified at least one concrete piece of evidence (a quoted phrase). This prevents generic scoring.
+
+STEP 1 — Score each criterion INDEPENDENTLY using the FULL range (0-5, 0.5 increments). Do NOT default to middle scores (3-3.5). Award HIGH scores (4-5) ONLY if the summary genuinely matches the upper rubric bands. Award LOW scores (1-2) if the summary clearly matches the lower rubric bands. Score based ONLY on how the text aligns with the rubric descriptors. If quality falls between bands, award a half-point.
 
 STEP 2 — For EACH criterion, write a Justification that:
   (a) Names the score band chosen
-  (b) Quotes at least ONE phrase from the student's summary as evidence
+  (b) Quotes at least ONE exact phrase from the student's summary as evidence
   (c) Explains why the text fits that band — connect evidence to the rubric
   (d) For Task Achievement: address which main ideas were captured, paraphrasing quality, and whether irrelevant details were included
 
-STEP 3 — List up to 3 specific errors per criterion: "[exact quote]" — explain why wrong (no corrections).
+STEP 3 — List up to 3 specific errors per criterion in the "mistakes" array. Each mistake MUST have:
+  - "quote": the EXACT words from the student's summary that contain the error
+  - "explanation": WHY it is wrong (grammar rule broken, wrong word choice, etc.) — do NOT provide corrections
+  If you genuinely cannot find any error for a criterion, you may set mistakes to [] — but this should be rare.
 
-STEP 4 — overallFeedback (3-4 sentences): which main ideas were captured/missed, strongest/weakest criterion, paraphrasing quality, one prioritized action item.
+STEP 4 — For EACH criterion, write:
+  - "strengths": 1-2 specific things the student did well in this criterion (quote evidence)
+  - "suggestions": 1-2 specific, actionable improvements for this criterion
 
-STEP 5 — totalScore = sum of scores (max ${totalMaxScore}). percentage = round(totalScore / ${totalMaxScore} * 100).
+STEP 5 — overallFeedback (3-4 sentences): which main ideas were captured/missed, strongest/weakest criterion, paraphrasing quality, one prioritized action item.
+
+STEP 6 — totalScore = sum of scores (max ${totalMaxScore}). percentage = round(totalScore / ${totalMaxScore} * 100).
 
 ============================================================
 CRITICAL OUTPUT RULES:
@@ -667,6 +739,7 @@ CRITICAL OUTPUT RULES:
 - Straight double quotes only. No trailing commas. No smart/curly quotes.
 - Use bullet points (•) in justification, strengths, suggestions, and overallFeedback.
 - SCORE INDEPENDENTLY: The example JSON below shows FORMAT ONLY — do NOT copy its example scores. Score each criterion based on the actual student text quality against the rubric bands.
+- MANDATORY: Every score entry MUST include justification, strengths, mistakes, and suggestions fields.
 
 JSON FORMAT:
 ============================================================
@@ -676,20 +749,31 @@ JSON FORMAT:
       "criterionName": "Task Achievement",
       "score": 3.5,
       "maxScore": 5,
-      "justification": "Score 3.5 — Good achievement. Captures most main ideas. Quote: \\"[exact quote]\\" shows [rubric alignment]. Paraphrased well in most places."
+      "justification": "Score 3.5 — Good achievement. Captures most main ideas. Quote: \\"[exact phrase from summary]\\" shows [rubric alignment]. Paraphrased well in most places.",
+      "strengths": "[specific strengths with evidence]",
+      "mistakes": [
+        { "quote": "[exact error from summary]", "explanation": "[why wrong, no correction]" }
+      ],
+      "suggestions": "[specific actionable improvement]"
     },
     {
       "criterionName": "Coherence & Cohesion",
       "score": 3,
       "maxScore": 5,
-      "justification": "Score 3 — Satisfactory. [explanation with quote]"
+      "justification": "Score 3 — Satisfactory. [explanation with quote]",
+      "strengths": "[specific strengths]",
+      "mistakes": [
+        { "quote": "[exact error]", "explanation": "[why wrong]" }
+      ],
+      "suggestions": "[specific improvement]"
     }
   ],
   "totalScore": 17,
   "maxScore": ${totalMaxScore},
   "percentage": 85,
-  "overallFeedback": "Captures main ideas about [X, Y] but misses [Z]. Strongest: [criterion]. Weakest: [criterion]. Paraphrasing is [quality]. Focus on: [action]."
-}`;
+  "overallFeedback": "Captures main ideas about [X, Y] but misses [Z]. Strongest: [criterion] because [reason]. Weakest: [criterion] because [reason]. Paraphrasing is [quality]. Focus on: [action]."
+}
+`;
 }
 
 // Synthesis assignments data (defined here to avoid import issues with @/lib/store in server-side route)
@@ -764,18 +848,27 @@ POINTS TO CONSIDER:
 SCORING INSTRUCTIONS:
 ============================================================
 
-STEP 1 — Score each criterion INDEPENDENTLY using the FULL range (0-5, 0.5 increments). Do NOT default to middle scores (3-3.5). Award HIGH scores (4-5) for strong work matching the upper rubric bands, and LOW scores (1-2) for weak work matching the lower bands. Score based ONLY on how the text aligns with the rubric descriptors. If quality falls between bands, award a half-point.
+BEFORE SCORING — DIAGNOSE FIRST: For EACH criterion, actively scan the essay for SPECIFIC errors, weaknesses, and strengths. Do NOT give a score until you have identified at least one concrete piece of evidence (a quoted phrase). This prevents generic scoring.
+
+STEP 1 — Score each criterion INDEPENDENTLY using the FULL range (0-5, 0.5 increments). Do NOT default to middle scores (3-3.5). Award HIGH scores (4-5) ONLY if the essay genuinely matches the upper rubric bands. Award LOW scores (1-2) if the essay clearly matches the lower rubric bands. Score based ONLY on how the text aligns with the rubric descriptors. If quality falls between bands, award a half-point.
 
 STEP 2 — For EACH criterion, write a Justification that:
   (a) Names the score band chosen
-  (b) Quotes at least ONE phrase from the student's essay as evidence
+  (b) Quotes at least ONE exact phrase from the student's essay as evidence
   (c) Explains why the essay fits that band — connect evidence to the rubric
 
-STEP 3 — List up to 3 specific errors per criterion: "[exact quote]" — explain why wrong (no corrections).
+STEP 3 — List up to 3 specific errors per criterion in the "mistakes" array. Each mistake MUST have:
+  - "quote": the EXACT words from the student's essay that contain the error
+  - "explanation": WHY it is wrong (grammar rule broken, wrong word choice, etc.) — do NOT provide corrections
+  If you genuinely cannot find any error for a criterion, you may set mistakes to [] — but this should be rare.
 
-STEP 4 — overallFeedback (3-4 sentences): strongest/weakest criterion, how well discussion points were addressed, paraphrasing quality, one prioritized action item.
+STEP 4 — For EACH criterion, write:
+  - "strengths": 1-2 specific things the student did well in this criterion (quote evidence)
+  - "suggestions": 1-2 specific, actionable improvements for this criterion
 
-STEP 5 — totalScore = sum of scores (max ${totalMaxScore}). percentage = round(totalScore / ${totalMaxScore} * 100).
+STEP 5 — overallFeedback (3-4 sentences): strongest/weakest criterion, how well discussion points were addressed, paraphrasing quality, one prioritized action item.
+
+STEP 6 — totalScore = sum of scores (max ${totalMaxScore}). percentage = round(totalScore / ${totalMaxScore} * 100).
 
 ============================================================
 CRITICAL OUTPUT RULES:
@@ -783,6 +876,7 @@ CRITICAL OUTPUT RULES:
 - Straight double quotes only. No trailing commas. No smart/curly quotes.
 - Use bullet points (•) in justification, strengths, suggestions, and overallFeedback.
 - SCORE INDEPENDENTLY: The example JSON below shows FORMAT ONLY — do NOT copy its example scores. Score each criterion based on the actual student text quality against the rubric bands.
+- MANDATORY: Every score entry MUST include justification, strengths, mistakes, and suggestions fields.
 
 JSON FORMAT:
 ============================================================
@@ -792,20 +886,31 @@ JSON FORMAT:
       "criterionName": "Task Achievement",
       "score": 4,
       "maxScore": 5,
-      "justification": "Score 4: Good. Addresses the task. Quote: \\"[exact quote]\\" shows [rubric alignment]."
+      "justification": "Score 4: Good. Addresses the task well. Quote: \\"[exact phrase from essay]\\" shows [rubric alignment].",
+      "strengths": "[specific strengths with evidence]",
+      "mistakes": [
+        { "quote": "[exact error from essay]", "explanation": "[why wrong, no correction]" }
+      ],
+      "suggestions": "[specific actionable improvement]"
     },
     {
       "criterionName": "Coherence and Cohesion",
       "score": 3,
       "maxScore": 5,
-      "justification": "Score 3 — Satisfactory. [explanation with quote]"
+      "justification": "Score 3 — Satisfactory. [explanation with quote]",
+      "strengths": "[specific strengths]",
+      "mistakes": [
+        { "quote": "[exact error]", "explanation": "[why wrong]" }
+      ],
+      "suggestions": "[specific improvement]"
     }
   ],
   "totalScore": 16,
   "maxScore": ${totalMaxScore},
   "percentage": 80,
-  "overallFeedback": "Strongest: [criterion] where [strength]. Weakest: [criterion] because [reason]. Focus on: [action]."
-}`;
+  "overallFeedback": "Strongest: [criterion] because [reason]. Weakest: [criterion] because [reason]. Discussion points: [evaluation]. Focus on: [action]."
+}
+`;
 }
 
 // Build prompt for Synthesis Essay (LANC2160)
@@ -881,19 +986,28 @@ SYNTHESIS RULES:
 SCORING INSTRUCTIONS:
 ============================================================
 
-STEP 1 — Score each criterion INDEPENDENTLY using the FULL range (0-5, 0.5 increments). Do NOT default to middle scores (3-3.5). Award HIGH scores (4-5) for strong work matching the upper rubric bands, and LOW scores (1-2) for weak work matching the lower bands. Score based ONLY on how the text aligns with the rubric descriptors. If quality falls between bands, award a half-point.
+BEFORE SCORING — DIAGNOSE FIRST: For EACH criterion, actively scan the synthesis essay for SPECIFIC errors, weaknesses, and strengths. Do NOT give a score until you have identified at least one concrete piece of evidence (a quoted phrase). This prevents generic scoring.
+
+STEP 1 — Score each criterion INDEPENDENTLY using the FULL range (0-5, 0.5 increments). Do NOT default to middle scores (3-3.5). Award HIGH scores (4-5) ONLY if the essay genuinely matches the upper rubric bands. Award LOW scores (1-2) if the essay clearly matches the lower rubric bands. Score based ONLY on how the text aligns with the rubric descriptors. If quality falls between bands, award a half-point.
 
 STEP 2 — For EACH criterion, write a Justification that:
   (a) Names the score band chosen
-  (b) Quotes at least ONE phrase from the student's essay as evidence
+  (b) Quotes at least ONE exact phrase from the student's essay as evidence
   (c) Explains why the essay fits that band — connect evidence to the rubric
   (d) For Task Achievement: address whether ALL THREE sources were synthesized, assignment prompt addressed, and own words used. If word count exceeds target, mention in feedback but do NOT deduct marks.
 
-STEP 3 — List up to 3 specific errors per criterion: "[exact quote]" — explain why wrong (no corrections).
+STEP 3 — List up to 3 specific errors per criterion in the "mistakes" array. Each mistake MUST have:
+  - "quote": the EXACT words from the student's essay that contain the error
+  - "explanation": WHY it is wrong (grammar rule broken, wrong word choice, etc.) — do NOT provide corrections
+  If you genuinely cannot find any error for a criterion, you may set mistakes to [] — but this should be rare.
 
-STEP 4 — overallFeedback (3-4 sentences): which sources were used (all 3?), strongest/weakest criterion, paraphrasing/copied text percentage, one prioritized action item.
+STEP 4 — For EACH criterion, write:
+  - "strengths": 1-2 specific things the student did well in this criterion (quote evidence)
+  - "suggestions": 1-2 specific, actionable improvements for this criterion
 
-STEP 5 — totalScore = sum of scores (max ${totalMaxScore}). percentage = round(totalScore / ${totalMaxScore} * 100).
+STEP 5 — overallFeedback (3-4 sentences): which sources were used (all 3?), strongest/weakest criterion, paraphrasing/copied text percentage, one prioritized action item.
+
+STEP 6 — totalScore = sum of scores (max ${totalMaxScore}). percentage = round(totalScore / ${totalMaxScore} * 100).
 
 ============================================================
 CRITICAL OUTPUT RULES:
@@ -901,6 +1015,7 @@ CRITICAL OUTPUT RULES:
 - Straight double quotes only. No trailing commas. No smart/curly quotes.
 - Use bullet points (•) in justification, strengths, suggestions, and overallFeedback.
 - SCORE INDEPENDENTLY: The example JSON below shows FORMAT ONLY — do NOT copy its example scores. Score each criterion based on the actual student text quality against the rubric bands.
+- MANDATORY: Every score entry MUST include justification, strengths, mistakes, and suggestions fields.
 
 JSON FORMAT:
 ============================================================
@@ -910,20 +1025,32 @@ JSON FORMAT:
       "criterionName": "Task Achievement",
       "score": 3.5,
       "maxScore": 5,
-      "justification": "Score 3.5 — Synthesizes all three sources. Quote: \\"[exact quote]\\" shows [rubric alignment]. Paraphrased in most places. Word count acceptable."
+      "justification": "Score 3.5 — Synthesizes all three sources. Quote: \\"[exact phrase from essay]\\" shows [rubric alignment]. Paraphrased in most places. Word count acceptable.",
+      "strengths": "[specific strengths with evidence]",
+      "mistakes": [
+        { "quote": "[exact error from essay]", "explanation": "[why wrong, no correction]" },
+        { "quote": "[exact copied phrase]", "explanation": "Copied directly from source — should be paraphrased" }
+      ],
+      "suggestions": "[specific actionable improvement]"
     },
     {
       "criterionName": "Coherence and Cohesion",
       "score": 3,
       "maxScore": 5,
-      "justification": "Score 3 — Satisfactory. [explanation with quote]"
+      "justification": "Score 3 — Satisfactory. [explanation with quote]",
+      "strengths": "[specific strengths]",
+      "mistakes": [
+        { "quote": "[exact error]", "explanation": "[why wrong]" }
+      ],
+      "suggestions": "[specific improvement]"
     }
   ],
   "totalScore": 10,
   "maxScore": ${totalMaxScore},
   "percentage": 50,
-  "overallFeedback": "Draws on [X of 3] source texts. Strongest: [criterion]. Weakest: [criterion]. Copied text ~[X]%. Focus on: [action]."
-}`;
+  "overallFeedback": "Draws on [X of 3] source texts. Strongest: [criterion] because [reason]. Weakest: [criterion] because [reason]. Copied text ~[X]%. Focus on: [action]."
+}
+`;
 }
 
 /**
@@ -1312,6 +1439,8 @@ export async function POST(request: NextRequest) {
       ? 'You are an expert writing assessment AI for the Credit level course LANC1070 (Academic English) at Sultan Qaboos University. For synthesis essay tasks based on a single source text, students are at CEFR A2-B1 level. Your feedback must use simple, clear language appropriate for this proficiency level. CRITICAL: You MUST (1) compare the student essay against the provided source text, (2) check that the student addresses the required discussion points, (3) quote exact words from the student essay as evidence, (4) explicitly justify why the score matches the rubric band, (5) list specific errors with quoted text, (6) assess paraphrasing quality and estimate copying percentage, (7) check word count against the target range, and (8) give actionable suggestions. You respond only with valid JSON. No markdown formatting or code blocks.'
       : isLanc2146
       ? 'You are an expert writing assessment AI for the Credit level course LANC2146 (Report Writing) at Sultan Qaboos University. For lab report Discussion and Conclusion tasks, students are at CEFR A2-B1 level. Your feedback must use simple, clear language appropriate for this proficiency level. CRITICAL: You MUST (1) evaluate the Discussion section for analysis and interpretation of data with details/examples/statistics, (2) evaluate the Conclusion for summary of results, reference to previous research, restatement of aim, and recommendations, (3) quote exact words from the student text as evidence, (4) explicitly justify why the score matches the rubric band, (5) list specific errors with quoted text, (6) check word count against the target range specified in the prompt, and (7) give actionable suggestions. You respond only with valid JSON. No markdown formatting or code blocks.'
+      : isFoundation
+      ? 'You are an expert writing assessment AI for Foundation level courses (FP0230, FP0340) at Sultan Qaboos University. Foundation students are at CEFR A1-A2 level (Beginner to Elementary). Your feedback must use very simple, clear language appropriate for this proficiency level. CRITICAL: You MUST (1) actively scan for specific grammar, vocabulary, cohesion, and task-related errors in the essay, (2) quote exact words from the student essay as evidence for EVERY score and feedback point, (3) explicitly justify why the score matches the rubric band descriptor, (4) list specific errors with quoted text in the mistakes array for each criterion, (5) identify genuine strengths with evidence, and (6) give actionable suggestions. Use the FULL score range (0-6) — do NOT default to middle scores. You respond only with valid JSON. No markdown formatting or code blocks.'
       : 'You are an expert writing assessment AI for university courses at Sultan Qaboos University. Students are at CEFR A2-B1 level (Elementary to Pre-Intermediate). Your feedback must use simple, clear language appropriate for this proficiency level. Focus on fundamental skills and provide encouraging, constructive guidance. CRITICAL: For each criterion you MUST (1) quote exact words from the student essay as evidence, (2) explicitly justify why the score matches the rubric band, (3) list specific errors with quoted text, and (4) give actionable suggestions. You respond only with valid JSON. No markdown formatting or code blocks.';
 
     // Model tiers: try gemini-2.0-flash first (fast, non-thinking), fall back to
