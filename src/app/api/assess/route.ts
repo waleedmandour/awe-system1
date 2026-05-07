@@ -263,7 +263,7 @@ const LANC2146_RUBRICS = {
 // arithmetic. Those are computed purely in TypeScript after the response.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const ASSESSMENT_SCHEMA = {
+const ASSESSMENT_SCHEMA: Schema = {
   type: SchemaType.OBJECT,
   properties: {
     scores: {
@@ -289,12 +289,12 @@ const ASSESSMENT_SCHEMA = {
           },
           suggestions: { type: SchemaType.STRING },
         },
-        required: ['criterionName', 'score', 'maxScore', 'justification', 'strengths', 'mistakes', 'suggestions'],
+        required:['criterionName', 'score', 'maxScore', 'justification', 'strengths', 'mistakes', 'suggestions'],
       },
     },
     overallFeedback: { type: SchemaType.STRING },
   },
-  required: ['scores', 'overallFeedback'],
+  required:['scores', 'overallFeedback'],
 };
 
 // ─── Prompt Builders (Lean — no JSON formatting instructions) ────────────────
