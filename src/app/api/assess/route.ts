@@ -167,7 +167,7 @@ const SYNTHESIS_CRITERIA = [
   {
     name: 'Task Achievement',
     maxScore: 5,
-    description: 'How effectively the synthesis essay fulfils the task requirements, synthesizes information from all source texts, and stays within the word count.',
+    description: 'How effectively the synthesis essay fulfils the task requirements, synthesizes information from all source texts, and addresses the assignment prompt.'
   },
   {
     name: 'Coherence and Cohesion',
@@ -332,9 +332,9 @@ function buildLanc2146Prompt(
     : wordCount < targetWordCount.min
     ? `NOTE: Word count (${wordCount}) is slightly below the required range of ${targetWordCount.min}-${targetWordCount.max} words (within 20-word tolerance). Minor flexibility is acceptable — do NOT penalize.`
     : wordCount > toleranceAbove
-    ? `NOTE: Word count (${wordCount}) SIGNIFICANTLY exceeds the target range of ${targetWordCount.min}-${targetWordCount.max} words (more than 20 words above maximum). This should lower the Task Response score.`
+    ? `NOTE: Word count (${wordCount}) significantly exceeds the target range of ${targetWordCount.min}-${targetWordCount.max} words (more than 20 words above maximum). Do NOT deduct marks for exceeding the word limit. However, you MUST mention this in your feedback.`
     : wordCount > targetWordCount.max
-    ? `Word count (${wordCount}) is slightly above the target range of ${targetWordCount.min}-${targetWordCount.max} words (within 20-word tolerance). Minor flexibility is acceptable — do NOT penalize.`
+    ? `Word count (${wordCount}) is slightly above the target range of ${targetWordCount.min}-${targetWordCount.max} words (within 20-word tolerance). Do NOT deduct marks — just note it in the feedback if relevant.`
     : `Word count (${wordCount}) is within the acceptable range of ${targetWordCount.min}-${targetWordCount.max} words.`;
 
   const criteriaDetails = rubrics.criteria.map(c => {
@@ -437,9 +437,9 @@ function buildFoundationPrompt(text: string, topic: string | null, wordCount: nu
     : wordCount < targetWordCount.min
     ? `NOTE: Word count (${wordCount}) is slightly below the required range of ${targetWordCount.min}-${targetWordCount.max} words (within 10-word tolerance). Minor flexibility is acceptable — do NOT penalize.`
     : wordCount > toleranceAbove
-    ? `NOTE: Word count (${wordCount}) SIGNIFICANTLY exceeds the target range of ${targetWordCount.min}-${targetWordCount.max} words (more than 10 words above maximum). This should lower the Task Response score.`
+    ? `NOTE: Word count (${wordCount}) significantly exceeds the target range of ${targetWordCount.min}-${targetWordCount.max} words (more than 10 words above maximum). Do NOT deduct marks for exceeding the word limit. However, you MUST mention this in your feedback.`
     : wordCount > targetWordCount.max
-    ? `Word count (${wordCount}) is slightly above the target range of ${targetWordCount.min}-${targetWordCount.max} words (within 10-word tolerance). Minor flexibility is acceptable — do NOT penalize.`
+    ? `Word count (${wordCount}) is slightly above the target range of ${targetWordCount.min}-${targetWordCount.max} words (within 10-word tolerance). Do NOT deduct marks — just note it in the feedback if relevant.`
     : `Word count (${wordCount}) is within the acceptable range of ${targetWordCount.min}-${targetWordCount.max} words.`;
 
   const examLabel = targetWordCount.label || 'Foundation Exam';
@@ -482,7 +482,7 @@ STEP 2 — For EACH criterion, write a Justification that:
   (a) Names the score band chosen
   (b) Quotes at least ONE phrase from the student's essay as evidence
   (c) Explains why the essay fits that band — connect evidence to the rubric
-  (d) For Task Response: address topic adherence, word count, essay structure
+  (d) For Task Response: address topic adherence and essay structure. If the word count exceeds the target, mention it in the feedback but do NOT deduct marks.
 
 STEP 3 — List up to 3 specific errors per criterion: "[exact quote]" — explain why wrong (no corrections).
 
@@ -605,7 +605,7 @@ function buildSummaryPrompt(
     : wordCount < targetWordCount.min
     ? `WARNING: Word count (${wordCount}) is BELOW the recommended range of ${targetWordCount.min}-${targetWordCount.max} words. The summary should be approximately one-third of the original text length. This should lower the Task Achievement score.`
     : wordCount > targetWordCount.max
-    ? `NOTE: Word count (${wordCount}) exceeds the recommended range of ${targetWordCount.min}-${targetWordCount.max} words. A summary should be concise and approximately one-third of the original text length. Minor flexibility is acceptable, but excessive length may indicate the student included unnecessary details rather than summarizing.`
+    ? `NOTE: Word count (${wordCount}) exceeds the recommended range of ${targetWordCount.min}-${targetWordCount.max} words. Do NOT deduct marks for exceeding the word limit. However, you MUST mention this in the feedback and note that the summary should be concise and approximately one-third of the original text length.`
     : `Word count (${wordCount}) is within the acceptable range of ${targetWordCount.min}-${targetWordCount.max} words.`;
 
   const criteriaDetails = rubrics.criteria.map(c => {
@@ -717,9 +717,9 @@ function buildLanc1070Prompt(
     : wordCount < targetWordCount.min
     ? `NOTE: Word count (${wordCount}) is below the required range of ${targetWordCount.min}-${targetWordCount.max} words. Up to 10% below is acceptable for the Satisfactory band.`
     : wordCount > tenPercentAbove
-    ? `WARNING: Word count (${wordCount}) is MORE THAN 10% ABOVE the required maximum of ${targetWordCount.max} words. This MUST lower the Task Achievement score per the rubric.`
+    ? `NOTE: Word count (${wordCount}) is MORE THAN 10% ABOVE the required maximum of ${targetWordCount.max} words. Do NOT deduct marks for exceeding the word limit. However, you MUST mention this in your feedback.`
     : wordCount > targetWordCount.max
-    ? `NOTE: Word count (${wordCount}) exceeds the recommended range of ${targetWordCount.min}-${targetWordCount.max} words. Up to 10% above is acceptable for the Satisfactory band.`
+    ? `NOTE: Word count (${wordCount}) exceeds the recommended range of ${targetWordCount.min}-${targetWordCount.max} words. Do NOT deduct marks — just note it in the feedback if relevant.`
     : `Word count (${wordCount}) is within the acceptable range of ${targetWordCount.min}-${targetWordCount.max} words.`;
 
   const criteriaDetails = rubrics.criteria.map(c => {
@@ -755,7 +755,7 @@ ASSESSMENT RUBRICS (LANC1070 — Synthesis Essay, single source):
 ${criteriaDetails}
 
 POINTS TO CONSIDER:
-- TA: Does the essay address the required discussion points? Is source text synthesized? Word count within target?
+- TA: Does the essay address the required discussion points? Is source text synthesized? Note: do NOT deduct marks if word count exceeds the target — mention it in feedback only.
 - C&C: Logical organization, cohesive devices, paragraphing
 - LR: Vocabulary range/accuracy, paraphrasing quality, spelling
 - GRA: Grammatical range/accuracy, sentence variety, punctuation
@@ -828,9 +828,9 @@ function buildSynthesisPrompt(
     : wordCount < targetWordCount.min
     ? `NOTE: Word count (${wordCount}) is below the required range of ${targetWordCount.min}-${targetWordCount.max} words. Up to 10% below is acceptable for the Satisfactory band.`
     : wordCount > tenPercentAbove
-    ? `WARNING: Word count (${wordCount}) is MORE THAN 10% ABOVE the required maximum of ${targetWordCount.max} words. This MUST lower the Task Achievement score per the rubric.`
+    ? `NOTE: Word count (${wordCount}) is MORE THAN 10% ABOVE the required maximum of ${targetWordCount.max} words. Do NOT deduct marks for exceeding the word limit. However, you MUST mention this in your feedback.`
     : wordCount > targetWordCount.max
-    ? `NOTE: Word count (${wordCount}) exceeds the recommended range of ${targetWordCount.min}-${targetWordCount.max} words. Up to 10% above is acceptable for the Satisfactory band.`
+    ? `NOTE: Word count (${wordCount}) exceeds the recommended range of ${targetWordCount.min}-${targetWordCount.max} words. Do NOT deduct marks — just note it in the feedback if relevant.`
     : `Word count (${wordCount}) is within the acceptable range of ${targetWordCount.min}-${targetWordCount.max} words.`;
 
   const criteriaDetails = rubrics.criteria.map(c => {
@@ -875,7 +875,7 @@ SYNTHESIS RULES:
 2. Student MUST use OWN WORDS (paraphrasing). Copied phrases/sentences lower TA and LR scores. Estimate copying percentage.
 3. Structure: exactly 4 paragraphs (intro, body 1, body 2, conclusion). Note deviations in C&C assessment.
 4. No personal opinions, arguments, or new information. Off-topic = TA 0. Large-scale copying = low TA and LR regardless of accuracy.
-5. Word count: 10%+ deviation from target range MUST lower TA per rubric bands.
+5. Word count: do NOT deduct marks if the word count exceeds the target — mention it in the feedback only. If 10%+ BELOW the target range, this MUST lower TA per rubric bands.
 
 ============================================================
 SCORING INSTRUCTIONS:
@@ -887,7 +887,7 @@ STEP 2 — For EACH criterion, write a Justification that:
   (a) Names the score band chosen
   (b) Quotes at least ONE phrase from the student's essay as evidence
   (c) Explains why the essay fits that band — connect evidence to the rubric
-  (d) For Task Achievement: address whether ALL THREE sources were synthesized, assignment prompt addressed, word count respected, and own words used
+  (d) For Task Achievement: address whether ALL THREE sources were synthesized, assignment prompt addressed, and own words used. If word count exceeds target, mention in feedback but do NOT deduct marks.
 
 STEP 3 — List up to 3 specific errors per criterion: "[exact quote]" — explain why wrong (no corrections).
 
