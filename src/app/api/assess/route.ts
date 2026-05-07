@@ -297,6 +297,31 @@ const ASSESSMENT_SCHEMA: Schema = {
   required:['scores', 'overallFeedback'],
 };
 
+const CREDIT_HUMANIZATION = `
+BAND CALIBRATION FOR CEFR A2-B1 (what each band looks like at this level):
+- 4.5-5/5 (Excellent): Exceptional for A2-B1. Approaches B1+ level. Very rare.
+- 4/5 (Good): Strong for A2-B1. Clear communication with minor expected errors.
+- 3-3.5/5 (Satisfactory): Average for A2-B1. Meaning usually clear despite grammar/vocabulary errors. Most credit students score here.
+- 2-2.5/5 (Unsatisfactory): Below expectations even for A2-B1. Frequent errors impede understanding.
+- 0-1.5/5 (Poor): Incomprehensible, completely off-task, or large-scale copying. Reserve for genuine failures.
+
+ERROR CLASSIFICATION (apply per criterion — this is critical):
+1. Expected A2/B1 errors (missing articles a/an/the, wrong prepositions in/on/at, subject-verb agreement for 3rd person singular, awkward paraphrasing from sources, limited sentence variety, minor spelling) → Do NOT lower the score. These are normal developmental errors at this level.
+2. Non-impeding errors (meaning still clear; repetitive vocabulary, minor punctuation, occasional awkward phrasing) → Only minor score impact if frequent.
+3. Impeding errors (reader cannot understand; wrong text type; large-scale copying without paraphrasing; task fundamentally not met) → Significant score impact.
+Rate each criterion based primarily on COMMUNICATION SUCCESS and IMPEDING errors, not total error count.
+
+SPECIAL RULES:
+1. Reward successful communication of ideas. Do not be overly harsh on A2/B1 grammatical/spelling errors if the overall meaning is clear.
+2. For error listings: classify each error as expected, non-impeding, or impeding. Do NOT provide corrections.
+
+SCORING FLOW (follow in this order):
+Step 1 — Identify what the student communicated successfully (strengths first).
+Step 2 — Determine the overall CEFR demonstrated level.
+Step 3 — Score each criterion 0-5 (0.5 increments) relative to A2-B1 expectations, not B2+ standards.
+Step 4 — Only deduct for errors that genuinely impede meaning or show a gap below A2 level.
+`;
+
 // ─── Prompt Builders (Lean — no JSON formatting instructions) ────────────────
 // Structured Outputs (responseSchema) guarantees valid JSON.
 // We only need rubrics + scoring quality instructions.
@@ -353,6 +378,7 @@ ${studentText}
 ASSESSMENT RUBRICS:
 ${buildCriteriaText(rubrics)}
 
+${CREDIT_HUMANIZATION}
 SCORING INSTRUCTIONS:
 1. Score each criterion 0-5 (0.5 increments). Use the FULL range — do NOT default to middle scores.
 2. For each criterion: quote at least ONE exact phrase from the student text as evidence in your justification.
@@ -445,6 +471,7 @@ WORD COUNT: ${wordCount} words
 ASSESSMENT CRITERIA (Credit Course - LANC2160):
 ${criteria.map(c => `- ${c.name} (0-${c.maxScore}): ${c.description}`).join('\n')}
 
+${CREDIT_HUMANIZATION}
 SCORING INSTRUCTIONS:
 1. Score each criterion 0-5 (0.5 increments). Use the FULL range — do NOT default to middle scores.
 2. For each criterion: quote at least ONE exact phrase from the essay as evidence in your justification.
@@ -496,6 +523,7 @@ SUMMARY RULES:
 2. Student must use OWN WORDS (paraphrasing). Copied phrases lower TA and LR scores.
 3. Off-topic summary = Task Achievement 0. Large-scale copying = low TA and LR.
 
+${CREDIT_HUMANIZATION}
 SCORING INSTRUCTIONS:
 1. Score each criterion 0-5 (0.5 increments). Use the FULL range — do NOT default to middle scores.
 2. For each criterion: quote at least ONE exact phrase from the summary as evidence.
@@ -549,6 +577,7 @@ ${studentText}
 SYNTHESIS RUBRICS:
 ${buildCriteriaText(rubrics)}
 
+${CREDIT_HUMANIZATION}
 SCORING INSTRUCTIONS:
 1. Score each criterion 0-5 (0.5 increments). Use the FULL range — do NOT default to middle scores.
 2. For each criterion: quote at least ONE exact phrase from the essay as evidence.
@@ -610,6 +639,7 @@ SYNTHESIS RULES:
 4. No personal opinions or new information. Off-topic = TA 0.
 5. Do NOT deduct marks if word count exceeds target. If 10%+ BELOW, lower TA per rubric.
 
+${CREDIT_HUMANIZATION}
 SCORING INSTRUCTIONS:
 1. Score each criterion 0-5 (0.5 increments). Use the FULL range — do NOT default to middle scores.
 2. For each criterion: quote at least ONE exact phrase from the essay as evidence.
