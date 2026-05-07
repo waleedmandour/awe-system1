@@ -605,7 +605,7 @@ SCORING INSTRUCTIONS:
 
 // ─── Shared helpers ──────────────────────────────────────────────────────────
 
-const MODEL_TIERS = ['gemini-2.5-pro', 'gemini-2.5-flash'];
+const MODEL_TIERS = ['gemini-2.0-flash', 'gemini-2.5-flash'];
 
 const safetySettings = [
   { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH },
@@ -810,19 +810,22 @@ export async function POST(request: NextRequest) {
         generationConfig: {
           responseMimeType: 'application/json',
           responseSchema: ASSESSMENT_SCHEMA,
+          // Disable thinking for gemini-2.5-flash to skip 3-8s reasoning overhead
+          ...(modelName.startsWith('gemini-2.5') ? { thinkingConfig: { thinkingBudget: 0 } } : {}),
         },
       });
 
       for (let rateLimitAttempt = 0; rateLimitAttempt < RATE_LIMIT_RETRIES; rateLimitAttempt++) {
         try {
           const result = await model.generateContent({
-            contents:[{ role: 'user', parts: [{ text: prompt }] }],
+            contents: [{ role: 'user', parts: [{ text: prompt }] }],
             generationConfig: {
               temperature: 0.1,
               maxOutputTokens: 8192,
               responseMimeType: 'application/json',
               responseSchema: ASSESSMENT_SCHEMA,
-            },
+              ...(modelName.startsWith('gemini-2.5') ? { thinkingConfig: { thinkingBudget: 0 } } : {}),
+            } as any,
             safetySettings,
           });
 
@@ -895,107 +898,6 @@ export async function POST(request: NextRequest) {
     if (!parsedOk || !assessment?.scores) {
       return NextResponse.json(
         { error: 'Failed to get a valid assessment from the AI. Please try again.', details: 'All model tiers failed to return a valid response.' },
-        { status: 500 }
-      );
-    }
-
-    // ── Process and normalize scores (deterministic TypeScript math) ──────────
-
-    // Ensure all criteria are assessed (pad missing ones with zeros)
-    const assessedNames = assessment.scores.map((s: any) => s.criterionName);
-    const missingCriteria = criteria.filter(c => !assessedNames.includes(c.name));
-    if (missingCriteria.length > 0) {
-      missingCriteria.forEach(c => {
-        assessment.scores.push({
-          criterionName: c.name,
-          score: 0,
-          maxScore: c.maxScore,
-          justification: 'Unable to assess this criterion from the provided text.',
-          strengths: 'No specific strengths identified.',
-          mistakes:[],
-          suggestions: 'Unable to provide suggestions.',
-        });
-      });
-    }
-
-    // Normalize each score
-    assessment.scores.forEach((s: any) => {
-      // Clamp score to[0, maxScore] rounded to nearest 0.5
-      const rawScore = Number(s.score) || 0;
-      const maxScore = Math.round(Number(s.maxScore) || 0);
-      s.score = Math.max(0, Math.min(Math.round(rawScore * 2) / 2, maxScore));
-      s.maxScore = maxScore;
-
-      // Clean text fields (strip markdown, handle arrays/objects)
-      s.justification = clean(s.justification);
-      s.strengths = clean(s.strengths);
-      s.suggestions = clean(s.suggestions);
-
-      // Ensure strengths and suggestions are never empty
-      if (!s.strengths) s.strengths = 'No specific strengths identified for this criterion.';
-      if (!s.suggestions) s.suggestions = 'No specific suggestions for this criterion.';
-
-      // Clean mistakes array
-      if (!Array.isArray(s.mistakes) || s.mistakes.length === 0) {
-        s.mistakes =[{ quote: '', explanation: 'No specific mistakes identified for this criterion.' }];
-      } else {
-        s.mistakes = s.mistakes.map((m: any) => {
-          if (typeof m === 'string') {
-            const cleaned = m.replace(/^[\-\*]\s+/, '').trim().replace(/\s*[—\-]\s*/, ': ').trim();
-            return { quote: cleaned, explanation: '' };
-          }
-          return {
-            quote: clean(typeof m.quote === 'string' ? m.quote : (m.text || '')),
-            explanation: clean(typeof m.explanation === 'string' ? m.explanation : (m.reason || '')),
-          };
-        }).filter((m: any) => m.quote || m.explanation);
-      }
-
-      // Build feedback string locally from clean fields
-      s.feedback = buildFeedback(s);
-    });
-
-    // ── Deterministic math: compute totals in TypeScript ────────────────────
-    const totalScore = Math.round(
-      assessment.scores.reduce((sum: number, s: any) => sum + s.score, 0) * 2
-    ) / 2;
-    const maxScore = assessment.scores.reduce((sum: number, s: any) => sum + s.maxScore, 0);
-    const percentage = maxScore > 0 ? Math.round((totalScore / maxScore) * 100) : 0;
-
-    // Clean overallFeedback
-    let overallFeedback = clean(assessment.overallFeedback);
-    if (!overallFeedback) overallFeedback = 'No overall feedback provided.';
-
-    return NextResponse.json({
-      success: true,
-      assessment: {
-        scores: assessment.scores,
-        totalScore,
-        maxScore,
-        percentage,
-        overallFeedback,
-        wordCount,
-        targetWordCount: (isFoundation || isSummaryWriting || isSynthesisWriting || isLanc1070 || isLanc2146) ? activeTargetWordCount : null,
-        createdAt: new Date().toISOString(),
-      }
-    });
-  } catch (error) {
-    console.error('Assessment error:', error);
-    const msg = error instanceof Error ? error.message : 'Unknown error';
-    let userError = 'Failed to assess essay';
-    if (msg.includes('API key not valid') || msg.includes('API_KEY_INVALID') || msg.includes('invalid API key')) {
-      userError = 'Gemini API key is invalid. Please check the GEMINI_API_KEY environment variable on the server.';
-    } else if (msg.includes('model not found') || msg.includes('does not exist') || msg.includes('MODEL_NOT_FOUND')) {
-      userError = 'The AI model is currently unavailable. Please try again later.';
-    } else if (msg.includes('quota') || msg.includes('RESOURCE_EXHAUSTED')) {
-      userError = 'Gemini API quota exceeded. Please wait a few minutes and try again.';
-    } else if (msg.includes('PERMISSION_DENIED') || msg.includes('forbidden')) {
-      userError = 'Gemini API access denied. The API key may not have permission to use this model.';
-    } else if (msg.includes('timeout') || msg.includes('TIMEOUT') || msg.includes('Function exceeded time limits') || msg.includes('504') || msg.includes('ECONNRESET') || msg.includes('socket hang up')) {
-      userError = 'Assessment timed out. The AI took too long to respond. Please try again.';
-    }
-    return NextResponse.json(
-        { error: 'Failed to get a valid assessment from the AI. Please try again.', details: 'No valid response received from any model tier.' },
         { status: 500 }
       );
     }
