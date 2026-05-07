@@ -331,6 +331,42 @@ Before technology and the Internet revolutionized marketing practices, tradition
 However, nowadays, the introduction of digital marketing has revolutionized the marketing industry, offering innovative ways for companies to connect with customers. Search Engine Marketing involves increasing search traffic through paid placements on result pages or emphasizing search engine optimization (SEO) techniques for organic visibility. E-mail Marketing relies on distributing messages or newsletters to customer email addresses, offering coupons, discounts, or advance sale notices. Social Media Marketing focuses on building an online presence on platforms through paid advertisements or organic growth strategies like posting content and interacting with followers. Content Marketing involves creating free content such as eBooks, infographics, or videos to share information about products, gather customer data, and foster long-term engagement with the company.`,
     },
   },
+  {
+    id: 'lanc1070-p4-college-jobs',
+    title: 'How Colleges Can Prepare Students for Future Jobs',
+    description: 'Write an essay about 2 ways colleges can follow to prepare students for future jobs. Write a 4-paragraph synthesis essay based on the source text. You must cite the source in-text using APA format.',
+    cefrLevel: 'A2-B1',
+    expectedParagraphs: 4,
+    practiceType: 'final',
+    targetWordCount: { min: 300, max: 350, ideal: 325 },
+    sourceText: {
+      id: 'lanc1070-p4-source',
+      title: 'How colleges are preparing students for jobs that don\u2019t exist yet',
+      content: `Eighty-five percent of the jobs that today\u2019s students will do in 2030 don\u2019t exist yet, the Institute for the Future has predicted.
+That might seem like a high number to reach in only 12 years. But think about the now-mainstream careers that did not exist just a handful of years ago: drone operator, social media manager, app developer and cloud computing engineer, among others.
+Even if that 85 percent is ultimately smaller, the number begs an important question about how the workforce is preparing for the future, starting in the classroom. What role should colleges and universities play in preparing students for a workplace that is constantly changing?
+Educational institutions are trying to answer that question, largely by adapting their programs to better suit an ever-shifting work landscape. Here are some of the approaches they\u2019re taking.
+Stop thinking about higher education as a four-year, linear journey
+Those who study the intersection of education and the future of work say the four-year learning model needs to be rethought in a big way. They say education can no longer be seen as something that stops when a person graduates from college.
+Jonathan Blake Huer, an education professional who consults with colleges to address the needs of the changing workforce, said he imagines a world where college is not four consecutive years at all.
+\u201cI would prefer if the education system is more fluid so [students] can go in and out of it,\u201d he said.
+\u201cIf students could take a year or two of school, get a job, and then return to school a few years later\u201d, Huer said, \u201cthe education system would offer true life-long learning and better adapt to changing technology\u201d.
+\u201cWhat we need to start doing is\u2026to create an ecosystem where people are constantly being educated.\u201d In the meantime, online programs are filling in the gaps. Universities are offering more online courses. Private companies like LinkedIn Learning, which absorbed Lynda.com, are also teaching people new skills through online videos via online subscription services.
+\u201cWe can\u2019t possibly prepare people for all of the jobs that are ahead,\u201d Brandon Busteed, the president of Kaplan University Partners, which supports U.S. colleges and universities adapt to the changing world. \u201cWhat we need to start doing is creating the scaffolding to create an ecosystem where people are constantly being educated and retooled to stay relevant in their jobs.\u201d
+The good news, Busteed said, is that our education systems have been forced to adapt to major disruptions in the past, and it\u2019s likely they will figure out how to do so again. Some universities are already trying to make the shift.
+Find ways to fill the skill gap
+Internships, which many colleges already offer, appear to be the new kind of training program, though Busteed said universities could do more to integrate them part of a student\u2019s graduation requirements.
+At the University of Utah, the new Degree Plus program seeks to fill the job skills gap. It offers eight-week courses intended as an add-on to a student\u2019s main degree. The courses include data analysis, web design and digital marketing, all taught by industry professionals.
+The goal \u201cwas to take a foundational degree and recognize that if you pair it with something more concentrated and technical, it can open up more opportunities,\u201d said Andrea Miller, the University of Utah\u2019s director of professional education.
+It is additional work, and an additional cost, but Miller said many students find the added value is worth it. Anthropology majors could benefit from understanding data analysis, for example. Students studying political science could see value in understanding content management or marketing, giving them an opportunity when looking for jobs or getting a promotion a few years down the road. The model is similar to \u201cbadge\u201d programs, which aim to give students a certificate showing they know a skill that employers might find useful.
+As the job market changes, the University of Utah also plans to eliminate and add courses more frequently. That rapid-response mentality is easier done in a supplemental program like Degree Plus than it is in more established yearslong programs taught by professors, who offer a deep base of knowledge but aren\u2019t necessarily focused on workplace practices.
+Making the classroom more like the office
+Other institutions are trying to mimic the workplace within the traditional classroom. Several public colleges have partnered with private companies, like the software company Adobe, to integrate their products into the classroom. Professors at schools who partner with the company are encouraged to use the product for atypical assignments, like reinterpreting poems using video. Students at the University of Central Florida have used the software to design 3D-printed limbs.
+\u201cThese colleges are teaching digital communication and creative problem solving with assignments that ask students to understand problems, find solutions and then take action,\u201d said Tacy Trowbridge, head of Adobe\u2019s global education programs.
+The idea is that students learn how to create a project that can be used in the real world, drawing on the skills a student would need in a business setting rather than those they\u2019d use for taking a test. They also learn the \u201csoft skills\u201d that employers say are increasingly difficult to find in a job candidate.
+Students can design their own courses, such as \u201cBlockchain Fundamentals\u201d and \u201cImpact of AI,\u201d a class that explores \u201cvarious economic, social, and ethical challenges facing AI.\u201d \u201cWe\u2019re not just about preparing kids for work,\u201d said Jenn Stringer, the chief academic technology officer at the University of California, Berkeley. \u201cWe hope we are preparing them to have a huge impact on society in some way.\u201d That way, she said, they will not only be prepared for whatever the job market looks like in 10, 20 or 50 years. They will be the ones shaping it.`,
+    },
+  },
 ];
 
 // LANC2146 practice test interface (lab report discussion & conclusion, A2-B1 level)
@@ -396,6 +432,104 @@ Treatment methods for seed priming include \u201chydropriming, biopriming, seed 
       imageUrl: '/lanc2146-seed-priming-results.png',
       graphDescription: 'The graph shows the effects of four different concentrations of PEG (5%, 10%, 15%, 20%) on the radical length of wheat seedlings, compared to a control group.',
     },
+  },
+];
+
+// LANC2070 practice test interface (article review with main article + source excerpts, A2-B1 level)
+export interface Lanc2070PracticeTest {
+  id: string;
+  title: string;
+  description: string;
+  writingPrompt: string;
+  cefrLevel: string;
+  expectedParagraphs: number;
+  mainArticle: {
+    id: string;
+    title: string;
+    author: string;
+    year: number;
+    content: string;
+  };
+  excerpts: {
+    id: string;
+    author: string;
+    year: number;
+    title: string;
+    content: string;
+  }[];
+  targetWordCount: {
+    min: number;
+    max: number;
+    ideal: number;
+  };
+  practiceType: 'mid-semester' | 'final';
+}
+
+export const LANC2070_PRACTICE_TESTS: Lanc2070PracticeTest[] = [
+  {
+    id: 'lanc2070-p1-final-article-review',
+    title: 'Final Exam Writing Practice — Article Review',
+    description: 'Write a FOUR paragraph article review (320-350 words) that critically analyses the assigned article. Review any 2 points discussed by the author, use at least 2 excerpts to support your answer, and cite sources in-text using APA format.',
+    writingPrompt: 'Write a FOUR paragraph article review (320-350 words) that critically analyses the article "The Impact of Artificial Intelligence in Business" written by Ben Eubanks in 2021.\n\nReview any 2 points discussed by the author.\nYou must use at least 2 excerpts to support your answer. You may use more.\nYou must cite the sources in-text.\nYou MUST paraphrase. Do not copy chunks of 3 words or more.',
+    cefrLevel: 'A2-B1',
+    expectedParagraphs: 4,
+    practiceType: 'final',
+    targetWordCount: { min: 320, max: 350, ideal: 335 },
+    mainArticle: {
+      id: 'lanc2070-p1-main-article',
+      title: 'The Impact of Artificial Intelligence in Business',
+      author: 'Ben Eubanks',
+      year: 2021,
+      content: `Artificial intelligence (AI) refers to a range of computer technologies that are designed to learn, reason, and make decisions in ways that resemble human thinking. In the business world, AI is no longer a distant concept; it is already being used across many industries to improve efficiency, reduce costs, and create new opportunities. Examples of these technologies are already familiar to most people, from personalised recommendations on streaming platforms to customer service chatbots. As these tools become more widely available and affordable, their influence on how organisations operate is growing rapidly, making it essential for business leaders to understand both the opportunities and the risks that AI presents.
+One of the most significant ways AI is transforming business is by increasing operational efficiency and generating valuable insights. Companies are integrating AI tools into their daily operations to automate repetitive tasks, analyse large volumes of data more quickly than any human team could, and identify patterns that would otherwise go unnoticed. This allows organisations to make faster and more informed decisions, reduce human error, and allocate their human workforce toward more complex and creative responsibilities. In sectors such as finance, healthcare, logistics, and retail, AI-driven systems are already producing measurable improvements in speed, accuracy, and cost-effectiveness. However, these benefits are not equally accessible to all organisations. Smaller businesses with limited budgets and weaker digital infrastructure may struggle to implement AI solutions effectively, meaning that the efficiency gains AI offers risk widening the gap between large and small competitors in many industries.
+A second major impact of AI on business concerns the workforce and the future of employment. As AI systems become capable of performing tasks that were previously done by humans, including data analysis, customer interaction, and even elements of decision-making, concerns about job displacement have grown significantly. Some roles will undoubtedly be reduced or eliminated as automation becomes more cost-effective than human labour. However, it is important to recognise that technological change has historically created new types of work alongside the jobs it removes. Search engine optimisation, for example, is a professional discipline that did not exist before the rise of internet search tools, yet it now supports thousands of careers worldwide. Similarly, the growth of AI is already generating demand for new roles in areas such as data science, AI ethics, and technology management. The key challenge for businesses is therefore not simply to adopt AI, but to prepare their workforce for the changes it will bring through targeted training, reskilling, and a clear understanding of which human capabilities machines cannot replicate.
+A third area of impact involves the growing importance of uniquely human skills in an increasingly automated workplace. As machines take over more routine and analytical tasks, the abilities that remain distinctly human, such as empathy, creativity, ethical judgement, and the capacity to build genuine relationships, become more valuable rather than less. Businesses that rely heavily on trust, personal interaction, and nuanced communication cannot simply replace their human workforce with algorithms, as these qualities are difficult to automate convincingly. At the same time, organisations must ensure that their employees develop the skills needed to work effectively alongside AI tools, including the ability to evaluate the reliability of AI-generated information, adapt to rapidly changing technological environments, and apply sound judgement in situations where data alone cannot provide a complete answer. Achieving this balance between the efficiency of machines and the irreplaceable qualities of human workers is one of the central leadership challenges that AI presents to businesses today and in the years ahead.
+AI is transforming the way businesses operate, and its influence will only grow in the years ahead. Organisations that use AI to improve efficiency, adapt their workforce, and maintain a strong human element are best positioned for long-term success. However, the benefits of AI are not equally accessible to all businesses, and without careful planning, smaller organisations and lower-skilled workers risk being left behind. AI is ultimately a tool, and its value depends entirely on how responsibly and thoughtfully it is applied.`,
+    },
+    excerpts: [
+      {
+        id: 'lanc2070-p1-excerpt-eclac',
+        author: 'Economic Commission for Latin America and the Caribbean (ECLAC)',
+        year: 2021,
+        title: 'Digital technologies for a new future',
+        content: 'Technological progress has gone along with socially negative outcomes, such as the exclusion of a large proportion of the world\'s people from the benefits of digitalization, essentially because their incomes are too low for them to have good connectivity (i.e., high-quality access), access to devices, fixed home connections, and the ability to use these day to day.',
+      },
+      {
+        id: 'lanc2070-p1-excerpt-ahmed',
+        author: 'Ahmed, A.',
+        year: 2025,
+        title: 'Things humans can still do better than machines',
+        content: 'Freeing professionals from the difficult aspect of their work could allow them to dedicate more time and attention to cultivating skills that are peculiarly human, such as empathy and interpersonal relationships, which, for the time being, clearly remain a human element.',
+      },
+      {
+        id: 'lanc2070-p1-excerpt-williams',
+        author: 'Williams, M.',
+        year: 2021,
+        title: 'Career in Search Engine Optimization: The Definitive Guide',
+        content: 'SEO or Search Engine Optimization is a growing field that offers many opportunities for creative thinkers and problem solvers. If you enjoy researching and finding the underlying cause of things, you have the potential to earn a great living while helping the world find the information they are looking for.',
+      },
+      {
+        id: 'lanc2070-p1-excerpt-tucci',
+        author: 'Tucci, L.',
+        year: 2021,
+        title: 'A guide to artificial intelligence in the enterprise',
+        content: 'The application of artificial intelligence in the enterprise is profoundly changing the way businesses work. Companies are incorporating AI technologies into their business operations with the aim of saving money, boosting efficiency, generating insights and creating new markets.',
+      },
+      {
+        id: 'lanc2070-p1-excerpt-rainie',
+        author: 'Rainie, L., and Anderson, J.',
+        year: 2018,
+        title: 'Artificial Intelligence and the Future of Humans',
+        content: 'The experts predicted networked artificial intelligence would amplify human effectiveness but also threaten human autonomy, agency and capabilities. They spoke of the wide-ranging possibilities; that computers might match or even exceed human intelligence and capabilities on tasks such as complex decision-making, reasoning and learning, sophisticated analytics and pattern recognition, visual acuity, speech recognition and language translation.',
+      },
+      {
+        id: 'lanc2070-p1-excerpt-echeverri',
+        author: 'Echeverri, M.',
+        year: 2020,
+        title: 'Three steps to advance AI skills in your organization',
+        content: 'The enormous opportunities and benefits artificial intelligence can bring to an organization require skills development programs designed to ensure consistency and intentional outcomes. A prescriptive approach to AI skills development in AI literacy, contextual AI knowledge, and AI solution-building capabilities are critical for success.',
+      },
+    ],
   },
 ];
 
@@ -513,6 +647,13 @@ const defaultCourses: Course[] = [
     name: 'Report Writing (LANC2146)',
     program: 'post-foundation',
     description: 'Post-foundation course focusing on academic report writing, including lab report Discussion and Conclusion sections.'
+  },
+  {
+    id: 'course-lanc2070',
+    code: 'LANC2070',
+    name: 'Academic English: Article Review (LANC2070)',
+    program: 'post-foundation',
+    description: 'Post-foundation course focusing on academic article review writing with in-text citation and paraphrasing skills.'
   }
 ];
 
