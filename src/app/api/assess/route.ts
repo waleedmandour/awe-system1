@@ -383,7 +383,7 @@ function buildFoundationPrompt(
     ? `Word count (${wordCount}) is slightly above ${targetWordCount.min}-${targetWordCount.max} (within tolerance). Do NOT deduct marks.`
     : `Word count (${wordCount}) is within ${targetWordCount.min}-${targetWordCount.max}.`;
 
-  return `You are an expert, encouraging writing assessor for Foundation level students at Sultan Qaboos University. CEFR A1-A2 level. 
+  return `You are an expert, encouraging writing assessor for Foundation level students at Sultan Qaboos University. CEFR A1-A2 level.
 
 EXAM TYPE: ${examLabel}
 ${topic ? `Essay Topic: ${topic}` : 'No specific topic provided.'}
@@ -399,18 +399,34 @@ ${wordCountStatus}
 ASSESSMENT RUBRICS (FP0230 and FP0340):
 ${buildCriteriaText(rubrics)}
 
+BAND CALIBRATION FOR CEFR A1-A2 (what each band looks like at this level):
+- 5-6/6 (Excellent): Exceptional for A1-A2. Near-fluent grammar, rich vocabulary, perfect structure. Very rare at this level.
+- 4-4.5/6 (Good): Strong for A1-A2. Clear communication with minor expected errors. This is the typical range for strong foundation students.
+- 3-3.5/6 (Satisfactory): Average for A1-A2. Meaning is usually clear despite frequent grammar/vocabulary errors. Most foundation students score here.
+- 2-2.5/6 (Weak): Below expectations even for A1-A2. Meaning often unclear, very limited vocabulary or severe structural issues.
+- 0-1.5/6 (Very Poor): Incomprehensible or completely off-topic. Reserve for genuine failures to communicate.
+
+ERROR CLASSIFICATION (apply per criterion — this is critical):
+1. Expected A1/A2 errors (e.g., missing articles, wrong preposition, subject-verb agreement for 3rd person singular, incorrect word order in complex sentences) → Do NOT lower the score. These are normal developmental errors at this level.
+2. Non-impeding errors (meaning is still clear despite the error; e.g., wrong tense form, spelling that does not obscure meaning) → Only minor score impact if the error is frequent.
+3. Impeding errors (reader genuinely cannot understand the intended meaning) → Significant score impact.
+Rate each criterion based primarily on COMMUNICATION SUCCESS and IMPEDING errors, not total error count.
+
 SPECIAL RULES:
 1. Deduct marks for Task Response ONLY IF the text is severely off-topic. Do not penalize minor tangents.
 2. Reward successful communication of ideas. Do not be overly harsh on minor A1/A2 grammatical/spelling errors if the overall meaning is clear.
 
-SCORING INSTRUCTIONS:
-1. Score ALL FOUR criteria 0-6 (0.5 increments). Evaluate holistically and fairly—do not artificially lower scores for minor mistakes.
-2. For each criterion: quote at least ONE exact phrase from the essay as evidence in your justification.
-3. List up to 3 specific errors per criterion as { "quote": "[exact text]", "explanation": "[why wrong]" }. Do NOT provide corrections.
-4. Write 1-2 specific strengths and 1-2 actionable suggestions per criterion.
-5. overallFeedback (3-4 sentences): strongest/weakest criterion, word count comment, one prioritized action item.
-6. For Task Response: address topic adherence and essay structure. If the word count exceeds the target, mention it but do NOT deduct marks.
-7. Do NOT calculate totalScore or percentage — those are computed automatically.`;
+SCORING FLOW (follow in this order):
+Step 1 — Identify what the student communicated successfully (strengths first).
+Step 2 — Determine the overall CEFR demonstrated level from the essay.
+Step 3 — Score each criterion 0-6 (0.5 increments) relative to A1-A2 expectations, not B2+ academic standards.
+Step 4 — Only deduct for errors that genuinely impede meaning or show a gap below A1 level.
+Step 5 — For each criterion: quote at least ONE exact phrase from the essay as evidence in your justification.
+Step 6 — List up to 3 specific errors per criterion as { "quote": "[exact text]", "explanation": "[why wrong]" }. Classify each as expected, non-impeding, or impeding. Do NOT provide corrections.
+Step 7 — Write 1-2 specific strengths and 1-2 actionable suggestions per criterion.
+Step 8 — overallFeedback (3-4 sentences): strongest/weakest criterion, what the student communicated well, one prioritized action item.
+Step 9 — For Task Response: address topic adherence and essay structure. If the word count exceeds the target, mention it but do NOT deduct marks.
+Step 10 — Do NOT calculate totalScore or percentage — those are computed automatically.`;
 }
 function buildCreditPrompt(text: string, topic: string | null, wordCount: number): string {
   const criteria = CREDIT_CRITERIA;
@@ -795,7 +811,7 @@ export async function POST(request: NextRequest) {
       : isLanc2146
       ? 'You are an expert writing assessment AI for LANC2146 (Report Writing) at Sultan Qaboos University. CEFR A2-B1 level. Evaluate Discussion (analysis/interpretation) and Conclusion (summary, recommendations). Quote exact words as evidence. Justify every score against the rubric. List specific errors with quoted text.'
       : isFoundation
-      ? 'You are an expert, encouraging writing assessor for Foundation courses (FP0230, FP0340) at Sultan Qaboos University. CEFR A1-A2 level. Actively scan for specific grammar, vocabulary, cohesion, and task-related errors. Quote exact words as evidence for EVERY score.'
+      ? 'You are an expert, encouraging writing assessor for Foundation courses (FP0230, FP0340) at Sultan Qaboos University. CEFR A1-A2 level. Score relative to A1-A2 expectations — reward successful communication and only penalize impeding errors. Quote exact words as evidence for EVERY score.'
       : 'You are an expert writing assessment AI at Sultan Qaboos University. CEFR A2-B1 level. Quote exact words from the student essay as evidence. Justify every score against the rubric. List specific errors with quoted text.';
 
     // ── Generate with Structured Output + model fallback + rate-limit retry ──
