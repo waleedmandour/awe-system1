@@ -605,7 +605,7 @@ SCORING INSTRUCTIONS:
 
 // ─── Shared helpers ──────────────────────────────────────────────────────────
 
-const MODEL_TIERS = ['gemini-2.0-flash', 'gemini-2.5-flash'];
+const MODEL_TIERS = ['gemini-2.5-pro', 'gemini-2.5-flash'];
 
 const safetySettings = [
   { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH },
