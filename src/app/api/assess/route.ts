@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold, SchemaType } from '@google/generative-ai';
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold, SchemaType, Schema } from '@google/generative-ai';
 
 // IMPORTANT: Vercel Hobby plan ($20/mo) allows maxDuration = 60.
 // On the FREE tier, Vercel caps serverless functions at 10 seconds regardless of this setting.
