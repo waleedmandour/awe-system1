@@ -383,7 +383,7 @@ function buildFoundationPrompt(
     ? `Word count (${wordCount}) is slightly above ${targetWordCount.min}-${targetWordCount.max} (within tolerance). Do NOT deduct marks.`
     : `Word count (${wordCount}) is within ${targetWordCount.min}-${targetWordCount.max}.`;
 
-  return `You are an expert writing assessor for Foundation level students at Sultan Qaboos University. CEFR A1 level.
+  return `You are an expert, encouraging writing assessor for Foundation level students at Sultan Qaboos University. CEFR A1-A2 level. 
 
 EXAM TYPE: ${examLabel}
 ${topic ? `Essay Topic: ${topic}` : 'No specific topic provided.'}
@@ -400,10 +400,11 @@ ASSESSMENT RUBRICS (FP0230 and FP0340):
 ${buildCriteriaText(rubrics)}
 
 SPECIAL RULES:
-${rubrics.specialRules.map((r, i) => `${i + 1}. ${r}`).join('\n')}
+1. Deduct marks for Task Response ONLY IF the text is severely off-topic. Do not penalize minor tangents.
+2. Reward successful communication of ideas. Do not be overly harsh on minor A1/A2 grammatical/spelling errors if the overall meaning is clear.
 
 SCORING INSTRUCTIONS:
-1. Score ALL FOUR criteria 0-6 (0.5 increments). Use the FULL range — do NOT default to middle scores.
+1. Score ALL FOUR criteria 0-6 (0.5 increments). Evaluate holistically and fairly—do not artificially lower scores for minor mistakes.
 2. For each criterion: quote at least ONE exact phrase from the essay as evidence in your justification.
 3. List up to 3 specific errors per criterion as { "quote": "[exact text]", "explanation": "[why wrong]" }. Do NOT provide corrections.
 4. Write 1-2 specific strengths and 1-2 actionable suggestions per criterion.
@@ -411,7 +412,6 @@ SCORING INSTRUCTIONS:
 6. For Task Response: address topic adherence and essay structure. If the word count exceeds the target, mention it but do NOT deduct marks.
 7. Do NOT calculate totalScore or percentage — those are computed automatically.`;
 }
-
 function buildCreditPrompt(text: string, topic: string | null, wordCount: number): string {
   const criteria = CREDIT_CRITERIA;
 
