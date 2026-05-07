@@ -379,7 +379,7 @@ POINTS TO CONSIDER:
 SCORING INSTRUCTIONS:
 ============================================================
 
-STEP 1 — Score each criterion INDEPENDENTLY using the FULL range (1-5, 0.5 increments). Do NOT default to middle scores (3-3.5). Award HIGH scores (4-5) for strong work matching the upper rubric bands, and LOW scores (1-2) for weak work matching the lower bands. Score based ONLY on how the text aligns with the rubric descriptors. If quality falls between bands, award a half-point.
+STEP 1 — Score each criterion INDEPENDENTLY using the FULL range (0-5, 0.5 increments). Do NOT default to middle scores (3-3.5). Award HIGH scores (4-5) for strong work matching the upper rubric bands, and LOW scores (0-1) for weak work matching the lower bands. Score based ONLY on how the text aligns with the rubric descriptors. If quality falls between bands, award a half-point.
 
 STEP 2 — For EACH criterion, write a Justification that:
   (a) Names the score band chosen
@@ -1119,10 +1119,18 @@ function extractJsonObject(text: string): string | null {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid request: expected JSON body.', details: 'The request body could not be parsed as JSON.' },
+        { status: 400 }
+      );
+    }
     const { text, courseCode, topic, examType, writingType, sourceTextId } = body;
 
-    if (!text) {
+    if (!text || !text.trim()) {
       return NextResponse.json(
         { error: 'No text provided for assessment', details: 'The text field is empty or missing from the request.' },
         { status: 400 }
@@ -1549,12 +1557,12 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Normalize scores: allow 0.5 increments, round to nearest 0.5, clamp
+    // Normalize scores: allow 0.5 increments, round to nearest 0.5, clamp to [0, maxScore]
     assessment.scores.forEach((s: any) => {
       const rawScore = Number(s.score) || 0;
-      // Round to nearest 0.5
-      s.score = Math.round(rawScore * 2) / 2;
       s.maxScore = Math.round(Number(s.maxScore) || 0);
+      // Round to nearest 0.5 and clamp between 0 and maxScore
+      s.score = Math.max(0, Math.min(Math.round(rawScore * 2) / 2, s.maxScore));
 
       // Strip markdown from Gemini-returned fields before building feedback.
       // Coerces non-string values (arrays, objects) to strings first to prevent
