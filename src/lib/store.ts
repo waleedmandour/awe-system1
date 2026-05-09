@@ -247,6 +247,47 @@ HFO-1234yf | 25 | None; uses existing HFC-134a systems | Very high recharge cost
       },
     ],
   },
+  {
+    id: 'delivery-drones-challenges',
+    title: 'Technical Challenges of Delivery Drones',
+    description: 'Write a synthesis essay (4 paragraphs) based on three source texts about the development of delivery drones. Synthesize information from all three sources to explain the key technical challenges that engineers must overcome to make delivery drones a practical reality.',
+    cefrLevel: 'A2-B1',
+    expectedParagraphs: 4,
+    targetWordCount: {
+      min: 300,
+      max: 400,
+      ideal: 350,
+    },
+    sources: [
+      {
+        id: 'source-1-rise-of-drones',
+        title: 'The Rise of Delivery Drones',
+        content: `The development of the internet has altered nearly everything in our lives. One massive change is how we buy the things we want and need every day. Online retailers like Amazon in the U.S. and Alibaba in China are now among the largest and richest companies in the world with billions of dollars in annual profits. These companies operate by offering a large choice of products that are affordable and, importantly, can be delivered quickly to the customer. In trying to be profitable, finding the fastest way to deliver products can be the difference between success and failure.
+For online stores, the biggest problem of delivery is often called the "last-mile issue." It is not difficult or expensive to ship large quantities of products across the world and get them to local distribution centers. These warehouses are usually located outside of major urban areas where the land for large, single-story buildings is cheap and big trucks can move easily. However, to deliver packages to customers who live inside cities, companies need to reload them onto smaller trucks. Then delivery drivers take them one by one to each customer's front door. This means the "last mile" involves the biggest logistical problem and the greatest cost for the retailer.
+For this reason, there are many companies investing millions of dollars in a race to develop the latest and most exciting delivery method to date: drones. The idea of drones – small, pilotless, flying vehicles – bringing packages and pizzas to your home on demand may seem like science fiction, but most experts think that future is just around the corner. In fact, demonstrations of drones delivering fast food meals began in 2016, and drone delivery services for medical supplies such as blood and medicine already exist. Even so, it is still not possible to get your mom's last-minute gift flown into her backyard just in time for her birthday. Why not?
+The reason is that a number of challenges must still be overcome before we see armies of delivery drones buzzing around our city skylines. Some of these are legal or ethical, such as who owns the airspace drones would fly in? And how do we protect people's privacy with hundreds of cameras flying around? Assuming that these types of issues can be fixed, there are also several technical problems that must be resolved before delivery drones become a reality. Solving these engineering challenges can mean massive profits for some, and a completely new element to the way we shop.`,
+      },
+      {
+        id: 'source-2-powering-drones',
+        title: 'Powering Delivery Drones',
+        content: `When it comes to designing package-delivering drones, power is one of the major technical challenges. The problem involves two issues: weight and distance. Flying a toy quadcopter around a football field is easy, but add a few kilos of books or some groceries, and the power required to lift it becomes significantly more. In addition, the distance from a distribution warehouse outside of a city to your apartment downtown – and back – is much farther than the range of most commercial drones. Both of these problems require innovative power solutions.
+Drones generally run on batteries. As any electric car owner knows, battery technology has advanced a lot in recent years. Large lithium-ion batteries are extremely powerful, but more power means more weight. Moreover, batteries need to be continually recharged. In order to carry large enough batteries to meet the requirements of delivery flights, developers are testing several design options.
+The first clear option for increasing the airtime of a delivery drone is to include solar panels. Like batteries, photovoltaic solar cells are getting more efficient year by year. They are also becoming more lightweight. Engineers at Alta Devices, a solar cell developer, are experimenting with extremely thin, flexible solar cells that could cover any available surface of a drone. Their newest "Gen4" technology can even generate significant power from indirect sunlight. That makes them useful in cloudy as well as sunny conditions. The company hopes that combining solar and battery power would allow delivery drones to operate over most required distances.
+Still, package delivery is a 24-hour business, and solar does not work at night. That is why Amazon's drone division, known as Prime Air, is developing another technology: lamppost charging. The company recently received a patent for drone platforms that can be installed on top of existing streetlights or utility towers around delivery areas. With this system, a drone that is low on power could simply land, dock to a charging station, and recharge itself before continuing on its way. Alternatively, a drone could just switch out its battery, leaving the used one behind to recharge and wait for the next drone that needs it.
+Located high on a lamppost, the drones – and the packages they carry – would be safe from cross traffic or would-be thieves. Drones can also use the stations as shelter points during periods of bad weather. Using this type of system, a drone's delivery range could theoretically be unlimited.`,
+      },
+      {
+        id: 'source-3-final-delivery',
+        title: 'The Problem of Final Delivery',
+        content: `In order to be a solution for the "last mile" delivery problem, drone developers need to solve one big issue: final delivery. This refers to actually dropping off a package safely and making sure it gets into the hands of the person who ordered it. Obviously, there are a number of technical issues and security risks involved. Because drones are expensive machinery, people will want to steal or damage them. Then there is the factor of customer safety. A typical delivery drone would need a clear landing space of at least a few meters in diameter. That may be possible if you have a house with a large backyard, but where will drones land in the center of a busy city?
+Currently, there are three concepts in development:
+Concept 1 — Smart lockers or designated drop stations (e.g., on a rooftop): Safe and practical for apartment or large commercial buildings, but not convenient or desirable for customers and not practical for hot food deliveries.
+Concept 2 — Drop cord or cable to lower packages from a hovering drone: Possible in urban areas and drones are protected, but the customer must be present to receive the package.
+Concept 3 — Parachute drop-off: Drones are protected, but it is unsafe and may not work in all weather conditions.
+Whatever methods delivery companies may choose, it may still be a long time before all of the logistics can be worked out. Most likely, one solution will not fit every situation. For now, it seems that the drone delivery services may only be practical in certain geographical areas and only for a limited range of products and services. It is difficult to say what the future will bring, but many people are still betting that drones will be delivering part of that future.`,
+      },
+    ],
+  },
 ];
 
 // LANC1070 practice test interface (single source text, 4-paragraph essay)
