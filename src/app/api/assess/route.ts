@@ -98,6 +98,51 @@ const CREDIT_CRITERIA = [
   { name: 'Grammatical Range & Accuracy', maxScore: 5, description: 'Range and accuracy of grammar' },
 ];
 
+const CREDIT_RUBRICS = {
+  criteria: [
+    {
+      name: 'Task Achievement', maxScore: 5,
+      rubric: {
+        '0-1.5': 'Poor: Fails to fulfil any task requirements. 10% or more outside word count.',
+        '2-2.5': 'Unsatisfactory: Does not adequately fulfil task requirements. Most details are unimportant. 10% or more outside word count.',
+        '3-3.5': 'Satisfactory: Adequately fulfils task requirements. Most main ideas present. Meaning generally accurate; some unimportant details may be included. Up to 10% outside word count.',
+        '4-4.5': 'Good: Fulfils all task requirements but a little more could be expected. Main ideas present. Meaning mostly accurate, most details relevant. Stays within word count.',
+        '5': 'Excellent: Fulfils all task requirements and exceeds expectations. All main ideas present. Meaning accurate, all details relevant. Stays within word count.',
+      }
+    },
+    {
+      name: 'Coherence & Cohesion', maxScore: 5,
+      rubric: {
+        '0-1.5': 'Poor: Lacks organization and coherence. Text largely confused and incoherent, challenging for reader to process.',
+        '2-2.5': 'Unsatisfactory: Organization and coherence limited. Some re-reading necessary. Most cohesive devices are simple, used inaccurately and mechanically.',
+        '3-3.5': 'Satisfactory: Organization and coherence often adequate, but supporting ideas may be limited. Text may be stilted. Cohesive devices sometimes inaccurate, repetitive, or over/under used.',
+        '4-4.5': 'Good: Organization makes text clear and easy to understand. Cohesive devices almost always used accurately and appropriately within and between sentences.',
+        '5': 'Excellent: Effective organization with logical flow throughout. Good range of cohesive devices used accurately and appropriately.',
+      }
+    },
+    {
+      name: 'Lexical Resource', maxScore: 5,
+      rubric: {
+        '0-1.5': 'Poor: Paraphrasing largely absent. Poor word choice, word form, and spelling prevent communication.',
+        '2-2.5': 'Unsatisfactory: Very little paraphrasing; more than 15% directly copied. Inadequate vocabulary range. Errors in word choice, word form, and spelling predominate and affect communication.',
+        '3-3.5': 'Satisfactory: Generally paraphrased; some copying but less than 15%. Limited but adequate vocabulary. Errors in word choice and spelling sometimes affect communication.',
+        '4-4.5': 'Good: Well paraphrased with very little copying. Good vocabulary range. Spelling mostly correct.',
+        '5': 'Excellent: Completely and accurately paraphrased. Wider vocabulary range than expected for the level. Spelling accurate.',
+      }
+    },
+    {
+      name: 'Grammatical Range & Accuracy', maxScore: 5,
+      rubric: {
+        '0-1.5': 'Poor: Inaccurate structures, errors predominate, preventing communication. Punctuation inadequate and/or inaccurate.',
+        '2-2.5': 'Unsatisfactory: Very limited structures inadequate for the level. Grammatical errors noticeable and often affect communication. Punctuation may be inadequate/inaccurate.',
+        '3-3.5': 'Satisfactory: Structures sometimes limited but adequate for the task. Grammatical errors may affect communication in places. Punctuation generally correct and effective.',
+        '4-4.5': 'Good: Good range of structures. Some inaccuracy but communication not affected. Punctuation well managed and effective.',
+        '5': 'Excellent: Wider range of structures than expected for the level. Most sentences error-free. Punctuation well managed and effective.',
+      }
+    },
+  ],
+};
+
 const SUMMARY_CRITERIA = [
   { name: 'Task Achievement', maxScore: 5, description: 'How effectively the summary captures the main points of the source text using the student\'s own words.' },
   { name: 'Coherence & Cohesion', maxScore: 5, description: 'How logically the summary is organized and how well ideas are linked together.' },
@@ -345,25 +390,25 @@ function buildLanc2146Prompt(
   targetWordCount: { min: number; max: number; ideal: number }
 ): string {
   const rubrics = LANC2146_RUBRICS;
-  const toleranceBelow = targetWordCount.min - 20;
-  const toleranceAbove = targetWordCount.max + 20;
+  const tenPercentBelow = Math.round(targetWordCount.min * 0.9);
+  const tenPercentAbove = Math.round(targetWordCount.max * 1.1);
 
-  const wordCountStatus = wordCount < toleranceBelow
-    ? `WARNING: Word count (${wordCount}) is SIGNIFICANTLY BELOW ${targetWordCount.min}-${targetWordCount.max} (more than 20 words below minimum). This MUST lower the Task Response score.`
+  const wordCountStatus = wordCount < tenPercentBelow
+    ? `WARNING: Word count is MORE THAN 10% BELOW ${targetWordCount.min}. This MUST lower the Task Response score.`
     : wordCount < targetWordCount.min
-    ? `NOTE: Word count (${wordCount}) is slightly below ${targetWordCount.min}-${targetWordCount.max} (within 20-word tolerance). Do NOT penalize.`
-    : wordCount > toleranceAbove
-    ? `NOTE: Word count (${wordCount}) significantly exceeds ${targetWordCount.min}-${targetWordCount.max}. Do NOT deduct marks. Mention in feedback.`
+    ? `NOTE: Word count is below ${targetWordCount.min}-${targetWordCount.max}. Up to 10% below is acceptable.`
+    : wordCount > tenPercentAbove
+    ? `NOTE: Word count is MORE THAN 10% ABOVE ${targetWordCount.max}. Do NOT deduct marks. Mention in feedback.`
     : wordCount > targetWordCount.max
-    ? `Word count (${wordCount}) is slightly above ${targetWordCount.min}-${targetWordCount.max} (within tolerance). Do NOT deduct marks.`
-    : `Word count (${wordCount}) is within ${targetWordCount.min}-${targetWordCount.max}.`;
+    ? `NOTE: Word count exceeds ${targetWordCount.min}-${targetWordCount.max}. Do NOT deduct marks.`
+    : `Word count is within ${targetWordCount.min}-${targetWordCount.max}.`;
 
   const sectionsText = reportSections.map(s => `=== ${s.title} ===\n${s.content}`).join('\n\n');
 
   return `You are an expert writing assessor for LANC2146 (Report Writing — Discussion & Conclusion) at Sultan Qaboos University. CEFR A2-B1 level.
 
 ASSIGNMENT: ${assignmentTitle}
-TARGET WORD COUNT: ${targetWordCount.min}-${targetWordCount.max} (ideal: ${targetWordCount.ideal}). Tolerance: +/-20 words.
+TARGET WORD COUNT: ${targetWordCount.min}-${targetWordCount.max} (ideal: ${targetWordCount.ideal}). Tolerance: +/-10%.
 ${wordCountStatus}
 
 PROVIDED REPORT SECTIONS:
@@ -455,7 +500,7 @@ Step 9 — For Task Response: address topic adherence and essay structure. If th
 Step 10 — Do NOT calculate totalScore or percentage — those are computed automatically.`;
 }
 function buildCreditPrompt(text: string, topic: string | null, wordCount: number): string {
-  const criteria = CREDIT_CRITERIA;
+  const rubrics = CREDIT_RUBRICS;
 
   return `You are an expert writing assessor for Credit level students at Sultan Qaboos University. CEFR A2-B1 level.
 
@@ -468,8 +513,8 @@ ${text}
 
 WORD COUNT: ${wordCount} words
 
-ASSESSMENT CRITERIA (Credit Course - LANC2160):
-${criteria.map(c => `- ${c.name} (0-${c.maxScore}): ${c.description}`).join('\n')}
+ASSESSMENT RUBRICS (Credit Course — LANC2160):
+${buildCriteriaText(rubrics)}
 
 ${CREDIT_HUMANIZATION}
 SCORING INSTRUCTIONS:
@@ -490,14 +535,20 @@ function buildSummaryPrompt(
 ): string {
   const rubrics = SUMMARY_RUBRICS;
   const sourceWordCount = sourceText.trim().split(/\s+/).filter(Boolean).length;
+  const tenPercentBelow = Math.round(targetWordCount.min * 0.9);
+  const tenPercentAbove = Math.round(targetWordCount.max * 1.1);
 
   const wordCountStatus = wordCount < 20
     ? `WARNING: Word count (${wordCount}) is BELOW 20 words. This MUST significantly lower the Task Achievement score.`
+    : wordCount < tenPercentBelow
+    ? `WARNING: Word count is MORE THAN 10% BELOW ${targetWordCount.min}. This MUST lower the Task Achievement score.`
     : wordCount < targetWordCount.min
-    ? `WARNING: Word count (${wordCount}) is BELOW ${targetWordCount.min}-${targetWordCount.max}. This should lower the Task Achievement score.`
+    ? `NOTE: Word count is below ${targetWordCount.min}-${targetWordCount.max}. Up to 10% below is acceptable.`
+    : wordCount > tenPercentAbove
+    ? `NOTE: Word count is MORE THAN 10% ABOVE ${targetWordCount.max}. Do NOT deduct marks. Mention in feedback.`
     : wordCount > targetWordCount.max
-    ? `NOTE: Word count (${wordCount}) exceeds ${targetWordCount.min}-${targetWordCount.max}. Do NOT deduct marks. Mention in feedback.`
-    : `Word count (${wordCount}) is within ${targetWordCount.min}-${targetWordCount.max}.`;
+    ? `NOTE: Word count exceeds ${targetWordCount.min}-${targetWordCount.max}. Do NOT deduct marks.`
+    : `Word count is within ${targetWordCount.min}-${targetWordCount.max}.`;
 
   return `You are an expert writing assessor for LANC2160 (Summary Writing) at Sultan Qaboos University. CEFR A2-B1 level.
 
@@ -513,7 +564,7 @@ ${studentText}
 """
 
 ${wordCountStatus}
-Target summary length: ${targetWordCount.min}-${targetWordCount.max} (approximately one-third of the ${sourceWordCount}-word source text).
+Target summary length: ${targetWordCount.min}-${targetWordCount.max} (approximately one-third of the ${sourceWordCount}-word source text). Tolerance: +/-10%.
 
 SUMMARY RUBRICS:
 ${buildCriteriaText(rubrics)}
