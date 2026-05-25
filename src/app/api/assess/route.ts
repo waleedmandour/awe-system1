@@ -878,10 +878,12 @@ SCORING INSTRUCTIONS:
 
 // ─── Shared helpers ──────────────────────────────────────────────────────────
 
-// Model tier groups — Foundation needs stronger instruction-following for nuanced judgment;
-// Credit/Synthesis/Summary courses can use lighter models (writing is more structured).
-const FOUNDATION_TIERS = ['gemini-2.5-flash', 'gemini-2.5-flash-lite'];
-const CREDIT_TIERS = ['gemini-2.5-flash-lite', 'gemini-2.5-flash'];
+// Model tier groups — gemini-2.5-flash-lite removed due to known structured-output
+// and instruction-following inconsistencies (see discuss.ai.google.dev #102367, #101331).
+// Foundation essays are harder to evaluate (more OCR noise, L1 transfer, borderline cases),
+// so they get the stronger pro fallback. Credit writing is more structured, flash suffices.
+const FOUNDATION_TIERS = ['gemini-2.5-flash', 'gemini-2.5-pro'];
+const CREDIT_TIERS = ['gemini-2.5-flash', 'gemini-2.5-pro'];
 
 const safetySettings = [
   { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH },
@@ -1080,6 +1082,7 @@ export async function POST(request: NextRequest) {
     // ── Generate with Structured Output + model fallback + rate-limit retry ──
     let assessment: any = null;
     let parsedOk = false;
+    let usedModelName = '';
 
     modelTierLoop: for (let modelTierIndex = 0; modelTierIndex < targetModelTiers.length; modelTierIndex++) {
       const modelName = targetModelTiers[modelTierIndex];
@@ -1100,6 +1103,7 @@ export async function POST(request: NextRequest) {
             contents: [{ role: 'user', parts: [{ text: prompt }] }],
             generationConfig: {
               temperature: 0.0,
+              topP: 1,
               maxOutputTokens: 8192,
               responseMimeType: 'application/json',
               responseSchema: currentSchema,
@@ -1149,6 +1153,8 @@ export async function POST(request: NextRequest) {
           // ── Validate structure ──
           if (assessment?.scores && Array.isArray(assessment.scores)) {
             parsedOk = true;
+            usedModelName = modelName;
+            console.log(`Assessment successful using model: ${modelName}`);
             break modelTierLoop; // Success! Break completely out of the outer loop
           }
 
@@ -1269,6 +1275,7 @@ export async function POST(request: NextRequest) {
         overallFeedback,
         wordCount,
         targetWordCount: (isFoundation || isSummaryWriting || isSynthesisWriting || isLanc1070 || isLanc2146) ? activeTargetWordCount : null,
+        modelUsed: usedModelName,
         createdAt: new Date().toISOString(),
       }
     });
