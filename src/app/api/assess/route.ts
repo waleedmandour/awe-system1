@@ -310,7 +310,8 @@ const LANC2146_RUBRICS = {
 // arithmetic. Those are computed purely in TypeScript after the response.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const ASSESSMENT_SCHEMA: Schema = {
+// Schema for Foundation Courses (FP0230, FP0340) — Strict 0–6 scale in 0.5 increments
+const FOUNDATION_SCHEMA: Schema = {
   type: SchemaType.OBJECT,
   properties: {
     scores: {
@@ -319,7 +320,12 @@ const ASSESSMENT_SCHEMA: Schema = {
         type: SchemaType.OBJECT,
         properties: {
           criterionName: { type: SchemaType.STRING },
-          score: { type: SchemaType.NUMBER },
+          score: {
+            type: SchemaType.STRING,
+            format: 'enum',
+            enum: ['0', '0.5', '1', '1.5', '2', '2.5', '3', '3.5', '4', '4.5', '5', '5.5', '6'],
+            description: 'Rubric score. You MUST select ONLY from the allowed 0.5 increment values between 0 and 6.',
+          },
           maxScore: { type: SchemaType.NUMBER },
           justification: { type: SchemaType.STRING },
           strengths: { type: SchemaType.STRING },
@@ -336,12 +342,52 @@ const ASSESSMENT_SCHEMA: Schema = {
           },
           suggestions: { type: SchemaType.STRING },
         },
-        required:['criterionName', 'score', 'maxScore', 'justification', 'strengths', 'mistakes', 'suggestions'],
+        required: ['criterionName', 'score', 'maxScore', 'justification', 'strengths', 'mistakes', 'suggestions'],
       },
     },
     overallFeedback: { type: SchemaType.STRING },
   },
-  required:['scores', 'overallFeedback'],
+  required: ['scores', 'overallFeedback'],
+};
+
+// Schema for Credit/Post-Foundation Courses — Strict 0–5 scale in 0.5 increments
+const CREDIT_SCHEMA: Schema = {
+  type: SchemaType.OBJECT,
+  properties: {
+    scores: {
+      type: SchemaType.ARRAY,
+      items: {
+        type: SchemaType.OBJECT,
+        properties: {
+          criterionName: { type: SchemaType.STRING },
+          score: {
+            type: SchemaType.STRING,
+            format: 'enum',
+            enum: ['0', '0.5', '1', '1.5', '2', '2.5', '3', '3.5', '4', '4.5', '5'],
+            description: 'Rubric score. You MUST select ONLY from the allowed 0.5 increment values between 0 and 5.',
+          },
+          maxScore: { type: SchemaType.NUMBER },
+          justification: { type: SchemaType.STRING },
+          strengths: { type: SchemaType.STRING },
+          mistakes: {
+            type: SchemaType.ARRAY,
+            items: {
+              type: SchemaType.OBJECT,
+              properties: {
+                quote: { type: SchemaType.STRING },
+                explanation: { type: SchemaType.STRING },
+              },
+              required: ['quote', 'explanation'],
+            },
+          },
+          suggestions: { type: SchemaType.STRING },
+        },
+        required: ['criterionName', 'score', 'maxScore', 'justification', 'strengths', 'mistakes', 'suggestions'],
+      },
+    },
+    overallFeedback: { type: SchemaType.STRING },
+  },
+  required: ['scores', 'overallFeedback'],
 };
 
 const CREDIT_HUMANIZATION = `
@@ -832,7 +878,10 @@ SCORING INSTRUCTIONS:
 
 // ─── Shared helpers ──────────────────────────────────────────────────────────
 
-const MODEL_TIERS = ['gemini-2.0-flash', 'gemini-2.5-flash'];
+// Model tier groups — Foundation needs stronger instruction-following for nuanced judgment;
+// Credit/Synthesis/Summary courses can use lighter models (writing is more structured).
+const FOUNDATION_TIERS = ['gemini-2.5-flash', 'gemini-2.5-flash-lite'];
+const CREDIT_TIERS = ['gemini-2.5-flash-lite', 'gemini-2.5-flash'];
 
 const safetySettings = [
   { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH },
@@ -1010,7 +1059,10 @@ export async function POST(request: NextRequest) {
       criteria = CREDIT_CRITERIA;
     }
 
-    // ── Initialize Gemini ──────────────────────────────────────────────────
+    // ── Initialize Gemini: select schema & model tiers by course type ──────
+    const currentSchema = isFoundation ? FOUNDATION_SCHEMA : CREDIT_SCHEMA;
+    const targetModelTiers = isFoundation ? FOUNDATION_TIERS : CREDIT_TIERS;
+
     const genAI = new GoogleGenerativeAI(apiKey);
 
     const systemInstruction = isSummaryWriting
@@ -1029,15 +1081,15 @@ export async function POST(request: NextRequest) {
     let assessment: any = null;
     let parsedOk = false;
 
-    modelTierLoop: for (let modelTierIndex = 0; modelTierIndex < MODEL_TIERS.length; modelTierIndex++) {
-      const modelName = MODEL_TIERS[modelTierIndex];
+    modelTierLoop: for (let modelTierIndex = 0; modelTierIndex < targetModelTiers.length; modelTierIndex++) {
+      const modelName = targetModelTiers[modelTierIndex];
       const model = genAI.getGenerativeModel({
         model: modelName,
         systemInstruction,
         generationConfig: {
           responseMimeType: 'application/json',
-          responseSchema: ASSESSMENT_SCHEMA,
-          // Disable thinking for gemini-2.5-flash to skip 3-8s reasoning overhead
+          responseSchema: currentSchema,
+          // Disable thinking for gemini-2.5+ models to skip reasoning overhead
           ...(modelName.startsWith('gemini-2.5') ? { thinkingConfig: { thinkingBudget: 0 } } : {}),
         },
       });
@@ -1050,7 +1102,7 @@ export async function POST(request: NextRequest) {
               temperature: 0.0,
               maxOutputTokens: 8192,
               responseMimeType: 'application/json',
-              responseSchema: ASSESSMENT_SCHEMA,
+              responseSchema: currentSchema,
               ...(modelName.startsWith('gemini-2.5') ? { thinkingConfig: { thinkingBudget: 0 } } : {}),
             } as any,
             safetySettings,
