@@ -8,20 +8,26 @@ A Multimodal, LLM-based Automated Writing Evaluation (AWE) System for Formative 
 
 ## Overview
 
-This Progressive Web App (PWA) enables students to upload photos of handwritten essays, extract text using AI-powered OCR, and receive detailed, rubric-aligned assessments with constructive feedback. The system supports multiple courses across SQU's Foundation and Post-Foundation programs, each with tailored rubrics, word count targets, and assessment criteria. Students can install the app on their phones for quick, on-the-go practice, and all data is stored locally in the browser for privacy.
+The system offers two dedicated Progressive Web Apps (PWAs):
+
+- **AWE Student App** (free, no login) — for students to practice writing and receive instant feedback
+- **iAWE Teacher App** (email-whitelisted, paid API access) — for instructors to evaluate student writing with full assessment capabilities
+
+Both apps enable users to upload photos of handwritten essays, extract text using AI-powered OCR, and receive detailed, rubric-aligned assessments with constructive feedback. The system supports multiple courses across SQU's Foundation and Post-Foundation programs, each with tailored rubrics, word count targets, and assessment criteria. All student data is stored locally in the browser for privacy.
 
 **Key capabilities:**
 
 - Upload photos of handwritten essays (up to 2 pages) or type directly
 - Extract text using Google Gemini OCR or Google Cloud Vision API
-- Receive AI-powered assessment based on course-specific rubrics aligned with CEFR levels
-- Get detailed feedback with justifications, error identification, and improvement suggestions
+- Receive deterministic, AI-powered assessment based on course-specific rubrics aligned with CEFR levels
+- Get humanized feedback with justifications, error classification, and improvement suggestions
+- Score humanization: 9 built-in rules to soften scores while maintaining consistency (see [Score Humanization](#score-humanization--softening-rules))
 - Select exam type (Mid-semester or Final) for FP0230 and FP0340 with appropriate word count targets
 - Enter an optional writing prompt for Foundation Final Exam to guide assessment
 - Practice summary writing and synthesis essay writing for LANC2160 with source texts
 - Practice 4-paragraph essay writing for LANC1070 with mid-semester and final tests
 - Download assessment reports as PDF
-- Install the app on mobile devices for quick offline-capable access
+- Install either app on mobile devices for quick offline-capable access
 
 ---
 
@@ -59,7 +65,7 @@ This Progressive Web App (PWA) enables students to upload photos of handwritten 
 | Lexical Resource | 0-6 | Range and accuracy of vocabulary, word choice, and spelling |
 | Grammatical Range and Accuracy | 0-6 | Range and accuracy of grammatical structures and punctuation |
 
-**Total:** 24 marks | **Special Rules:** Off-topic penalties apply to Task Response and Lexical Resource. Half-point scoring (0.5 increments) supported.
+**Total:** 24 marks | **Special Rules:** Off-topic penalties apply to Task Response and Lexical Resource. Score floor of 1/6 for genuine on-topic attempts (2/6 for Task Response). Half-point scoring (0.5 increments) enforced via constrained JSON schema.
 
 ### LANC1070 — 4-Paragraph Essay Rubric
 
@@ -134,8 +140,9 @@ When FP0340 is selected, students choose between "For Mid-semester Exam" and "Fo
 - **Frontend:** Next.js 16, React 19, TypeScript
 - **Styling:** Tailwind CSS 4, shadcn/ui
 - **State Management:** Zustand (persisted to localStorage)
-- **AI Assessment:** Google Gemini (gemini-2.5-flash)
+- **AI Assessment:** Google Gemini with hybrid model routing (see [Model Routing](#hybrid-model-routing))
 - **OCR:** Google Gemini + Google Cloud Vision API (DOCUMENT_TEXT_DETECTION)
+- **Scoring:** Deterministic (temperature 0.0) with constrained JSON schemas enforcing valid 0.5-increment scores
 - **Animations:** Framer Motion
 - **PDF Generation:** PDFKit
 - **Testing:** Vitest
@@ -216,8 +223,8 @@ awe-system/
 
 ```bash
 # Clone the repository
-git clone https://github.com/waleedmandour/awe-system.git
-cd awe-system
+git clone https://github.com/waleedmandour/awe-system1.git
+cd awe-system1
 
 # Install dependencies
 npm install
@@ -309,12 +316,49 @@ API keys are entered by each user inside the app and stored locally in their bro
 
 - **Mobile-First:** Optimized for iOS and Android with touch-friendly UI, safe area support, and iOS press effects
 - **Smooth Animations:** Framer Motion page transitions and micro-interactions
-- **SQU Branding:** Official green (#1e40af) and gold (#3b82f6) color scheme throughout, supporting 5 courses
+- **SQU Branding:** Blue and gold color scheme for Teacher App, green and gold for Student App, supporting 5 courses
 - **Dark Mode:** Automatic theme detection (light/dark/system)
 - **PWA Features:** Offline support, install prompts, service worker caching
 - **Responsive:** Works seamlessly on phones, tablets, and desktop browsers
 - **Error Boundaries:** Graceful error handling with user-friendly fallback UI
 - **Modular Architecture:** Screen-based component structure for maintainability
+
+---
+
+## Score Humanization & Softening Rules
+
+The assessment engine applies 9 humanization rules to ensure fair, encouraging, and consistent scoring across all courses. These rules are embedded in both the Foundation and Credit assessment prompts, with deterministic TypeScript enforcement as a backup.
+
+| # | Rule | Description |
+|---|------|-------------|
+| 1 | **First Draft Awareness** | Essays are handwritten exam first drafts under timed conditions — no penalty for lack of polish or editing |
+| 2 | **OCR Error Forgiveness** | All apparent spelling errors are treated as potential OCR artifacts by default; only errors repeating 3+ times consistently are flagged as genuine student errors |
+| 3 | **Arabic L1 Transfer Recognition** | 7 common Arabic-to-English transfer patterns (e.g., missing copula "be", article omissions, adjective-noun reversal) are classified as expected developmental errors, not penalized |
+| 4 | **Anti-Double-Penalization** | Each error is penalized in only one criterion — the one where it primarily belongs |
+| 5 | **Effort Reward (Attempted Complexity)** | Students who attempt complex structures or vocabulary are not scored lower than students who use only simple, correct forms |
+| 6 | **Score Floor for Genuine Attempts** | On-topic essays with ≥50% of minimum word count receive at least 1/6 per criterion (2/6 for Task Response on Foundation) — enforced in both prompt and TypeScript |
+| 7 | **Borderline Benefit of the Doubt** | When genuinely uncertain between two bands, the higher band is awarded |
+| 8 | **Feedback Tone Guardrails** | All feedback starts with strengths, uses asset-based language, and avoids judgmental phrasing |
+| 9 | **Holistic Consistency Check** | After scoring all criteria, verifies that score spread does not exceed 2 points; flags potential over-penalization |
+
+These rules apply to both Foundation (0–6 scale) and Credit (0–5 scale) courses, with appropriate adaptations for each CEFR level.
+
+---
+
+## Hybrid Model Routing
+
+The system uses a **hybrid multi-tier routing strategy** that automatically selects different Gemini models based on course complexity:
+
+| Course Type | Primary Model | Fallback Model | Rationale |
+|-------------|:-------------:|:--------------:|-----------|
+| Foundation (FP0230, FP0340) | `gemini-2.5-flash` | `gemini-2.5-flash-lite` | Messier handwriting, more OCR noise, more borderline cases — needs stronger instruction-following |
+| Credit / Summary / Synthesis / LANC2146 / LANC1070 | `gemini-2.5-flash-lite` | `gemini-2.5-flash` | More structured writing, clearer rubric application — lighter model sufficient |
+
+**Scoring determinism is enforced through:**
+- `temperature: 0.0` — forces greedy decoding for identical outputs on identical inputs
+- **Constrained JSON schemas** — Foundation uses a `STRING` enum (`['0', '0.5', '1', ...,'6']`) and Credit uses `['0', '0.5', '1', ...,'5']`, preventing the model from outputting invalid intermediate decimals
+- **TypeScript post-processing** — score clamping, 0.5-increment rounding, and score floor enforcement as a deterministic backup
+- **`thinkingConfig: { thinkingBudget: 0 }`** — disables extended reasoning on Gemini 2.5+ models for faster, more deterministic responses
 
 ---
 
@@ -338,30 +382,29 @@ Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for gui
 
 ## How to Cite
 
-If you use **awe-system** in your research, teaching, or publications, please cite it as follows:
+If you use the **iAWE System** in your research, teaching, or publications, please cite it as follows:
 
 ### APA
 
-> Mandour, W. (2025). *awe-system: A Multimodal, LLM-based Automated Writing Evaluation System for Formative Assessment* (Version 1.0.0) [Computer software]. Sultan Qaboos University — Center for Preparatory Studies. https://github.com/waleedmandour/awe-system
+> Mandour, W. (2025). *iAWE System: A Multimodal, LLM-based Automated Writing Evaluation System for Formative Assessment* (Version 2.0.0) [Computer software]. Sultan Qaboos University — Center for Preparatory Studies. https://github.com/waleedmandour/awe-system1
 
 ### BibTeX
 
 ```bibtex
 @software{mandour_awe_system_2025,
   author    = {Mandour, Waleed},
-  title     = {{awe-system: A Multimodal, LLM-based Automated Writing Evaluation System for Formative Assessment}},
+  title     = {{iAWE System: A Multimodal, LLM-based Automated Writing Evaluation System for Formative Assessment}},
   year      = {2025},
-  version   = {1.0.0},
+  version   = {2.0.0},
   publisher = {Sultan Qaboos University -- Center for Preparatory Studies},
-  url       = {https://github.com/waleedmandour/awe-system}
+  url       = {https://github.com/waleedmandour/awe-system1}
 }
 ```
 
 ### MLA
 
-> Mandour, Waleed. *awe-system: A Multimodal, LLM-based Automated Writing Evaluation System for Formative Assessment*. Version 1.0.0, Sultan Qaboos University — Center for Preparatory Studies, 2025, https://github.com/waleedmandour/awe-system.
+> Mandour, Waleed. *iAWE System: A Multimodal, LLM-based Automated Writing Evaluation System for Formative Assessment*. Version 2.0.0, Sultan Qaboos University — Center for Preparatory Studies, 2025, https://github.com/waleedmandour/awe-system1.
 
-> A machine-readable citation file ([`CITATION.cff`](CITATION.cff)) is also available in the repository root.
 
 ---
 
