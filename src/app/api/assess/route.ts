@@ -87,7 +87,9 @@ const FOUNDATION_RUBRICS = {
   ],
   specialRules:[
     'If the text is somewhat off-topic, deduct 50% of the mark obtained for Task Response and Lexical Resource.',
-    'A completely off-topic text should receive a zero for Task Response and Lexical Resource.'
+    'A completely off-topic text should receive a zero for Task Response and Lexical Resource.',
+    'SCORE FLOOR: If the student wrote at least 50% of the minimum word count and the text is on-topic, each criterion must receive a minimum of 1/6. A score of 0/6 is reserved only for blank, near-blank, or completely incomprehensible submissions.',
+    'ANTI-DOUBLE-PENALIZATION: Each error should be penalized in only ONE criterion. Do not deduct for the same underlying issue across multiple criteria.',
   ]
 };
 
@@ -343,6 +345,12 @@ const ASSESSMENT_SCHEMA: Schema = {
 };
 
 const CREDIT_HUMANIZATION = `
+FIRST DRAFT AWARENESS:
+These are handwritten exam essays written under timed conditions — they are first drafts with no opportunity for revision, editing, or spell-check. Do NOT penalize for lack of polish. Evaluate what the student ACHIEVED in a single timed sitting.
+
+OCR ERROR AWARENESS:
+The student text was extracted via OCR from handwritten scripts. Some apparent "spelling errors" may be OCR artifacts (letter substitution, merged/split words). If a word is only 1-2 characters different from a valid English word and the intended word is obvious from context, treat it as an OCR artifact — do NOT count it as a spelling error.
+
 BAND CALIBRATION FOR CEFR A2-B1 (what each band looks like at this level):
 - 4.5-5/5 (Excellent): Exceptional for A2-B1. Approaches B1+ level. Very rare.
 - 4/5 (Good): Strong for A2-B1. Clear communication with minor expected errors.
@@ -352,19 +360,73 @@ BAND CALIBRATION FOR CEFR A2-B1 (what each band looks like at this level):
 
 ERROR CLASSIFICATION (apply per criterion — this is critical):
 1. Expected A2/B1 errors (missing articles a/an/the, wrong prepositions in/on/at, subject-verb agreement for 3rd person singular, awkward paraphrasing from sources, limited sentence variety, minor spelling) → Do NOT lower the score. These are normal developmental errors at this level.
+   ARABIC L1 TRANSFER ERRORS (also Expected — do NOT lower score):
+   The students are Arabic L1 speakers. These patterns are normal developmental transfer, though some may be less frequent at A2-B1:
+   - Missing copula "be" (e.g., "She happy" instead of "She is happy") — Arabic has no present-tense copula
+   - Omission of indefinite articles (e.g., "I am student") — Arabic has no indefinite article
+   - Overuse of definite article (e.g., "the life is hard") — Arabic uses al-definiteness more broadly
+   - Subject-verb agreement with 3rd person singular (e.g., "he go") — Arabic verbs don't inflect for person the same way
+   - Adjective-noun word order reversal (e.g., "car big" instead of "big car") — Arabic places adjectives after nouns (less frequent at A2-B1)
+   - Preposition substitution (e.g., "in Monday" instead of "on Monday") — Arabic preposition usage differs significantly
+   - Missing "it/there" expletive subjects (e.g., "Is hot today") — Arabic is pro-drop (less frequent at A2-B1)
+   If these errors appear but meaning is still clear, classify them as expected A2/B1 errors. Only flag them if they genuinely impede comprehension.
 2. Non-impeding errors (meaning still clear; repetitive vocabulary, minor punctuation, occasional awkward phrasing) → Only minor score impact if frequent.
 3. Impeding errors (reader cannot understand; wrong text type; large-scale copying without paraphrasing; task fundamentally not met) → Significant score impact.
 Rate each criterion based primarily on COMMUNICATION SUCCESS and IMPEDING errors, not total error count.
 
+ANTI-DOUBLE-PENALIZATION:
+1. Each error should be penalized in ONLY ONE criterion — the one where it primarily belongs:
+   - Grammar errors (verb tense, subject-verb agreement, word order) → Grammar only
+   - Word choice errors (wrong word, wrong form) → Lexical Resource only
+   - Structural errors (missing paragraph, no cohesion) → Coherence & Cohesion only
+2. If an error has secondary effects on another criterion, do NOT deduct again. For example, a grammar error that makes a sentence slightly awkward does NOT also lower Coherence.
+3. The ONLY exception is Task Achievement, which may be independently affected if content is off-topic, regardless of other criterion scores.
+
+EFFORT REWARD — REWARD ATTEMPTED COMPLEXITY:
+1. If a student attempts a complex structure (e.g., subordinate clause, conditional, passive voice) and makes an error, the score should NOT be lower than if the student had written a simpler correct sentence. Reward the attempt.
+2. If a student attempts to use a less common vocabulary word but uses it slightly incorrectly (e.g., wrong preposition collocation, wrong word form), this should be classified as a "non-impeding error" at minimum — do NOT penalize more harshly than if the student had used a simpler, correct word.
+3. Students who show RANGE (even imperfect) should not score lower than students who show ACCURACY only in a narrow band. Range + some errors ≥ Accuracy in simple structures only.
+
+SCORE FLOOR FOR GENUINE ATTEMPTS:
+1. If a student has written at least 50% of the minimum word count AND the text is on-topic, each criterion should receive a MINIMUM of 1/5 — because producing any on-topic text demonstrates some level of competence in each criterion.
+2. A score of 0/5 should be reserved ONLY for:
+   - Complete off-topic writing (for Task Achievement)
+   - Completely incomprehensible text (for other criteria)
+   - Blank or near-blank submissions
+
 SPECIAL RULES:
 1. Reward successful communication of ideas. Do not be overly harsh on A2/B1 grammatical/spelling errors if the overall meaning is clear.
 2. For error listings: classify each error as expected, non-impeding, or impeding. Do NOT provide corrections.
+
+BORDERLINE DECISIONS — BENEFIT OF THE DOUBT:
+1. When a student's performance sits on the borderline between two bands (e.g., 3 vs 3.5, or 4 vs 4.5), award the HIGHER band if:
+   - The student showed effort beyond the minimum (attempted complexity, addressed the topic with some depth)
+   - The errors present are primarily "expected" or "non-impeding" per the error classification rules
+   - Communication was largely successful despite imperfections
+2. Only award the LOWER band if:
+   - Errors are predominantly "impeding" (meaning genuinely unclear)
+   - The writing shows minimal effort or engagement with the task
+   - Performance clearly falls on the lower side of the borderline
+3. Default rule: When genuinely uncertain, round UP to the nearest 0.5 increment.
+
+FEEDBACK TONE GUARDRAILS:
+1. ALWAYS begin each criterion's feedback with at least one specific strength or successful communication moment before discussing errors.
+2. Frame suggestions as "next steps" or "to improve further," never as "you failed to" or "you should have."
+3. Use asset-based language:
+   - "You successfully expressed..." / "You attempted a complex sentence..."
+   - Avoid: "You failed to..." / "You didn't..." / "You lack..."
+4. For students scoring 3/5 or below, include at least one statement that validates their effort: "Writing in a second language is challenging, and your essay shows that you are building important skills."
+5. Avoid comparative language ("unlike stronger students...") — feedback should be criterion-referenced, not norm-referenced.
+6. Error explanations should be educational, not judgmental:
+   - "In English, the verb needs to agree with the subject..."
+   - Avoid: "This is a basic grammatical error..."
 
 SCORING FLOW (follow in this order):
 Step 1 — Identify what the student communicated successfully (strengths first).
 Step 2 — Determine the overall CEFR demonstrated level.
 Step 3 — Score each criterion 0-5 (0.5 increments) relative to A2-B1 expectations, not B2+ standards.
 Step 4 — Only deduct for errors that genuinely impede meaning or show a gap below A2 level.
+Step 5 — HOLISTIC CONSISTENCY CHECK: After scoring all criteria, verify the spread between highest and lowest scores does not exceed 2 points. If it does, re-examine whether the low score truly reflects impeding errors or whether expected/non-impeding errors were over-penalized. These are SOFT constraints — genuine outliers can exist but should be justified in the feedback.
 `;
 
 // ─── Prompt Builders (Lean — no JSON formatting instructions) ────────────────
@@ -470,6 +532,20 @@ ${wordCountStatus}
 ASSESSMENT RUBRICS (FP0230 and FP0340):
 ${buildCriteriaText(rubrics)}
 
+FIRST DRAFT AWARENESS:
+These are handwritten exam essays written under timed conditions — they are first drafts with no opportunity for revision, editing, or spell-check.
+1. Do NOT penalize for lack of polish, minor inconsistencies, or surface-level errors that would be caught in a second draft.
+2. Minor repetition, slight awkwardness in transitions, or occasional inconsistent tense use are NORMAL in first drafts — treat these as expected errors, not signs of poor writing ability.
+3. Evaluate what the student ACHIEVED in a single timed sitting, not what an ideal revised version would look like.
+4. Never use language like "should have proofread" or "could have been improved with editing" — these are irrelevant in an exam context.
+
+OCR ERROR AWARENESS:
+The student text was extracted via OCR from handwritten scripts. Some apparent "spelling errors" may be OCR artifacts (e.g., letter substitution, merged words, split words). Apply these rules:
+1. If a word is only 1-2 characters different from a valid English word and the intended word is obvious from context, treat it as an OCR artifact — do NOT count it as a spelling error or lower the Lexical Resource score.
+2. If meaning is still recoverable despite garbled text, do NOT penalize.
+3. Only flag as a genuine student error if the mistake reflects a clear pattern (e.g., consistent "thier" → shows a spelling issue, not OCR).
+4. When uncertain whether an error is OCR or student-originated, give the student the benefit of the doubt.
+
 BAND CALIBRATION FOR CEFR A1-A2 (what each band looks like at this level):
 - 5-6/6 (Excellent): Exceptional for A1-A2. Near-fluent grammar, rich vocabulary, perfect structure. Very rare at this level.
 - 4-4.5/6 (Good): Strong for A1-A2. Clear communication with minor expected errors. This is the typical range for strong foundation students.
@@ -479,13 +555,67 @@ BAND CALIBRATION FOR CEFR A1-A2 (what each band looks like at this level):
 
 ERROR CLASSIFICATION (apply per criterion — this is critical):
 1. Expected A1/A2 errors (e.g., missing articles, wrong preposition, subject-verb agreement for 3rd person singular, incorrect word order in complex sentences) → Do NOT lower the score. These are normal developmental errors at this level.
+   ARABIC L1 TRANSFER ERRORS (also Expected — do NOT lower score):
+   The students are Arabic L1 speakers. The following patterns are normal developmental transfer, NOT poor writing:
+   - Missing copula "be" (e.g., "She happy" instead of "She is happy") — Arabic has no copula in present tense
+   - Omission of indefinite articles (e.g., "I am student") — Arabic has no indefinite article
+   - Overuse of definite article (e.g., "the life is hard") — Arabic uses al-definiteness more broadly
+   - Subject-verb agreement with 3rd person singular (e.g., "he go") — Arabic verbs don't inflect for person the same way
+   - Adjective-noun word order reversal (e.g., "car big" instead of "big car") — Arabic places adjectives after nouns
+   - Preposition substitution (e.g., "in Monday" instead of "on Monday") — Arabic preposition usage differs significantly
+   - Missing "it/there" expletive subjects (e.g., "Is hot today") — Arabic is pro-drop
+   If these errors appear but meaning is still clear, classify them as expected A1/A2 errors. Only flag them if they genuinely impede comprehension.
 2. Non-impeding errors (meaning is still clear despite the error; e.g., wrong tense form, spelling that does not obscure meaning) → Only minor score impact if the error is frequent.
 3. Impeding errors (reader genuinely cannot understand the intended meaning) → Significant score impact.
 Rate each criterion based primarily on COMMUNICATION SUCCESS and IMPEDING errors, not total error count.
 
+ANTI-DOUBLE-PENALIZATION:
+1. Each error should be penalized in ONLY ONE criterion — the one where it primarily belongs:
+   - Grammar errors (verb tense, subject-verb agreement, word order) → Grammar only
+   - Word choice errors (wrong word, wrong form) → Lexical Resource only
+   - Structural errors (missing paragraph, no cohesion) → Coherence & Cohesion only
+2. If an error has secondary effects on another criterion, do NOT deduct again. For example, a grammar error that makes a sentence slightly awkward does NOT also lower Coherence.
+3. The ONLY exception is Task Response, which may be independently affected if content is off-topic, regardless of other criterion scores.
+
+EFFORT REWARD — REWARD ATTEMPTED COMPLEXITY:
+1. If a student attempts a complex structure (e.g., subordinate clause, conditional, passive voice) and makes an error, the score should NOT be lower than if the student had written a simpler correct sentence. Reward the attempt.
+2. If a student attempts to use a less common vocabulary word but uses it slightly incorrectly (e.g., wrong preposition collocation, wrong word form), this should be classified as a "non-impeding error" at minimum — do NOT penalize more harshly than if the student had used a simpler, correct word.
+3. Students who show RANGE (even imperfect) should not score lower than students who show ACCURACY only in a narrow band. Range + some errors ≥ Accuracy in simple structures only.
+
+SCORE FLOOR FOR GENUINE ATTEMPTS:
+1. If a student has written at least 50% of the minimum word count AND the text is on-topic (even if error-heavy), each criterion should receive a MINIMUM of 1/6 — because producing any on-topic text demonstrates some level of competence in each criterion.
+2. A score of 0/6 should be reserved ONLY for:
+   - Complete off-topic writing (for Task Response)
+   - Completely incomprehensible text (for other criteria)
+   - Blank or near-blank submissions
+3. If the student's text is legible, on-topic, and communicates even a basic idea, the minimum for Task Response should be 2/6.
+
 SPECIAL RULES:
 1. Deduct marks for Task Response ONLY IF the text is severely off-topic. Do not penalize minor tangents.
 2. Reward successful communication of ideas. Do not be overly harsh on minor A1/A2 grammatical/spelling errors if the overall meaning is clear.
+
+BORDERLINE DECISIONS — BENEFIT OF THE DOUBT:
+1. When a student's performance sits on the borderline between two bands (e.g., 3 vs 3.5, or 4 vs 4.5), award the HIGHER band if:
+   - The student showed effort beyond the minimum (attempted complexity, addressed the topic with some depth)
+   - The errors present are primarily "expected" or "non-impeding" per the error classification rules
+   - Communication was largely successful despite imperfections
+2. Only award the LOWER band if:
+   - Errors are predominantly "impeding" (meaning genuinely unclear)
+   - The writing shows minimal effort or engagement with the task
+   - Performance clearly falls on the lower side of the borderline
+3. Default rule: When genuinely uncertain, round UP to the nearest 0.5 increment.
+
+FEEDBACK TONE GUARDRAILS:
+1. ALWAYS begin each criterion's feedback with at least one specific strength or successful communication moment before discussing errors.
+2. Frame suggestions as "next steps" or "to improve further," never as "you failed to" or "you should have."
+3. Use asset-based language:
+   - "You successfully expressed..." / "You attempted a complex sentence..."
+   - Avoid: "You failed to..." / "You didn't..." / "You lack..."
+4. For students scoring 3/6 or below, include at least one statement that validates their effort: "Writing in a second language is challenging, and your essay shows that you are building important skills."
+5. Avoid comparative language ("unlike stronger students...") — feedback should be criterion-referenced, not norm-referenced.
+6. Error explanations should be educational, not judgmental:
+   - "In English, the verb needs to agree with the subject..."
+   - Avoid: "This is a basic grammatical error..."
 
 SCORING FLOW (follow in this order):
 Step 1 — Identify what the student communicated successfully (strengths first).
@@ -497,7 +627,8 @@ Step 6 — List up to 3 specific errors per criterion as { "quote": "[exact text
 Step 7 — Write 1-2 specific strengths and 1-2 actionable suggestions per criterion.
 Step 8 — overallFeedback (3-4 sentences): strongest/weakest criterion, what the student communicated well, one prioritized action item.
 Step 9 — For Task Response: address topic adherence and essay structure. If the word count exceeds the target, mention it but do NOT deduct marks.
-Step 10 — Do NOT calculate totalScore or percentage — those are computed automatically.`;
+Step 10 — Do NOT calculate totalScore or percentage — those are computed automatically.
+Step 11 — HOLISTIC CONSISTENCY CHECK: After scoring all four criteria, verify that the spread between the HIGHEST and LOWEST criterion scores does not exceed 2 points. If it does, re-examine whether the low score truly reflects impeding errors or whether expected/non-impeding errors were over-penalized. Also verify: if Task Response and Coherence are 4+, Grammar and Lexical Resource should generally not be below 3, because successful communication inherently requires some grammatical and lexical competence. These are SOFT constraints — genuine outliers can exist but should be justified in the feedback.`;
 }
 function buildCreditPrompt(text: string, topic: string | null, wordCount: number): string {
   const rubrics = CREDIT_RUBRICS;
@@ -1025,6 +1156,17 @@ export async function POST(request: NextRequest) {
       const maxScore = Math.round(Number(s.maxScore) || 0);
       s.score = Math.max(0, Math.min(Math.round(rawScore * 2) / 2, maxScore));
       s.maxScore = maxScore;
+
+      // ── Score Floor: enforce minimum 1 for on-topic essays with sufficient words ──
+      // This backs up the prompt-based Score Floor rule with a deterministic TypeScript check.
+      // Note: Foundation uses "Task Response", Credit/Summary/Synthesis use "Task Achievement", LANC2146 uses "Task Response".
+      const isTaskCriterion = s.criterionName === 'Task Response' || s.criterionName === 'Task Achievement';
+      if (wordCount >= Math.round((activeTargetWordCount?.min ?? 0) * 0.5) && !isTaskCriterion && s.score === 0 && maxScore > 0) {
+        s.score = 1; // Floor of 1 for non-task criteria
+      }
+      if (wordCount >= Math.round((activeTargetWordCount?.min ?? 0) * 0.5) && isTaskCriterion && s.score === 0 && maxScore > 0) {
+        s.score = maxScore > 5 ? 2 : 1; // Floor of 2 for Task criterion on Foundation (0-6 scale); floor of 1 on Credit (0-5 scale)
+      }
 
       // Clean text fields (strip markdown, handle arrays/objects)
       s.justification = clean(s.justification);
