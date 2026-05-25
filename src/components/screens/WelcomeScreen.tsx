@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import {
@@ -22,9 +22,9 @@ const IconRevealAnimation = ({ onComplete }: { onComplete: () => void }) => {
 
   const [phase, setPhase] = useState<'reveal' | 'hold' | 'settle'>('reveal');
 
-  // Stable particle positions (avoid re-randomise on every render)
-  const particles = useRef(
-    [...Array(8)].map((_, i) => ({
+  // Stable particle positions (computed once via useMemo, not a ref accessed during render)
+  const particles = useMemo(
+    () => [...Array(8)].map((_, i) => ({
       id: i,
       x: 30 + ((i * 47 + 13) % 40), // deterministic spread 30-70 %
       y: 25 + ((i * 31 + 7) % 50),  // deterministic spread 25-75 %
@@ -32,8 +32,9 @@ const IconRevealAnimation = ({ onComplete }: { onComplete: () => void }) => {
       duration: 1.8 + i * 0.15,
       delay: i * 0.08,
       drift: (i % 2 === 0 ? 1 : -1) * (10 + (i % 4) * 5),
-    }))
-  ).current;
+    })),
+    []
+  );
 
   useEffect(() => {
     const holdTimer = setTimeout(() => setPhase('hold'), 600);

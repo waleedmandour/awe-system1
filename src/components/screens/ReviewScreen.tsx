@@ -52,17 +52,18 @@ const ReviewScreen = ({ onSubmit, onBack }: { onSubmit: (text: string) => void; 
   const { extractedText, setExtractedText, selectedCourse, ocrCompletedAt } = useAppStore();
   const [editedText, setEditedText] = useState(extractedText);
   const [isEditing, setIsEditing] = useState(false);
-  const [cooldownRemaining, setCooldownRemaining] = useState(0);
+  // Compute initial cooldown from ocrCompletedAt without calling setState in the effect body
+  const initialCooldown = ocrCompletedAt
+    ? Math.max(0, COOLDOWN_SECONDS - Math.floor((Date.now() - ocrCompletedAt) / 1000))
+    : 0;
+  const [cooldownRemaining, setCooldownRemaining] = useState(initialCooldown);
 
   const wordCount = editedText.trim().split(/\s+/).filter(Boolean).length;
   const charCount = editedText.length;
 
   // Cooldown timer: count down from OCR completion time
   useEffect(() => {
-    if (!ocrCompletedAt) {
-      setCooldownRemaining(0);
-      return;
-    }
+    if (!ocrCompletedAt) return;
 
     const calculateRemaining = () => {
       const elapsed = Math.floor((Date.now() - ocrCompletedAt) / 1000);
@@ -71,11 +72,7 @@ const ReviewScreen = ({ onSubmit, onBack }: { onSubmit: (text: string) => void; 
       return remaining;
     };
 
-    // Initial calculation
-    const remaining = calculateRemaining();
-    if (remaining <= 0) return;
-
-    // Update every second
+    // Start interval — initial state is already set via useState initializer
     const interval = setInterval(() => {
       const rem = calculateRemaining();
       if (rem <= 0) {

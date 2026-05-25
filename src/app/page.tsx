@@ -69,7 +69,7 @@ export default function AWEApp() {
     }
 
     checkAuth();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   const navigateTo = (step: string) => {
     setDirection('right');
