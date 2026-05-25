@@ -349,8 +349,7 @@ FIRST DRAFT AWARENESS:
 These are handwritten exam essays written under timed conditions — they are first drafts with no opportunity for revision, editing, or spell-check. Do NOT penalize for lack of polish. Evaluate what the student ACHIEVED in a single timed sitting.
 
 OCR ERROR AWARENESS:
-The student text was extracted via OCR from handwritten scripts. Some apparent "spelling errors" may be OCR artifacts (letter substitution, merged/split words). If a word is only 1-2 characters different from a valid English word and the intended word is obvious from context, treat it as an OCR artifact — do NOT count it as a spelling error.
-
+The student text was extracted via OCR from handwritten scripts. Many apparent "spelling errors" may be OCR artifacts (letter substitution, merged/split words, character misrecognition). Do NOT count any spelling error as a student error or lower the Lexical Resource score for it — the AI cannot reliably distinguish OCR artifacts from genuine student spelling mistakes, so ALL apparent spelling errors must be treated as potential OCR artifacts and forgiven. Only flag a spelling issue if the exact same error appears 3+ times in a consistent pattern (e.g., "thier" repeated throughout), indicating it is clearly the student's own spelling rather than OCR noise.
 BAND CALIBRATION FOR CEFR A2-B1 (what each band looks like at this level):
 - 4.5-5/5 (Excellent): Exceptional for A2-B1. Approaches B1+ level. Very rare.
 - 4/5 (Good): Strong for A2-B1. Clear communication with minor expected errors.
@@ -540,11 +539,11 @@ These are handwritten exam essays written under timed conditions — they are fi
 4. Never use language like "should have proofread" or "could have been improved with editing" — these are irrelevant in an exam context.
 
 OCR ERROR AWARENESS:
-The student text was extracted via OCR from handwritten scripts. Some apparent "spelling errors" may be OCR artifacts (e.g., letter substitution, merged words, split words). Apply these rules:
-1. If a word is only 1-2 characters different from a valid English word and the intended word is obvious from context, treat it as an OCR artifact — do NOT count it as a spelling error or lower the Lexical Resource score.
+The student text was extracted via OCR from handwritten scripts. Many apparent "spelling errors" may be OCR artifacts (e.g., letter substitution, merged words, split words, character misrecognition). Apply these rules:
+1. Do NOT count any apparent spelling error as a student error or lower the Lexical Resource score — the AI cannot reliably distinguish OCR artifacts from genuine student spelling mistakes, so ALL apparent spelling errors must be treated as potential OCR artifacts and forgiven.
 2. If meaning is still recoverable despite garbled text, do NOT penalize.
-3. Only flag as a genuine student error if the mistake reflects a clear pattern (e.g., consistent "thier" → shows a spelling issue, not OCR).
-4. When uncertain whether an error is OCR or student-originated, give the student the benefit of the doubt.
+3. Only flag a spelling issue as a genuine student error if the exact same error appears 3+ times in a consistent pattern (e.g., "thier" repeated throughout) — this indicates it is clearly the student's own spelling rather than OCR noise.
+4. When uncertain whether an error is OCR or student-originated, always give the student the benefit of the doubt.
 
 BAND CALIBRATION FOR CEFR A1-A2 (what each band looks like at this level):
 - 5-6/6 (Excellent): Exceptional for A1-A2. Near-fluent grammar, rich vocabulary, perfect structure. Very rare at this level.
@@ -1048,7 +1047,7 @@ export async function POST(request: NextRequest) {
           const result = await model.generateContent({
             contents: [{ role: 'user', parts: [{ text: prompt }] }],
             generationConfig: {
-              temperature: 0.1,
+              temperature: 0.0,
               maxOutputTokens: 8192,
               responseMimeType: 'application/json',
               responseSchema: ASSESSMENT_SCHEMA,
