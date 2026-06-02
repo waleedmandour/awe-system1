@@ -25,6 +25,7 @@ import {
   Loader2,
   History,
 } from 'lucide-react';
+import AIDisclaimer from '@/components/shared/AIDisclaimer';
 
 // Animation variants
 const slideInRight = {
@@ -274,7 +275,7 @@ const ResultsScreen = ({ assessment, onNewAssessment, onBack }: { assessment: As
 
         {/* Tab Content */}
         <ScrollArea className="flex-1">
-          <div className="p-4">
+          <div className="p-4 pb-2">
             {activeTab === 'overview' && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -461,6 +462,9 @@ const ResultsScreen = ({ assessment, onNewAssessment, onBack }: { assessment: As
                 )}
               </motion.div>
             )}
+
+            {/* AI Disclaimer — always visible regardless of active tab */}
+            <AIDisclaimer />
           </div>
         </ScrollArea>
 

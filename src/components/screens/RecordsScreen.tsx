@@ -22,6 +22,7 @@ import {
   History,
   MessageSquare,
 } from 'lucide-react';
+import AIDisclaimer from '@/components/shared/AIDisclaimer';
 
 // Animation variants
 const slideInRight = {
@@ -303,6 +304,9 @@ const RecordsScreen = ({ onBack, onNewAssessment }: { onBack: () => void; onNewA
                   <p className="text-sm text-muted-foreground">Word Count: <span className="font-semibold">{record.assessment.wordCount}</span></p>
                 </div>
               )}
+
+              {/* AI Disclaimer */}
+              <AIDisclaimer />
             </div>
           </ScrollArea>
         </div>
